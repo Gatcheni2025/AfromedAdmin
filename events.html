@@ -202,6 +202,13 @@ td strong{color:#273549}
 .palette-btn{border:1px solid #cdd9e6;background:#f3f7fb;color:var(--navy);padding:7px 9px;border-radius:8px;font-size:7.5px;font-weight:800;cursor:pointer}
 .map-label{position:absolute;background:linear-gradient(to bottom,#f0fdf4,#dcfce7);border:1px solid #22c55e;padding:6px 12px;font-size:12px;font-weight:700;box-shadow:0 4px 10px rgba(0,0,0,.15);white-space:nowrap;z-index:10;transform:translate(-50%,-50%);border-radius:20px;color:#166534}
 .workspace-marker{cursor:grab;user-select:none}
+.map-line-layer{position:absolute;inset:0;width:100%;height:100%;z-index:7;pointer-events:none;overflow:visible}
+.map-line-layer .venue-line{stroke:#d7192d;stroke-width:3;vector-effect:non-scaling-stroke;pointer-events:stroke;cursor:move}
+.map-line-layer .venue-line-handle{fill:#fff;stroke:#d7192d;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:all;cursor:grab}
+.map-line-layer .venue-line-group:hover .venue-line{stroke-width:4}
+.map-line-layer.output-lines{z-index:7}
+.map-line-layer.output-lines .venue-line{pointer-events:none}
+.line-help{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
 
 .sidebar-overlay{display:none}
 .toast{position:fixed;right:18px;bottom:18px;z-index:5000;background:var(--navy);color:#fff;border-radius:12px;padding:11px 14px;font-size:9px;font-weight:700;box-shadow:var(--shadow);transform:translateY(70px);opacity:0;transition:.2s}
@@ -236,6 +243,19 @@ ul.bullets li{margin-bottom:10px}
 .rating-col{display:flex;gap:5px}.rating-box{width:16px;text-align:center}.rating-label{margin-left:5px}
 #out_map_bg{position:relative;width:100%;height:500px;background-size:cover;background-position:center;border:1px solid #999;margin-top:40px;overflow:hidden;background-color:#e5e7eb}
 #floating-controls{position:fixed;bottom:28px;right:28px;display:none;gap:10px;z-index:4000}
+
+
+.finance-builder{width:min(1040px,calc(100vw - 50px));background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin:0 auto 20px;box-shadow:0 6px 18px rgba(7,27,47,.04)}
+.finance-builder h3{margin:0;color:var(--navy);font-family:'Manrope',sans-serif;font-size:1rem}
+.finance-builder p{margin:5px 0 15px;color:var(--muted);font-size:8.5px}
+.finance-company-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 16px}
+.company-choice{border:1px solid var(--line);background:#fbfcfe;border-radius:13px;padding:13px;text-align:left;cursor:pointer;transition:.15s}
+.company-choice:hover,.company-choice.active{border-color:var(--navy);background:#f2f6fa;box-shadow:0 0 0 3px rgba(7,27,47,.04)}
+.company-choice strong{display:block;color:var(--navy);font-size:9px}.company-choice span{display:block;color:var(--muted);font-size:7.5px;margin-top:4px;line-height:1.45}
+.finance-items-editor{width:100%;border-collapse:collapse;margin-top:10px}.finance-items-editor th{background:#f8fafc;text-align:left;font-size:7.5px;padding:8px;border:1px solid var(--line)}.finance-items-editor td{padding:6px;border:1px solid var(--line)}
+.finance-items-editor input{width:100%;border:0;background:transparent;padding:5px;font-size:8.5px;outline:none}
+.finance-summary{display:flex;justify-content:flex-end;margin-top:12px}.finance-summary-box{width:300px;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fbfcfe}.finance-summary-row{display:flex;justify-content:space-between;gap:12px;font-size:8.5px;margin-bottom:7px}.finance-summary-row.total{border-top:1px solid var(--line);padding-top:8px;font-size:10px;font-weight:800;color:var(--navy)}
+@media(max-width:700px){.finance-company-choice{grid-template-columns:1fr}.finance-builder{width:calc(100vw - 20px);padding:13px}}
 
 /* =========================================================
    QUOTATION / INVOICE OUTPUT
@@ -465,6 +485,8 @@ ul.bullets li{margin-bottom:10px}
           <div class="section-card">
             <h3>1. Match & Event Details</h3>
             <div class="form-grid">
+              <div class="field"><label>AREA / DISTRICT</label><input type="text" id="in_area" value="KWAZULU NATAL- ETHEKWINI DISTRICT" placeholder="e.g. KWAZULU NATAL- ETHEKWINI DISTRICT"></div>
+              <div class="field"><label>EVENT TYPE / COMPETITION</label><input type="text" id="in_event_type" value="BETWAY PREMIERSHIP 2026/27" placeholder="e.g. BETWAY PREMIERSHIP 2026/27"></div>
               <div class="field"><label>TEAM A (HOME)</label><input type="text" id="in_team_a" value="GOLDEN ARROWS F.C"></div>
               <div class="field"><label>TEAM B (AWAY)</label><input type="text" id="in_team_b" value="CHIPPA UNITED F.C"></div>
               <div class="field"><label>EVENT DATE</label><input type="text" id="in_event_date" value="01 AUGUST 2026"></div>
@@ -583,7 +605,10 @@ ul.bullets li{margin-bottom:10px}
                 <span class="palette-btn" onclick="addMarkerToWorkspace('2 X AMBULANCE')">2 X AMBULANCE</span>
                 <span class="palette-btn" onclick="addMarkerToWorkspace('3X BLS / 1 X ILS')">3X BLS / 1 X ILS</span>
                 <span class="palette-btn" onclick="addMarkerToWorkspace('VOC')">VOC</span>
+                <span class="palette-btn" onclick="addLineToWorkspace(false)"><i class="fa-solid fa-minus"></i> ADD LINE</span>
+                <span class="palette-btn" onclick="addLineToWorkspace(true)"><i class="fa-solid fa-arrow-right-long"></i> ADD POINTER LINE</span>
               </div>
+              <div class="line-help tiny"><span><i class="fa-solid fa-circle"></i> Drag either endpoint to point the line.</span><span><i class="fa-solid fa-arrows-up-down-left-right"></i> Drag the line itself to move it.</span><span><i class="fa-solid fa-trash"></i> Double-click a line to remove it.</span></div>
             </div>
             <div id="stadium-canvas"></div>
             <div class="head-actions" style="margin-top:14px">
@@ -610,11 +635,11 @@ ul.bullets li{margin-bottom:10px}
 <div id="document-container">
   <!-- PAGE 1 -->
   <div class="page title-page">
-    <div>KWAZULU NATAL- ETHEKWINI DISTRICT</div>
+    <div id="out_area_1">KWAZULU NATAL- ETHEKWINI DISTRICT</div>
     <div>AFROMED EMERGENCY MEDICAL SERVICES</div>
     <div>OPERATIONAL PLAN</div>
     <div>FOR</div>
-    <div>BETWAY PREMIERSHIP 2026/27</div>
+    <div id="out_event_type_1">BETWAY PREMIERSHIP 2026/27</div>
     <img src="https://afromed.life/logo/logo.png" alt="Afromed Logo">
     <div style="margin-top:40px" class="uppercase" id="out_venue_1">KING ZWELITHINI STADIUM, UMLAZI</div>
     <div class="uppercase" id="out_match_1">GOLDEN ARROWS F.C VS CHIPPA UNITED F.C</div>
@@ -779,14 +804,66 @@ ul.bullets li{margin-bottom:10px}
       <span class="close-modal" onclick="closeFinanceModal()">&times;</span>
     </div>
     <div class="modal-body">
-      <div style="text-align:center;margin-bottom:20px">
-        <button class="btn btn-primary" style="font-size:15px;padding:12px 24px" onclick="generateFinancePDF()"><i class="fa-solid fa-file-arrow-down"></i> Download PDF</button>
+      <div class="finance-builder">
+        <h3 id="finance-builder-heading">Create Quotation</h3>
+        <p>First select the Afromed billing entity. The PDF output layout below remains the same; the form only changes the information displayed in it.</p>
+
+        <div class="field full">
+          <label>BILLING ENTITY — SELECT FIRST</label>
+          <div class="finance-company-choice">
+            <button type="button" class="company-choice" id="choice-team" onclick="selectFinanceEntity('team')">
+              <strong>Afromed Team Pty Ltd</strong>
+              <span>VAT applies at 15%. Uses FNB account 62603308695.</span>
+            </button>
+            <button type="button" class="company-choice" id="choice-medical" onclick="selectFinanceEntity('medical')">
+              <strong>Afromed Medical Services</strong>
+              <span>No VAT. Uses FNB account 62344844601.</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="finance-form-fields" class="hidden">
+          <div class="form-grid">
+            <div class="field"><label>DOCUMENT DATE</label><input id="fin-date" type="date" onchange="updateFinancePreview()"></div>
+            <div class="field"><label>CLIENT / CUSTOMER NAME</label><input id="fin-client-name" placeholder="e.g. MS. C. NDLOVU" oninput="updateFinancePreview()"></div>
+            <div class="field"><label>CLIENT CONTACT</label><input id="fin-client-contact" placeholder="e.g. 031 250 8254" oninput="updateFinancePreview()"></div>
+            <div class="field"><label>EVENT NAME</label><input id="fin-event-name" value="STUDENT SPORT" oninput="updateFinancePreview()"></div>
+            <div class="field"><label>VENUE</label><input id="fin-venue" value="HOY PARK GROUND, DURBAN" oninput="updateFinancePreview()"></div>
+            <div class="field"><label>EVENT DATE</label><input id="fin-event-date" value="20 SEPTEMBER 2026" oninput="updateFinancePreview()"></div>
+            <div class="field"><label>TIME</label><input id="fin-time" value="08:00 - 17:00pm (all events)" oninput="updateFinancePreview()"></div>
+            <div class="field"><label>PAX / ATTENDANCE</label><input id="fin-pax" value="860-1000" oninput="updateFinancePreview()"></div>
+          </div>
+
+          <div class="panel-head" style="margin-top:16px;margin-bottom:8px">
+            <div><h3 style="font-size:.9rem">Invoice / Quotation Items</h3><p>Add the services that must appear in the existing PDF table.</p></div>
+            <button type="button" class="btn btn-light" onclick="addFinanceItem()"><i class="fa-solid fa-plus"></i> Add Item</button>
+          </div>
+          <div class="table-wrap">
+            <table class="finance-items-editor">
+              <thead><tr><th style="width:8%">QTY</th><th>DESCRIPTION</th><th style="width:18%">UNIT PRICE (R)</th><th style="width:8%">ACTION</th></tr></thead>
+              <tbody id="finance-items-editor-body"></tbody>
+            </table>
+          </div>
+
+          <div class="finance-summary">
+            <div class="finance-summary-box">
+              <div class="finance-summary-row"><span>Subtotal</span><strong id="fin-summary-subtotal">R 0.00</strong></div>
+              <div class="finance-summary-row"><span id="fin-summary-vat-label">VAT 15%</span><strong id="fin-summary-vat">R 0.00</strong></div>
+              <div class="finance-summary-row total"><span>Total</span><strong id="fin-summary-total">R 0.00</strong></div>
+            </div>
+          </div>
+
+          <div class="head-actions" style="justify-content:center;margin-top:16px">
+            <button class="btn btn-primary" style="font-size:13px;padding:11px 20px" onclick="generateFinancePDF()"><i class="fa-solid fa-file-arrow-down"></i> Download PDF</button>
+          </div>
+        </div>
       </div>
 
       <div id="invoice-card">
         <div class="fin-header">
           <div class="logo-area"><img src="https://www.afromed.life/logo/logo.png" alt="Afromed Logo"></div>
           <div class="company-info">
+            <span id="finance-company-output">AFROMED TEAM PTY LTD</span><br>
             ADDRESS: PO BOX 61231, PHOENIX 4068<br>
             TEL: 073 333 6656 / 073 331 5133<br>
             FAX: 086 650 3102<br>
@@ -797,20 +874,20 @@ ul.bullets li{margin-bottom:10px}
 
         <div class="title-section">
           <h1 class="doc-title-text" id="finance-doc-title">QUOTATION</h1>
-          <div class="date-box">DATE: 04 AUGUST 2026</div>
+          <div class="date-box" id="finance-output-date">DATE: 04 AUGUST 2026</div>
         </div>
 
         <div class="info-grid">
           <div class="box-label">QOUTATION TO:</div>
           <div class="outline-box">
-            <div class="box-content">MS. C. NDLOVU<br>031 250 8254</div>
+            <div class="box-content" id="finance-output-client">MS. C. NDLOVU<br>031 250 8254</div>
           </div>
         </div>
 
         <div class="quotation-details-box">
           <div class="box-label" id="finance-doc-details">QUOTATION DETAILS</div>
           <div class="outline-box">
-            <div class="box-content">
+            <div class="box-content" id="finance-output-event-details">
               <strong>EVENT NAME:</strong> STUDENT SPORT<br>
               <strong>VENUE:</strong> HOY PARK GROUND, DURBAN<br>
               <strong>DATE:</strong> 20 SEPTEMBER 2026<br>
@@ -827,23 +904,18 @@ ul.bullets li{margin-bottom:10px}
               <th width="15%">UNIT PRICE</th><th width="10%">VAT15%</th><th width="15%">AMOUNT</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="finance-output-items-body">
             <tr>
               <td></td><td></td>
               <td><strong>EVENT NAME: STUDENT SPORT</strong><br>HOY PARK GROUND, DURBAN<br>20 SEPTEMBER 2026<br>08:00 - 17:00pm (all events)<br>860-1000</td>
-              <td class="text-right">R 11 304.35</td><td class="text-center">N/A</td><td class="text-right">R 11 304.35</td>
+              <td class="text-right">R 0.00</td><td class="text-center">N/A</td><td class="text-right">R 0.00</td>
             </tr>
-            <tr><td>2</td><td></td><td>AMBULANCES FULLY EQUIPPED ON SITE</td><td></td><td></td><td></td></tr>
-            <tr><td>6</td><td></td><td>BASIC LIFE SUPPORT WITH EWUQUIPMENT ON SITE</td><td></td><td></td><td></td></tr>
-            <tr class="fin-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr class="fin-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr class="fin-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr class="fin-totals"><td colspan="4"></td><td class="label-cell">VAT</td><td class="value-cell">R 1 695.65</td></tr>
-            <tr class="fin-totals"><td colspan="4"></td><td class="label-cell">TOTAL</td><td class="value-cell">R 13 000.00</td></tr>
+            <tr class="fin-totals"><td colspan="4"></td><td class="label-cell" id="finance-output-vat-label">VAT</td><td class="value-cell" id="finance-output-vat">R 0.00</td></tr>
+            <tr class="fin-totals"><td colspan="4"></td><td class="label-cell">TOTAL</td><td class="value-cell" id="finance-output-total">R 0.00</td></tr>
           </tbody>
         </table>
 
-        <div class="bank-details">
+        <div class="bank-details" id="finance-output-bank">
           ACCOUNT: AFROMED TEAM PTY LTD<br>
           ACCOUNTNO: 62603308695<br>
           BANK: FIRST NATIONAL BANK<br>
@@ -936,19 +1008,181 @@ let personnelData=[...defaultPersonnel];
 let allocationData=[...defaultAllocations];
 let hospitalData=[];
 
-/* FINANCE OUTPUT LOGIC — retained */
+/* FINANCE OUTPUT LOGIC — output layout retained, input form expanded */
+const FINANCE_ENTITIES={
+  team:{
+    key:'team',
+    name:'AFROMED TEAM PTY LTD',
+    vat:true,
+    vatRate:.15,
+    bank:`ACCOUNT: AFROMED TEAM PTY LTD<br>
+ACCOUNTNO: 62603308695<br>
+BANK: FIRST NATIONAL BANK<br>
+BRANCH NAME: MY BRANCH<br>
+BRANCHCODE: 25065`
+  },
+  medical:{
+    key:'medical',
+    name:'AFROMED MEDICAL SERVICES',
+    vat:false,
+    vatRate:0,
+    bank:`BANKING DETAILS: FIRST NATIONAL<br>
+BANK<br>
+ACCOUNT NO:62344844601<br>
+B/CODE:25065<br>
+CHEQUE ACCOUNT`
+  }
+};
+let currentFinanceEntity='';
+let financeItems=[
+  {qty:2,description:'AMBULANCES FULLY EQUIPPED ON SITE',unitPrice:0},
+  {qty:6,description:'BASIC LIFE SUPPORT WITH EQUIPMENT ON SITE',unitPrice:0}
+];
+
+function money(v){
+  return 'R '+Number(v||0).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function dateForOutput(value){
+  if(!value)return new Intl.DateTimeFormat('en-ZA',{day:'2-digit',month:'long',year:'numeric'}).format(new Date()).toUpperCase();
+  const d=new Date(value+'T00:00:00');
+  if(Number.isNaN(d.getTime()))return value;
+  return new Intl.DateTimeFormat('en-ZA',{day:'2-digit',month:'long',year:'numeric'}).format(d).toUpperCase();
+}
+
 window.openFinanceModal=function(type){
   window.currentFinanceMode=type;
+  currentFinanceEntity='';
   document.getElementById('finance-modal').style.display='flex';
   document.getElementById('finance-modal-title').innerText=`Create ${type}`;
+  document.getElementById('finance-builder-heading').innerText=`Create ${type}`;
   document.getElementById('finance-doc-title').innerText=type.toUpperCase()==='INVOICE'?'TAX INVOICE':'QUOTATION';
   document.getElementById('finance-doc-details').innerText=`${type.toUpperCase()} DETAILS`;
+  document.querySelector('#invoice-card .box-label').innerText=type.toUpperCase()==='INVOICE'?'INVOICE TO:':'QOUTATION TO:';
+  document.getElementById('finance-form-fields').classList.add('hidden');
+  document.getElementById('invoice-card').classList.add('hidden');
+  document.getElementById('choice-team').classList.remove('active');
+  document.getElementById('choice-medical').classList.remove('active');
+
+  // Start form with today's date and preserve familiar defaults.
+  document.getElementById('fin-date').value=new Date().toISOString().slice(0,10);
+  financeItems=[
+    {qty:2,description:'AMBULANCES FULLY EQUIPPED ON SITE',unitPrice:0},
+    {qty:6,description:'BASIC LIFE SUPPORT WITH EQUIPMENT ON SITE',unitPrice:0}
+  ];
+  renderFinanceItemsEditor();
+  updateFinancePreview();
   toggleSidebar(false);
 };
 window.closeFinanceModal=function(){document.getElementById('finance-modal').style.display='none'};
+
+window.selectFinanceEntity=function(key){
+  if(!FINANCE_ENTITIES[key])return;
+  currentFinanceEntity=key;
+  document.getElementById('choice-team').classList.toggle('active',key==='team');
+  document.getElementById('choice-medical').classList.toggle('active',key==='medical');
+  document.getElementById('finance-form-fields').classList.remove('hidden');
+  document.getElementById('invoice-card').classList.remove('hidden');
+
+  // A non-VAT entity should issue a normal INVOICE rather than a TAX INVOICE.
+  document.getElementById('finance-doc-title').innerText=
+    window.currentFinanceMode.toUpperCase()==='INVOICE'
+      ? (FINANCE_ENTITIES[key].vat?'TAX INVOICE':'INVOICE')
+      : 'QUOTATION';
+
+  updateFinancePreview();
+};
+
+window.addFinanceItem=function(){
+  financeItems.push({qty:1,description:'',unitPrice:0});
+  renderFinanceItemsEditor();
+  updateFinancePreview();
+};
+window.removeFinanceItem=function(i){
+  financeItems.splice(i,1);
+  renderFinanceItemsEditor();
+  updateFinancePreview();
+};
+function renderFinanceItemsEditor(){
+  const body=document.getElementById('finance-items-editor-body');if(!body)return;
+  body.innerHTML=financeItems.map((item,i)=>`<tr>
+    <td><input type="number" min="0" step="1" value="${Number(item.qty||0)}" oninput="financeItems[${i}].qty=Number(this.value||0);updateFinancePreview()"></td>
+    <td><input value="${escapeHtml(item.description||'')}" placeholder="Service description" oninput="financeItems[${i}].description=this.value;updateFinancePreview()"></td>
+    <td><input type="number" min="0" step="0.01" value="${Number(item.unitPrice||0)}" oninput="financeItems[${i}].unitPrice=Number(this.value||0);updateFinancePreview()"></td>
+    <td><button type="button" class="action-btn" onclick="removeFinanceItem(${i})"><i class="fa-solid fa-trash"></i></button></td>
+  </tr>`).join('');
+}
+window.updateFinancePreview=function(){
+  const entity=FINANCE_ENTITIES[currentFinanceEntity];
+  if(entity){
+    document.getElementById('finance-company-output').textContent=entity.name;
+    document.getElementById('finance-output-bank').innerHTML=entity.bank;
+  }
+
+  const docDate=document.getElementById('fin-date')?.value||'';
+  document.getElementById('finance-output-date').textContent='DATE: '+dateForOutput(docDate);
+
+  const client=document.getElementById('fin-client-name')?.value.trim()||'CLIENT NAME';
+  const contact=document.getElementById('fin-client-contact')?.value.trim()||'';
+  document.getElementById('finance-output-client').innerHTML=`${escapeHtml(client)}${contact?'<br>'+escapeHtml(contact):''}`;
+
+  const eventName=document.getElementById('fin-event-name')?.value.trim()||'EVENT';
+  const venue=document.getElementById('fin-venue')?.value.trim()||'—';
+  const eventDate=document.getElementById('fin-event-date')?.value.trim()||'—';
+  const time=document.getElementById('fin-time')?.value.trim()||'—';
+  const pax=document.getElementById('fin-pax')?.value.trim()||'—';
+  const eventDetails=`<strong>EVENT NAME:</strong> ${escapeHtml(eventName)}<br>
+<strong>VENUE:</strong> ${escapeHtml(venue)}<br>
+<strong>DATE:</strong> ${escapeHtml(eventDate)}<br>
+<strong>TIME:</strong> ${escapeHtml(time)}<br>
+<strong>PAX:</strong> ${escapeHtml(pax)}`;
+  document.getElementById('finance-output-event-details').innerHTML=eventDetails;
+
+  const subtotal=financeItems.reduce((sum,item)=>sum+(Number(item.qty||0)*Number(item.unitPrice||0)),0);
+  const vat=entity?.vat?subtotal*entity.vatRate:0;
+  const total=subtotal+vat;
+
+  document.getElementById('fin-summary-subtotal').textContent=money(subtotal);
+  document.getElementById('fin-summary-vat-label').textContent=entity?.vat?'VAT 15%':'VAT (Not Applicable)';
+  document.getElementById('fin-summary-vat').textContent=entity?.vat?money(vat):'N/A';
+  document.getElementById('fin-summary-total').textContent=money(total);
+
+  const outputBody=document.getElementById('finance-output-items-body');
+  if(outputBody){
+    const eventRow=`<tr>
+      <td></td><td></td>
+      <td><strong>EVENT NAME: ${escapeHtml(eventName)}</strong><br>${escapeHtml(venue)}<br>${escapeHtml(eventDate)}<br>${escapeHtml(time)}<br>${escapeHtml(pax)}</td>
+      <td></td><td class="text-center">${entity?.vat?'15%':'N/A'}</td><td></td>
+    </tr>`;
+    const itemRows=financeItems.map((item,i)=>{
+      const amount=Number(item.qty||0)*Number(item.unitPrice||0);
+      const lineVat=entity?.vat?amount*entity.vatRate:0;
+      return `<tr>
+        <td>${i+1}</td>
+        <td>${escapeHtml(item.qty||'')}</td>
+        <td>${escapeHtml(item.description||'')}</td>
+        <td class="text-right">${money(item.unitPrice||0)}</td>
+        <td class="text-right">${entity?.vat?money(lineVat):'N/A'}</td>
+        <td class="text-right">${money(amount)}</td>
+      </tr>`;
+    }).join('');
+    const blankRows=Math.max(0,3-financeItems.length);
+    const blanks=Array.from({length:blankRows},()=>`<tr class="fin-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
+    outputBody.innerHTML=eventRow+itemRows+blanks+
+      `<tr class="fin-totals"><td colspan="4"></td><td class="label-cell" id="finance-output-vat-label">${entity?.vat?'VAT':'VAT'}</td><td class="value-cell" id="finance-output-vat">${entity?.vat?money(vat):'N/A'}</td></tr>
+       <tr class="fin-totals"><td colspan="4"></td><td class="label-cell">TOTAL</td><td class="value-cell" id="finance-output-total">${money(total)}</td></tr>`;
+  }
+};
+
 window.generateFinancePDF=function(){
+  if(!currentFinanceEntity){
+    alert('Please first select Afromed Team Pty Ltd or Afromed Medical Services.');
+    return;
+  }
+  updateFinancePreview();
   const element=document.getElementById('invoice-card');
-  const fileName=`Afromed_${window.currentFinanceMode}_Student_Sport.pdf`;
+  const entity=FINANCE_ENTITIES[currentFinanceEntity];
+  const safeEntity=entity.name.replace(/[^a-z0-9]+/gi,'_');
+  const fileName=`${safeEntity}_${window.currentFinanceMode}_${(document.getElementById('fin-event-name').value||'Event').replace(/[^a-z0-9]+/gi,'_')}.pdf`;
   const opt={
     margin:0,
     filename:fileName,
@@ -1001,6 +1235,87 @@ function makeMarker(label,left='50%',top='50%'){
 }
 window.addMarkerToWorkspace=label=>makeMarker(label);
 
+function ensureLineLayer(canvas=document.getElementById('stadium-canvas'), output=false){
+  let svg=canvas.querySelector(':scope > svg.map-line-layer');
+  if(svg)return svg;
+  const ns='http://www.w3.org/2000/svg';
+  svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('class',`map-line-layer${output?' output-lines':''}`);
+  svg.setAttribute('viewBox','0 0 100 100');
+  svg.setAttribute('preserveAspectRatio','none');
+
+  const defs=document.createElementNS(ns,'defs');
+  const marker=document.createElementNS(ns,'marker');
+  marker.setAttribute('id',output?'venue-arrow-output':'venue-arrow');
+  marker.setAttribute('markerWidth','8');marker.setAttribute('markerHeight','8');
+  marker.setAttribute('refX','7');marker.setAttribute('refY','3.5');marker.setAttribute('orient','auto');
+  const path=document.createElementNS(ns,'path');
+  path.setAttribute('d','M0,0 L0,7 L7,3.5 z');path.setAttribute('fill','#d7192d');
+  marker.appendChild(path);defs.appendChild(marker);svg.appendChild(defs);
+  canvas.prepend(svg);
+  return svg;
+}
+
+function makeVenueLine(data={x1:25,y1:40,x2:70,y2:40,arrow:false}){
+  const canvas=document.getElementById('stadium-canvas'),svg=ensureLineLayer(canvas,false),ns='http://www.w3.org/2000/svg';
+  const group=document.createElementNS(ns,'g');group.setAttribute('class','venue-line-group');
+  const line=document.createElementNS(ns,'line');line.setAttribute('class','venue-line');
+  const h1=document.createElementNS(ns,'circle');h1.setAttribute('class','venue-line-handle');h1.setAttribute('r','1.7');
+  const h2=document.createElementNS(ns,'circle');h2.setAttribute('class','venue-line-handle');h2.setAttribute('r','1.7');
+  group.append(line,h1,h2);svg.appendChild(group);
+
+  let state={x1:Number(data.x1)||25,y1:Number(data.y1)||40,x2:Number(data.x2)||70,y2:Number(data.y2)||40,arrow:!!data.arrow};
+  group.dataset.arrow=state.arrow?'1':'0';
+
+  const draw=()=>{
+    line.setAttribute('x1',state.x1);line.setAttribute('y1',state.y1);line.setAttribute('x2',state.x2);line.setAttribute('y2',state.y2);
+    h1.setAttribute('cx',state.x1);h1.setAttribute('cy',state.y1);h2.setAttribute('cx',state.x2);h2.setAttribute('cy',state.y2);
+    if(state.arrow)line.setAttribute('marker-end','url(#venue-arrow)');else line.removeAttribute('marker-end');
+    Object.assign(group.dataset,{x1:state.x1,y1:state.y1,x2:state.x2,y2:state.y2});
+  };
+  draw();
+
+  const pointer=(e)=>{
+    const r=canvas.getBoundingClientRect();
+    return {x:Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)),y:Math.max(0,Math.min(100,(e.clientY-r.top)/r.height*100))};
+  };
+  const dragHandle=(handle,keyX,keyY)=>{
+    handle.addEventListener('pointerdown',e=>{
+      e.preventDefault();e.stopPropagation();handle.setPointerCapture(e.pointerId);
+      const move=ev=>{const p=pointer(ev);state[keyX]=p.x;state[keyY]=p.y;draw()};
+      const up=()=>{handle.removeEventListener('pointermove',move);handle.removeEventListener('pointerup',up)};
+      handle.addEventListener('pointermove',move);handle.addEventListener('pointerup',up);
+    });
+  };
+  dragHandle(h1,'x1','y1');dragHandle(h2,'x2','y2');
+
+  line.addEventListener('pointerdown',e=>{
+    e.preventDefault();e.stopPropagation();line.setPointerCapture(e.pointerId);
+    const start=pointer(e),original={...state};
+    const move=ev=>{
+      const now=pointer(ev),dx=now.x-start.x,dy=now.y-start.y;
+      let nx1=original.x1+dx,nx2=original.x2+dx,ny1=original.y1+dy,ny2=original.y2+dy;
+      const minX=Math.min(nx1,nx2),maxX=Math.max(nx1,nx2),minY=Math.min(ny1,ny2),maxY=Math.max(ny1,ny2);
+      if(minX<0){nx1-=minX;nx2-=minX} if(maxX>100){nx1-=maxX-100;nx2-=maxX-100}
+      if(minY<0){ny1-=minY;ny2-=minY} if(maxY>100){ny1-=maxY-100;ny2-=maxY-100}
+      state={...state,x1:nx1,x2:nx2,y1:ny1,y2:ny2};draw();
+    };
+    const up=()=>{line.removeEventListener('pointermove',move);line.removeEventListener('pointerup',up)};
+    line.addEventListener('pointermove',move);line.addEventListener('pointerup',up);
+  });
+  line.addEventListener('dblclick',e=>{e.preventDefault();group.remove()});
+  return group;
+}
+window.addLineToWorkspace=arrow=>makeVenueLine({x1:25,y1:50,x2:72,y2:50,arrow:!!arrow});
+
+function currentVenueLines(){
+  const svg=document.querySelector('#stadium-canvas > svg.map-line-layer');
+  if(!svg)return[];
+  return [...svg.querySelectorAll('.venue-line-group')].map(g=>({
+    x1:Number(g.dataset.x1),y1:Number(g.dataset.y1),x2:Number(g.dataset.x2),y2:Number(g.dataset.y2),arrow:g.dataset.arrow==='1'
+  }));
+}
+
 async function loadStadiumsList(){
   const list=document.getElementById('stadium-list-ui');
   const select=document.getElementById('in_stadium');
@@ -1017,15 +1332,16 @@ window.createNewStadium=function(){
   currentStadiumId=null;showView('venues');
   document.getElementById('stad_name').value='';
   document.getElementById('stad_image_input').value='';
-  const c=document.getElementById('stadium-canvas');c.style.backgroundImage='none';c.dataset.img='';c.innerHTML='';
+  const c=document.getElementById('stadium-canvas');c.style.backgroundImage='none';c.dataset.img='';c.innerHTML='';ensureLineLayer(c,false);
   document.getElementById('btn-del-stadium').style.display='none';
 };
 window.editStadium=function(id){
   currentStadiumId=id;showView('venues');
   const s=cachedStadiums.find(x=>x.id===id);if(!s)return;
   document.getElementById('stad_name').value=s.name||'';
-  const c=document.getElementById('stadium-canvas');c.style.backgroundImage=s.image?`url(${s.image})`:'none';c.dataset.img=s.image||'';c.innerHTML='';
+  const c=document.getElementById('stadium-canvas');c.style.backgroundImage=s.image?`url(${s.image})`:'none';c.dataset.img=s.image||'';c.innerHTML='';ensureLineLayer(c,false);
   (s.markers||[]).forEach(m=>makeMarker(m.label,m.left,m.top));
+  (s.lines||[]).forEach(l=>makeVenueLine(l));
   document.getElementById('btn-del-stadium').style.display='inline-flex';
 };
 window.saveStadium=async function(){
@@ -1034,8 +1350,9 @@ window.saveStadium=async function(){
   btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
   const c=document.getElementById('stadium-canvas');
   const markers=[...c.querySelectorAll('.workspace-marker')].map(m=>({label:m.innerText,left:m.style.left,top:m.style.top}));
+  const lines=currentVenueLines();
   try{
-    const data={name,image:c.dataset.img||'',markers};
+    const data={name,image:c.dataset.img||'',markers,lines};
     if(currentStadiumId)await updateDoc(doc(db,STADIUM_COLLECTION,currentStadiumId),data);
     else await addDoc(collection(db,STADIUM_COLLECTION),data);
     showToast('Venue configuration saved');await loadStadiumsList();currentStadiumId=null;
@@ -1087,6 +1404,8 @@ window.openNewPlan=function(){
 };
 function readPlanForm(){
   return {
+    area:document.getElementById('in_area').value,
+    eventType:document.getElementById('in_event_type').value,
     teamA:document.getElementById('in_team_a').value,
     teamB:document.getElementById('in_team_b').value,
     eventDate:document.getElementById('in_event_date').value,
@@ -1133,6 +1452,7 @@ window.editPlan=async function(id){
   try{
     const snap=await getDoc(doc(db,DB_COLLECTION,id));if(!snap.exists())return;
     const d=snap.data();
+    setValue('in_area',d.area||'KWAZULU NATAL- ETHEKWINI DISTRICT');setValue('in_event_type',d.eventType||'BETWAY PREMIERSHIP 2026/27');
     setValue('in_team_a',d.teamA);setValue('in_team_b',d.teamB);setValue('in_event_date',d.eventDate);setValue('in_stadium',d.stadiumId);
     setValue('in_time',d.time);setValue('in_gates_open',d.gatesOpen);setValue('in_event_starts',d.eventStarts);setValue('in_shutdown',d.shutdown);
     setValue('in_organiser',d.organiser);setValue('in_build_up',d.buildUp);setValue('in_main_event',d.mainEvent);setValue('in_break_down',d.breakDown);
@@ -1208,7 +1528,11 @@ window.generatePreview=function(){
   const vName=st?st.name:"UNKNOWN VENUE";
   const teamA=document.getElementById('in_team_a').value,teamB=document.getElementById('in_team_b').value;
   const date=document.getElementById('in_event_date').value;
+  const area=document.getElementById('in_area').value;
+  const eventType=document.getElementById('in_event_type').value;
 
+  document.getElementById('out_area_1').innerText=area;
+  document.getElementById('out_event_type_1').innerText=eventType;
   document.getElementById('out_venue_1').innerText=vName;
   document.getElementById('out_venue_2').innerText=vName;
   document.getElementById('out_risk_venue').innerText=vName;
@@ -1244,6 +1568,15 @@ window.generatePreview=function(){
   if(st){
     mapOut.style.backgroundImage=`url(${st.image})`;
     (st.markers||[]).forEach(m=>mapOut.insertAdjacentHTML('beforeend',`<div class="map-label" style="left:${m.left};top:${m.top};position:absolute;transform:translate(-50%,-50%)">${escapeHtml(m.label)}</div>`));
+    if((st.lines||[]).length){
+      const svg=ensureLineLayer(mapOut,true),ns='http://www.w3.org/2000/svg';
+      (st.lines||[]).forEach(l=>{
+        const line=document.createElementNS(ns,'line');line.setAttribute('class','venue-line');
+        line.setAttribute('x1',l.x1);line.setAttribute('y1',l.y1);line.setAttribute('x2',l.x2);line.setAttribute('y2',l.y2);
+        if(l.arrow)line.setAttribute('marker-end','url(#venue-arrow-output)');
+        svg.appendChild(line);
+      });
+    }
   }else{
     mapOut.style.backgroundImage='none';
     mapOut.innerHTML='<div style="padding:40px;text-align:center;color:#666">No Stadium configured/selected.</div>';
@@ -1297,7 +1630,7 @@ window.closePreview=function(){
   showView('editor');
 };
 
-createRiskControls();renderPersonnel();renderAllocation();renderHospitals();
+createRiskControls();renderPersonnel();renderAllocation();renderHospitals();ensureLineLayer(document.getElementById('stadium-canvas'),false);renderFinanceItemsEditor();
 
 onAuthStateChanged(auth,async user=>{
   if(!user){window.location.href='index.html';return}
