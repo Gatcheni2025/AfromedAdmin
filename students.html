@@ -16,6 +16,10 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
+  <!-- Digital student card rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <style>
     :root{
       --navy:#071b2f;
@@ -306,6 +310,97 @@
     .indicator.ok{background:#22b978}
     .indicator.warn{background:#e3a527}
 
+
+    /* Student documents */
+    .document-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+    .document-card{
+      border:1px solid var(--line);border-radius:13px;padding:12px;background:#fbfcfe;
+      display:flex;align-items:center;gap:10px;min-width:0
+    }
+    .document-icon{
+      width:38px;height:38px;border-radius:11px;background:#edf4fa;color:var(--navy);
+      display:grid;place-items:center;flex:0 0 auto
+    }
+    .document-copy{min-width:0;flex:1}
+    .document-copy strong{display:block;color:#334155;font-size:8.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .document-copy span{display:block;color:var(--muted);font-size:7px;margin-top:3px}
+    .document-actions{display:flex;gap:5px;flex:0 0 auto}
+    .upload-zone{
+      border:1.5px dashed #cbd5e1;border-radius:14px;background:#f8fafc;padding:15px;
+      display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px
+    }
+    .photo-preview{
+      width:92px;height:92px;border-radius:18px;background:#edf2f7;border:1px solid var(--line);
+      object-fit:cover;display:block
+    }
+
+    /* Digital student card */
+    .student-card-shell{display:grid;gap:14px}
+    .student-card{
+      width:min(100%,760px);
+      aspect-ratio:1.586/1;
+      min-height:360px;
+      margin:0 auto;
+      border-radius:24px;
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(135deg,#071b2f 0%,#0e3a60 72%,#d7192d 160%);
+      color:#fff;
+      box-shadow:0 25px 60px rgba(7,27,47,.25);
+      isolation:isolate
+    }
+    .student-card:before{
+      content:'';position:absolute;width:330px;height:330px;border-radius:50%;
+      right:-160px;top:-145px;background:rgba(215,25,45,.42);z-index:-1
+    }
+    .student-card:after{
+      content:'';position:absolute;left:-130px;bottom:-210px;width:400px;height:300px;border-radius:50%;
+      border:40px solid rgba(255,255,255,.035);z-index:-1
+    }
+    .card-top{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      padding:22px 25px 15px;border-bottom:1px solid rgba(255,255,255,.12)
+    }
+    .card-brand{display:flex;align-items:center;gap:11px}
+    .card-brand-logo{
+      width:48px;height:48px;border-radius:13px;background:#fff;padding:5px;display:grid;place-items:center
+    }
+    .card-brand-logo img{width:100%;height:100%;object-fit:contain}
+    .card-brand strong{display:block;font-family:'Manrope',sans-serif;font-size:14px}
+    .card-brand span{display:block;color:#b8cad8;font-size:8px;margin-top:3px;letter-spacing:.04em}
+    .card-type{text-align:right}
+    .card-type strong{display:block;font-size:12px;letter-spacing:.08em}
+    .card-type span{display:block;color:#c8d7e4;font-size:7px;margin-top:4px}
+    .card-body{
+      display:grid;grid-template-columns:125px minmax(0,1fr) 90px;gap:20px;
+      padding:24px 25px;align-items:center
+    }
+    .card-photo{
+      width:120px;height:145px;border-radius:16px;background:#fff;border:4px solid rgba(255,255,255,.9);
+      object-fit:cover;box-shadow:0 12px 30px rgba(0,0,0,.22)
+    }
+    .card-photo-fallback{
+      width:120px;height:145px;border-radius:16px;background:linear-gradient(145deg,#e8eef4,#fff);
+      color:var(--navy);border:4px solid rgba(255,255,255,.9);display:grid;place-items:center;
+      font-family:'Manrope',sans-serif;font-size:34px;font-weight:800
+    }
+    .card-name{font-family:'Manrope',sans-serif;font-size:23px;line-height:1.06;letter-spacing:-.04em;margin:0}
+    .card-student-no{font-size:10px;color:#bcd0df;margin-top:6px}
+    .card-data{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:18px}
+    .card-data span{display:block;color:#a9c0d2;font-size:6.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+    .card-data strong{display:block;color:#fff;font-size:8.5px;margin-top:3px;line-height:1.35}
+    .card-qr{
+      background:#fff;border-radius:12px;padding:7px;width:86px;height:86px;display:grid;place-items:center
+    }
+    .card-qr img,.card-qr canvas{max-width:72px!important;max-height:72px!important}
+    .card-ref{text-align:center;font-size:6.5px;color:#a9c0d2;margin-top:7px}
+    .card-footer{
+      position:absolute;left:25px;right:25px;bottom:17px;display:flex;align-items:center;justify-content:space-between;
+      color:#a9c0d2;font-size:6.5px;letter-spacing:.03em
+    }
+    .card-footer strong{color:#fff}
+    .card-toolbar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+
     /* Modal */
     .modal-backdrop{
       position:fixed;inset:0;z-index:1000;background:rgba(4,19,33,.64);backdrop-filter:blur(6px);
@@ -367,6 +462,13 @@
       .field.full{grid-column:auto}
       .student-profile{grid-template-columns:1fr}
       .quick-grid{grid-template-columns:1fr}
+      .document-grid,.upload-zone{grid-template-columns:1fr}
+      .student-card{min-height:0}
+      .card-body{grid-template-columns:95px 1fr;gap:14px;padding:18px}
+      .card-photo,.card-photo-fallback{width:92px;height:112px}
+      .card-qr-wrap{display:none}
+      .card-name{font-size:17px}
+      .card-footer{left:18px;right:18px}
     }
     @media(max-width:450px){
       .metric-grid,.summary-grid{grid-template-columns:1fr}
@@ -406,6 +508,7 @@
       <div class="nav-title">Academic Operations</div>
       <div class="nav-list">
         <button class="nav-link" data-view="students"><i class="fa-solid fa-user-graduate"></i> Students</button>
+        <button class="nav-link" data-view="records"><i class="fa-solid fa-folder-open"></i> Records &amp; Student Cards</button>
         <button class="nav-link" data-view="courses"><i class="fa-solid fa-book-medical"></i> Courses</button>
         <button class="nav-link" data-view="assignments"><i class="fa-solid fa-list-check"></i> Assignments</button>
         <button class="nav-link" data-view="grading"><i class="fa-solid fa-square-poll-vertical"></i> Results &amp; Grading</button>
@@ -595,6 +698,37 @@
         </section>
       </section>
 
+
+      <!-- Records & Cards -->
+      <section class="view hidden" id="view-records">
+        <div class="page-head">
+          <div><h1>Records &amp; Student Cards</h1><p>Securely manage student photos and supporting documents, and generate digital student identification cards.</p></div>
+          <div class="head-actions">
+            <button class="btn btn-light" onclick="showView('students')"><i class="fa-solid fa-user-graduate"></i> Student Directory</button>
+          </div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card"><span>STUDENT RECORDS</span><strong id="records-students">0</strong></div>
+          <div class="summary-card"><span>FILES UPLOADED</span><strong id="records-files">0</strong></div>
+          <div class="summary-card"><span>STUDENT PHOTOS</span><strong id="records-photos">0</strong></div>
+          <div class="summary-card"><span>ID / PASSPORT FILES</span><strong id="records-identity">0</strong></div>
+        </div>
+
+        <section class="panel">
+          <div class="table-tools">
+            <div class="search-box"><i class="fa-solid fa-search"></i><input id="records-search" placeholder="Search student number or name" oninput="renderRecords()"></div>
+            <span class="tiny">Private files are uploaded through the Afromed PHP file service and opened only through the authenticated admin session.</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Student</th><th>Course</th><th>Photo</th><th>Files</th><th>Actions</th></tr></thead>
+              <tbody id="records-body"><tr><td colspan="5">Loading student records…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
       <!-- Courses -->
       <section class="view hidden" id="view-courses">
         <div class="page-head">
@@ -748,18 +882,18 @@
             <div class="setting-list">
               <div class="setting-row"><div><strong>Firebase Authentication</strong><span id="auth-health-text">Checking…</span></div><span id="auth-health-dot" class="indicator"></span></div>
               <div class="setting-row"><div><strong>Cloud Firestore</strong><span id="db-health-text">Checking…</span></div><span id="db-health-dot" class="indicator"></span></div>
-              <div class="setting-row"><div><strong>SMS Webhook</strong><span id="webhook-health-text">Not configured</span></div><span id="webhook-health-dot" class="indicator warn"></span></div>
+              <div class="setting-row"><div><strong>Twilio via Make.com</strong><span id="webhook-health-text">Checking existing route…</span></div><span id="webhook-health-dot" class="indicator warn"></span></div>
             </div>
           </section>
 
           <section class="panel">
             <div class="panel-head">
-              <div><h3>SMS Webhook</h3><p>Stored in this browser instead of hardcoded into the public GitHub source.</p></div>
+              <div><h3>SMS / Twilio Route</h3><p>The existing working Make.com → Twilio route is preserved. A browser override is optional.</p></div>
             </div>
             <div class="field">
-              <label>MAKE.COM / SMS WEBHOOK URL</label>
+              <label>OPTIONAL WEBHOOK OVERRIDE</label>
               <input id="webhook-input" type="password" placeholder="https://hook....">
-              <div class="form-note">For a multi-user production system, move SMS sending to a protected server endpoint rather than browser storage.</div>
+              <div class="form-note">Leave this blank to keep using the existing Afromed Make.com → Twilio route. Only use an override when intentionally changing the integration.</div>
             </div>
             <div class="head-actions" style="margin-top:12px">
               <button class="btn btn-primary" onclick="saveWebhook()"><i class="fa-solid fa-floppy-disk"></i> Save in Browser</button>
@@ -816,12 +950,14 @@
   let assignments = [];
   let results = [];
   let smsHistory = [];
+  let studentDocuments = [];
   let unsubscribers = [];
   const selectedRecipients = new Set();
 
   const pageMeta = {
     dashboard:['College Dashboard','Academic operations overview'],
     students:['Student Directory','Learner records and enrolment administration'],
+    records:['Records & Student Cards','Student documents, photos and digital identification cards'],
     courses:['Courses','Programme catalogue and enrolment oversight'],
     assignments:['Assignments','Learning activity management'],
     grading:['Results & Grading','Assessment outcomes and student results'],
@@ -1007,8 +1143,23 @@
         }else{
           payload.studentNo=await generateStudentNumber();
           payload.registeredAt=firebase.firestore.FieldValue.serverTimestamp();
-          await db.collection('students').add(payload);
-          showToast(`Student registered: ${payload.studentNo}`);
+          const newRef=await db.collection('students').add(payload);
+
+          const welcomeMsg=`Welcome to Afromed College! Your student number is ${payload.studentNo}. Enrolled in ${payload.course}.`;
+          try{
+            await sendSMSViaMake(
+              phone,
+              welcomeMsg,
+              `${payload.firstName} ${payload.lastName}`.trim(),
+              payload.studentNo,
+              payload.course,
+              'registration'
+            );
+            showToast(`Student registered and welcome SMS sent: ${payload.studentNo}`);
+          }catch(smsErr){
+            console.warn('Welcome SMS failed:',smsErr);
+            showToast(`Student registered: ${payload.studentNo}. SMS delivery could not be confirmed.`);
+          }
         }
         closeModal();
       }catch(err){showToast('Unable to save student: '+err.message)}
@@ -1036,6 +1187,8 @@
           ${s.notes?`<div class="detail" style="margin-top:10px"><span>Admin Notes</span><strong>${esc(s.notes)}</strong></div>`:''}
           <div class="head-actions" style="margin-top:14px">
             <button class="btn btn-primary" onclick="closeModal();openStudentModal('${s.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+            <button class="btn btn-light" onclick="closeModal();openStudentDocuments('${s.id}')"><i class="fa-solid fa-folder-open"></i> Documents</button>
+            <button class="btn btn-light" onclick="closeModal();openStudentCard('${s.id}')"><i class="fa-solid fa-id-card"></i> Student Card</button>
             <button class="btn btn-light" onclick="closeModal();showView('grading');openResultModal('${s.id}')"><i class="fa-solid fa-square-poll-vertical"></i> Add Result</button>
           </div>
         </div>
@@ -1049,6 +1202,495 @@
       await db.collection('students').doc(id).delete();
       showToast('Student deleted');
     }catch(err){showToast('Delete failed: '+err.message)}
+  }
+
+
+  const STUDENT_FILES_API = 'student_files.php';
+
+  function studentDocs(studentId){
+    return studentDocuments
+      .filter(d=>d.studentId===studentId)
+      .sort((a,b)=>String(b.uploadedAt||'').localeCompare(String(a.uploadedAt||'')));
+  }
+
+  function docTypeLabel(type){
+    return ({
+      photo:'Student Photo',
+      identity:'ID / Passport',
+      records:'Student Records',
+      results:'Current Results',
+      other:'Other Document'
+    })[type] || type || 'Document';
+  }
+
+  function docIcon(type){
+    return ({
+      photo:'fa-image',
+      identity:'fa-passport',
+      records:'fa-folder-open',
+      results:'fa-square-poll-vertical',
+      other:'fa-file'
+    })[type] || 'fa-file';
+  }
+
+  async function phpAuthHeaders(extra={}){
+    const user=auth.currentUser;
+    if(!user) throw new Error('Your admin session has expired. Please sign in again.');
+    const token=await user.getIdToken();
+    return {...extra, Authorization:`Bearer ${token}`};
+  }
+
+  async function apiJson(url,options={}){
+    options.headers=await phpAuthHeaders(options.headers||{});
+    const response=await fetch(url,options);
+    let data=null;
+    try{data=await response.json()}catch{}
+    if(!response.ok || data?.success===false){
+      throw new Error(data?.error || `Server returned HTTP ${response.status}`);
+    }
+    return data;
+  }
+
+  async function refreshAllStudentDocuments(){
+    try{
+      const data=await apiJson(`${STUDENT_FILES_API}?action=list_all`);
+      studentDocuments=Array.isArray(data.files)?data.files:[];
+      renderDashboard();
+      renderRecords();
+      return studentDocuments;
+    }catch(err){
+      console.warn('Student files API:',err);
+      studentDocuments=[];
+      renderRecords();
+      return [];
+    }
+  }
+
+  async function refreshStudentDocuments(studentId){
+    try{
+      const data=await apiJson(`${STUDENT_FILES_API}?action=list&studentId=${encodeURIComponent(studentId)}`);
+      const fresh=Array.isArray(data.files)?data.files:[];
+      studentDocuments=[
+        ...studentDocuments.filter(d=>d.studentId!==studentId),
+        ...fresh
+      ];
+      renderDashboard();
+      renderRecords();
+      return fresh;
+    }catch(err){
+      console.warn('Student file list:',err);
+      return studentDocs(studentId);
+    }
+  }
+
+  async function compressStudentPhoto(file){
+    if(!file.type.startsWith('image/')) throw new Error('Student photo must be an image');
+    const img=await new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const image=new Image();
+        image.onload=()=>resolve(image);
+        image.onerror=reject;
+        image.src=reader.result;
+      };
+      reader.onerror=reject;
+      reader.readAsDataURL(file);
+    });
+
+    const max=1200;
+    const scale=Math.min(1,max/Math.max(img.width,img.height));
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.max(1,Math.round(img.width*scale));
+    canvas.height=Math.max(1,Math.round(img.height*scale));
+    canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.82));
+    if(!blob) throw new Error('Could not compress photo');
+    return new File([blob],`student-photo-${Date.now()}.jpg`,{type:'image/jpeg'});
+  }
+
+  function validStudentFile(type,file){
+    const max=type==='photo'?5*1024*1024:15*1024*1024;
+    if(file.size>max) return `File is too large. Maximum ${type==='photo'?'5':'15'} MB.`;
+    const allowed=[
+      'image/jpeg','image/png','image/webp',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/csv'
+    ];
+    if(type==='photo' && !file.type.startsWith('image/')) return 'Student photo must be JPG, PNG or WebP.';
+    if(type!=='photo' && !allowed.includes(file.type)) return 'Unsupported file type. Use PDF, image, Word, Excel or CSV.';
+    return '';
+  }
+
+  async function uploadStudentDocument(studentId,type,file,label=''){
+    const student=students.find(s=>s.id===studentId);
+    if(!student) throw new Error('Student record not found');
+
+    const validation=validStudentFile(type,file);
+    if(validation) throw new Error(validation);
+
+    let uploadFile=file;
+    if(type==='photo') uploadFile=await compressStudentPhoto(file);
+
+    const form=new FormData();
+    form.append('studentId',studentId);
+    form.append('studentNo',student.studentNo||'');
+    form.append('studentName',`${student.firstName||''} ${student.lastName||''}`.trim());
+    form.append('type',type);
+    form.append('label',label||docTypeLabel(type));
+    form.append('file',uploadFile,uploadFile.name);
+
+    const headers=await phpAuthHeaders();
+    const response=await fetch(STUDENT_FILES_API,{
+      method:'POST',
+      headers,
+      body:form
+    });
+    let data=null;
+    try{data=await response.json()}catch{}
+    if(!response.ok || data?.success===false){
+      throw new Error(data?.error || `Upload failed with HTTP ${response.status}`);
+    }
+
+    await refreshStudentDocuments(studentId);
+    return data.file;
+  }
+
+  async function fetchStoredDocumentBlob(document){
+    const headers=await phpAuthHeaders();
+    const url=`${STUDENT_FILES_API}?action=file&studentId=${encodeURIComponent(document.studentId)}&fileId=${encodeURIComponent(document.id)}`;
+    const response=await fetch(url,{headers});
+    if(!response.ok){
+      let message=`File could not be loaded (HTTP ${response.status})`;
+      try{
+        const data=await response.json();
+        if(data?.error) message=data.error;
+      }catch{}
+      throw new Error(message);
+    }
+    return await response.blob();
+  }
+
+  async function openStudentDocuments(studentId){
+    const s=students.find(x=>x.id===studentId);
+    if(!s) return;
+
+    const docs=await refreshStudentDocuments(studentId);
+
+    openModal(`Student Files · ${s.studentNo||''}`,`
+      <div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          <div id="student-file-photo" class="profile-card-avatar" style="width:72px;height:72px;border-radius:16px;font-size:22px">${esc(((s.firstName||'A').charAt(0)+(s.lastName||'').charAt(0)).toUpperCase())}</div>
+          <div>
+            <strong style="display:block;color:var(--navy);font-size:12px">${esc(((s.firstName||'')+' '+(s.lastName||'')).trim()||'Student')}</strong>
+            <span class="tiny">${esc(s.studentNo||'')} · ${esc(s.course||'')}</span>
+          </div>
+        </div>
+
+        <form id="student-upload-form">
+          <div class="upload-zone">
+            <div class="field">
+              <label>FILE CATEGORY</label>
+              <select id="student-file-type">
+                <option value="photo">Student Photo</option>
+                <option value="identity">ID / Passport</option>
+                <option value="records">Student Records</option>
+                <option value="results">Current Results</option>
+                <option value="other">Other Document</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>FILE</label>
+              <input id="student-file-input" type="file" required accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx,.csv">
+            </div>
+            <div class="field full">
+              <label>LABEL / DESCRIPTION</label>
+              <input id="student-file-label" placeholder="e.g. Passport copy, 2026 Term 1 results">
+            </div>
+            <div class="field full">
+              <div class="form-note">Photos are compressed before upload. Other documents are limited to 15 MB. Sensitive files are uploaded through PHP into a protected server folder and are not exposed as normal public website files.</div>
+            </div>
+            <div class="field full">
+              <button class="btn btn-primary" id="upload-student-file-btn" type="submit"><i class="fa-solid fa-cloud-arrow-up"></i> Upload File</button>
+            </div>
+          </div>
+        </form>
+
+        <div style="margin-top:16px">
+          <div class="panel-head" style="margin-bottom:8px"><div><h3>Stored Files</h3><p>${docs.length} file${docs.length===1?'':'s'} attached to this student</p></div></div>
+          <div class="document-grid" id="student-document-list">
+            ${renderDocumentCards(docs)}
+          </div>
+        </div>
+      </div>
+    `);
+
+    const photoDoc=docs.find(d=>d.type==='photo');
+    if(photoDoc){
+      try{
+        const blob=await fetchStoredDocumentBlob(photoDoc);
+        const url=URL.createObjectURL(blob);
+        const holder=document.getElementById('student-file-photo');
+        if(holder){
+          holder.outerHTML=`<img id="student-file-photo" class="photo-preview" src="${url}" alt="Student photo">`;
+          setTimeout(()=>URL.revokeObjectURL(url),60000);
+        }
+      }catch(err){console.warn('Student photo:',err)}
+    }
+
+    document.getElementById('student-upload-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const btn=document.getElementById('upload-student-file-btn');
+      const type=document.getElementById('student-file-type').value;
+      const file=document.getElementById('student-file-input').files[0];
+      const label=document.getElementById('student-file-label').value.trim();
+      if(!file){showToast('Choose a file first');return}
+      btn.disabled=true;
+      btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Uploading…';
+      try{
+        await uploadStudentDocument(studentId,type,file,label);
+        showToast('Student file uploaded');
+        closeModal();
+        setTimeout(()=>openStudentDocuments(studentId),220);
+      }catch(err){
+        showToast('Upload failed: '+err.message);
+        btn.disabled=false;
+        btn.innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i> Upload File';
+      }
+    });
+  }
+
+  function renderDocumentCards(docs){
+    if(!docs.length) return `<div class="empty-state" style="grid-column:1/-1;padding:25px"><i class="fa-solid fa-folder-open"></i><strong>No files uploaded yet</strong><span>Add a photo, ID/passport, student records or current results above.</span></div>`;
+    return docs.map(d=>`
+      <div class="document-card">
+        <div class="document-icon"><i class="fa-solid ${docIcon(d.type)}"></i></div>
+        <div class="document-copy">
+          <strong>${esc(d.label||d.originalName||docTypeLabel(d.type))}</strong>
+          <span>${esc(docTypeLabel(d.type))} · ${formatDate(d.uploadedAt)}</span>
+        </div>
+        <div class="document-actions">
+          <button class="action-btn" title="Open file" onclick="openStoredDocument('${d.id}')"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+          <button class="action-btn danger" title="Delete file" onclick="deleteStoredDocument('${d.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>`).join('');
+  }
+
+  async function openStoredDocument(documentId){
+    const d=studentDocuments.find(x=>x.id===documentId);
+    if(!d) return;
+    try{
+      const blob=await fetchStoredDocumentBlob(d);
+      const url=URL.createObjectURL(blob);
+      window.open(url,'_blank','noopener');
+      setTimeout(()=>URL.revokeObjectURL(url),120000);
+    }catch(err){showToast('File could not be opened: '+err.message)}
+  }
+
+  async function deleteStoredDocument(documentId){
+    const d=studentDocuments.find(x=>x.id===documentId);
+    if(!d) return;
+    if(!confirm(`Delete ${d.label||d.originalName||'this file'}?`)) return;
+    try{
+      const headers=await phpAuthHeaders({'Content-Type':'application/json'});
+      const response=await fetch(STUDENT_FILES_API,{
+        method:'POST',
+        headers,
+        body:JSON.stringify({
+          action:'delete',
+          studentId:d.studentId,
+          fileId:d.id
+        })
+      });
+      let data=null;
+      try{data=await response.json()}catch{}
+      if(!response.ok || data?.success===false){
+        throw new Error(data?.error || `Delete failed with HTTP ${response.status}`);
+      }
+      await refreshStudentDocuments(d.studentId);
+      showToast('Student file deleted');
+      closeModal();
+      setTimeout(()=>openStudentDocuments(d.studentId),220);
+    }catch(err){showToast('Delete failed: '+err.message)}
+  }
+
+  async function resolveStudentPhoto(student){
+    const photo=studentDocs(student.id).find(d=>d.type==='photo');
+    if(!photo) return '';
+    try{
+      const blob=await fetchStoredDocumentBlob(photo);
+      return URL.createObjectURL(blob);
+    }catch(err){
+      console.warn('Photo load:',err);
+      return '';
+    }
+  }
+
+  async function openStudentCard(studentId){
+    const s=students.find(x=>x.id===studentId);
+    if(!s) return;
+
+    await refreshStudentDocuments(studentId);
+
+    const name=((s.firstName||'')+' '+(s.lastName||'')).trim()||'Student';
+    const initials=((s.firstName||'A').charAt(0)+(s.lastName||'').charAt(0)).toUpperCase();
+    const photo=await resolveStudentPhoto(s);
+
+    openModal('Digital Student Card',`
+      <div class="student-card-shell">
+        <div class="student-card" id="digital-student-card">
+          <div class="card-top">
+            <div class="card-brand">
+              <div class="card-brand-logo"><img src="./logo2.png" alt="Afromed"></div>
+              <div><strong>Afromed Emergency College</strong><span>STUDENT IDENTIFICATION</span></div>
+            </div>
+            <div class="card-type"><strong>STUDENT CARD</strong><span>Digital &amp; printable identification</span></div>
+          </div>
+          <div class="card-body">
+            <div>
+              ${photo
+                ? `<img class="card-photo" src="${photo}" alt="Student photo">`
+                : `<div class="card-photo-fallback">${esc(initials)}</div>`}
+            </div>
+            <div>
+              <h2 class="card-name">${esc(name)}</h2>
+              <div class="card-student-no">${esc(s.studentNo||'Student number unavailable')}</div>
+              <div class="card-data">
+                <div><span>Course / Programme</span><strong>${esc(s.course||'—')}</strong></div>
+                <div><span>Campus</span><strong>${esc(s.campus||'—')}</strong></div>
+                <div><span>Student Status</span><strong>${esc(s.status||'active')}</strong></div>
+                <div><span>Issued</span><strong>${esc(new Intl.DateTimeFormat('en-ZA',{day:'2-digit',month:'short',year:'numeric'}).format(new Date()))}</strong></div>
+              </div>
+            </div>
+            <div class="card-qr-wrap">
+              <div class="card-qr" id="student-card-qr"></div>
+              <div class="card-ref">Student reference</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Afromed Emergency College · Student identification</span>
+            <strong>${esc(s.studentNo||'')}</strong>
+          </div>
+        </div>
+
+        <div class="card-toolbar">
+          <button class="btn btn-primary" onclick="downloadStudentCard('${s.id}')"><i class="fa-solid fa-download"></i> Download PNG</button>
+          <button class="btn btn-light" onclick="printStudentCard('${s.id}')"><i class="fa-solid fa-print"></i> Print Card</button>
+          <button class="btn btn-light" onclick="shareStudentCard('${s.id}')"><i class="fa-solid fa-share-nodes"></i> Share Digitally</button>
+          <button class="btn btn-light" onclick="closeModal();openStudentDocuments('${s.id}')"><i class="fa-solid fa-camera"></i> Update Photo</button>
+        </div>
+        <div class="form-note" style="text-align:center">The QR code contains the student's Afromed reference only; it is not presented as an independent identity-verification service.</div>
+      </div>
+    `);
+
+    setTimeout(()=>{
+      const qr=document.getElementById('student-card-qr');
+      if(qr && window.QRCode){
+        qr.innerHTML='';
+        new QRCode(qr,{
+          text:`AFROMED|STUDENT|${s.studentNo||s.id}`,
+          width:72,
+          height:72,
+          colorDark:'#071b2f',
+          colorLight:'#ffffff',
+          correctLevel:QRCode.CorrectLevel.M
+        });
+      }
+    },80);
+  }
+
+  async function cardCanvas(){
+    const card=document.getElementById('digital-student-card');
+    if(!card) throw new Error('Open a student card first');
+    return await html2canvas(card,{
+      scale:2.2,
+      backgroundColor:null,
+      useCORS:true,
+      allowTaint:false,
+      logging:false
+    });
+  }
+
+  async function downloadStudentCard(studentId){
+    const s=students.find(x=>x.id===studentId);
+    try{
+      const canvas=await cardCanvas();
+      const a=document.createElement('a');
+      a.download=`Afromed-Student-Card-${s?.studentNo||studentId}.png`;
+      a.href=canvas.toDataURL('image/png');
+      a.click();
+    }catch(err){showToast('Card download failed: '+err.message)}
+  }
+
+  async function shareStudentCard(studentId){
+    const s=students.find(x=>x.id===studentId);
+    try{
+      const canvas=await cardCanvas();
+      const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+      const file=new File([blob],`Afromed-Student-Card-${s?.studentNo||studentId}.png`,{type:'image/png'});
+      if(navigator.share && navigator.canShare?.({files:[file]})){
+        await navigator.share({
+          title:'Afromed Student Card',
+          text:`Afromed Emergency College student card · ${s?.studentNo||''}`,
+          files:[file]
+        });
+      }else{
+        const a=document.createElement('a');
+        a.download=file.name;
+        a.href=URL.createObjectURL(blob);
+        a.click();
+        setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+        showToast('Sharing is not supported by this browser; the card was downloaded instead.');
+      }
+    }catch(err){
+      if(err.name!=='AbortError') showToast('Unable to share card: '+err.message);
+    }
+  }
+
+  async function printStudentCard(studentId){
+    try{
+      const canvas=await cardCanvas();
+      const data=canvas.toDataURL('image/png');
+      const win=window.open('','_blank','width=1000,height=760');
+      if(!win){showToast('Allow pop-ups to print the card');return}
+      win.document.write(`<!doctype html><html><head><title>Afromed Student Card</title><style>
+        body{margin:0;display:grid;place-items:center;min-height:100vh;background:#fff}
+        img{width:86mm;height:auto;max-width:95vw}
+        @page{size:landscape;margin:10mm}
+        @media print{body{min-height:auto}}
+      </style></head><body><img src="${data}" onload="window.print();"></body></html>`);
+      win.document.close();
+    }catch(err){showToast('Print failed: '+err.message)}
+  }
+
+  function renderRecords(){
+    const term=(document.getElementById('records-search')?.value||'').toLowerCase().trim();
+    const filtered=students.filter(s=>[s.studentNo,s.firstName,s.lastName,s.course].join(' ').toLowerCase().includes(term));
+    const photoDocs=studentDocuments.filter(d=>d.type==='photo');
+    const identityDocs=studentDocuments.filter(d=>d.type==='identity');
+
+    setText('records-students',students.length);
+    setText('records-files',studentDocuments.length);
+    setText('records-photos',new Set(photoDocs.map(d=>d.studentId)).size);
+    setText('records-identity',identityDocs.length);
+
+    document.getElementById('records-body').innerHTML=filtered.length?filtered.map(s=>{
+      const docs=studentDocs(s.id);
+      const hasPhoto=docs.some(d=>d.type==='photo');
+      return `<tr>
+        <td><strong>${esc(((s.firstName||'')+' '+(s.lastName||'')).trim()||'Student')}</strong><div class="tiny">${esc(s.studentNo||'')}</div></td>
+        <td>${esc(s.course||'—')}</td>
+        <td>${hasPhoto?'<span class="badge badge-green">Available</span>':'<span class="badge badge-amber">Missing</span>'}</td>
+        <td>${docs.length}</td>
+        <td><div class="actions">
+          <button class="btn btn-light" onclick="openStudentDocuments('${s.id}')"><i class="fa-solid fa-folder-open"></i> Files</button>
+          <button class="btn btn-primary" onclick="openStudentCard('${s.id}')"><i class="fa-solid fa-id-card"></i> Card</button>
+        </div></td>
+      </tr>`;
+    }).join(''):`<tr><td colspan="5">No matching students.</td></tr>`;
   }
 
   function openCourseModal(id=null){
@@ -1227,6 +1869,8 @@
     if(owing) signals.push({title:`${owing} payment record${owing===1?'':'s'} need follow-up`,text:'Review student payment status in the directory.',warn:true});
     if(!courses.length) signals.push({title:'No course catalogue records',text:'Add verified programme details in Courses.',warn:true});
     if(!assignments.length) signals.push({title:'No assignments published',text:'Create learning activities when ready.',warn:false});
+    const missingPhotos=students.filter(s=>!studentDocs(s.id).some(d=>d.type==='photo')).length;
+    if(missingPhotos>0) signals.push({title:`${missingPhotos} student photo${missingPhotos===1?'':'s'} missing`,text:'Upload photos from Records & Student Cards before issuing digital cards.',warn:true});
     if(!signals.length) signals.push({title:'Academic administration is up to date',text:'No major flags from the connected College collections.',warn:false});
     document.getElementById('academic-signals').innerHTML=signals.map(s=>`
       <div class="setting-row"><div><strong>${esc(s.title)}</strong><span>${esc(s.text)}</span></div><span class="indicator ${s.warn?'warn':'ok'}"></span></div>
@@ -1264,6 +1908,8 @@
         <td><div class="actions">
           <button class="action-btn" title="View" onclick="viewStudent('${s.id}')"><i class="fa-solid fa-eye"></i></button>
           <button class="action-btn" title="Edit" onclick="openStudentModal('${s.id}')"><i class="fa-solid fa-pen"></i></button>
+          <button class="action-btn" title="Documents" onclick="openStudentDocuments('${s.id}')"><i class="fa-solid fa-folder-open"></i></button>
+          <button class="action-btn" title="Digital Student Card" onclick="openStudentCard('${s.id}')"><i class="fa-solid fa-id-card"></i></button>
           <button class="action-btn danger" title="Delete" onclick="deleteStudent('${s.id}')"><i class="fa-solid fa-trash"></i></button>
         </div></td>
       </tr>`).join(''):`<tr><td colspan="7">No students match the selected filters.</td></tr>`;
@@ -1404,8 +2050,11 @@
     updateMessagePreview();
   }
 
+  // Existing Afromed Make.com -> Twilio route retained unchanged.
+  const WORKING_SMS_WEBHOOK = "https://hook.eu1.make.com/czbsf792mjy8sv1mnfq2acu6n3bjv2ij";
+
   function webhookUrl(){
-    return localStorage.getItem('afromed_college_sms_webhook') || '';
+    return localStorage.getItem('afromed_college_sms_webhook') || WORKING_SMS_WEBHOOK;
   }
 
   function updateWebhookHealth(){
@@ -1414,7 +2063,8 @@
     const text=document.getElementById('webhook-health-text');
     dot.classList.toggle('ok',!!url);
     dot.classList.toggle('warn',!url);
-    text.textContent=url?'Configured in this browser':'Not configured';
+    const overridden=!!localStorage.getItem('afromed_college_sms_webhook');
+    text.textContent=overridden?'Browser override configured':'Existing Afromed Make.com → Twilio route active';
   }
 
   function saveWebhook(){
@@ -1441,9 +2091,12 @@
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
-          type:'test',
-          source:'Afromed Emergency College Admin',
-          message:'Afromed College webhook connection test'
+          to:'+27821234567',
+          studentName:'Test Student',
+          studentNumber:'TEST001',
+          courseName:'Test Course',
+          message:'This is a test message from Afromed Admin Portal.',
+          type:'test'
         })
       });
       if(!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -1459,6 +2112,28 @@
     });
     if(!response.ok) throw new Error(`HTTP ${response.status}`);
     return true;
+  }
+
+  async function sendSMSViaMake(to,message,studentName='',studentNumber='',courseName='',type='manual'){
+    const url=webhookUrl();
+    if(!url) throw new Error('SMS webhook not configured');
+    const response=await fetch(url,{
+      method:'POST',
+      mode:'cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        to,
+        studentName,
+        studentNumber,
+        courseName,
+        message,
+        type
+      })
+    });
+    let body='';
+    try{body=await response.text()}catch{}
+    if(!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText} — ${body}`);
+    return {ok:true,status:response.status,body};
   }
 
   document.getElementById('message-form').addEventListener('submit',async e=>{
@@ -1482,14 +2157,14 @@
         .replace(/{studentNo}/g,s.studentNo||'')
         .replace(/{course}/g,s.course||'');
       try{
-        await sendWebhookMessage(url,{
-          to:s.phone,
-          studentName:((s.firstName||'')+' '+(s.lastName||'')).trim(),
-          studentNumber:s.studentNo||'',
-          courseName:s.course||'',
-          message:personalised,
-          type:'manual'
-        });
+        await sendSMSViaMake(
+          s.phone,
+          personalised,
+          ((s.firstName||'')+' '+(s.lastName||'')).trim(),
+          s.studentNo||'',
+          s.course||'',
+          'manual'
+        );
         sent++;
       }catch(err){failed++}
     }
@@ -1528,6 +2203,7 @@
   function refreshUi(){
     renderDashboard();
     renderStudents();
+    renderRecords();
     renderCourses();
     renderAssignments();
     renderResults();
@@ -1560,7 +2236,7 @@
   }
 
   function attachData(){
-    listenCollection('students',data=>{students=data;renderDashboard();renderStudents();renderCourses();renderRecipients()});
+    listenCollection('students',data=>{students=data;renderDashboard();renderStudents();renderRecords();renderCourses();renderRecipients()});
     listenCollection('courses',data=>{courses=data;renderDashboard();renderCourses();renderStudents();renderAssignments()});
     listenCollection('assignments',data=>{assignments=data;renderDashboard();renderAssignments();renderResults()});
     listenCollection('results',data=>{results=data;renderDashboard();renderCourses();renderAssignments();renderResults()});
@@ -1611,6 +2287,7 @@
     document.getElementById('auth-health-dot').classList.add('ok');
 
     attachData();
+    await refreshAllStudentDocuments();
     updateWebhookHealth();
 
     document.getElementById('app').classList.remove('hidden');
