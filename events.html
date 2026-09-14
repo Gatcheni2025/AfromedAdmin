@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Afromed Operational Plan App</title>
+<!-- Google Fonts (Inter) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- FontAwesome Premium Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- HTML2PDF for generating Quotations and Invoices -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+    /* ==========================================================================
+       RESET & BASE 
+       ========================================================================== */
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #f3f5f9; color: #1e293b; overflow-x: hidden; }
+
+    /* ==========================================================================
+       LAYOUT & SIDEBAR (PREMIUM RESPONSIVE)
+       ========================================================================== */
+    .layout-wrapper { display: flex; height: 100vh; overflow: hidden; width: 100%; background: #f3f5f9; }
+    
+    .sidebar { width: 280px; background: #0f172a; color: white; display: flex; flex-direction: column; transition: transform 0.3s ease, left 0.3s ease; box-shadow: 4px 0 15px rgba(0,0,0,0.05); z-index: 1000; flex-shrink: 0; }
+    .sidebar-header { padding: 30px 20px; background: #0b1121; border-bottom: 1px solid #1e293b; text-align: center; display: flex; justify-content: center; align-items: center; }
+    
+    /* Rounded Neat Logo */
+    .sidebar-header img { 
+        width: 100px; 
+        height: 100px; 
+        border-radius: 50%; 
+        object-fit: contain; 
+        background: white; 
+        padding: 10px; 
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        border: 3px solid #38bdf8;
+        transition: transform 0.3s ease;
+    }
+    .sidebar-header img:hover { transform: scale(1.05); }
+
+    .sidebar-menu { list-style: none; padding: 20px 0; margin: 0; flex: 1; overflow-y: auto; }
+    .sidebar-menu li { margin-bottom: 8px; }
+    .sidebar-menu a { display: flex; align-items: center; padding: 14px 28px; color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.2s ease-in-out; border-left: 4px solid transparent; }
+    .sidebar-menu a:hover { background: #1e293b; color: #f8fafc; border-left: 4px solid #38bdf8; }
+    .sidebar-menu a i { margin-right: 18px; font-size: 18px; width: 20px; text-align: center; }
+    
+    .main-content { flex: 1; height: 100vh; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+
+    .mobile-header { display: none; background: #0f172a; color: white; padding: 15px 20px; align-items: center; justify-content: space-between; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 998; }
+    .mobile-header button { background: none; border: none; color: #38bdf8; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: transform 0.2s; }
+    .mobile-header button:active { transform: scale(0.9); }
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 999; backdrop-filter: blur(3px); opacity: 0; transition: opacity 0.3s ease; }
+
+    @media (max-width: 900px) {
+        .layout-wrapper { flex-direction: column; }
+        .sidebar { position: fixed; top: 0; left: -280px; height: 100%; }
+        .sidebar.active { left: 0; }
+        .main-content { height: calc(100vh - 60px); }
+        .mobile-header { display: flex; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+    }
+
+    /* ==========================================================================
+       DASHBOARD & APP UI (PREMIUM)
+       ========================================================================== */
+    .app-container { max-width: 1200px; margin: 30px auto; background: white; padding: 35px; border-radius: 16px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 25px; }
+    .header-bar h1 { margin: 0; color: #0f172a; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+    .header-actions { display: flex; gap: 12px; flex-wrap: wrap;}
+    
+    /* Modern Buttons */
+    .btn { padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    .btn:active { transform: translateY(0); }
+    
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-success { background: #10b981; color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-warning { background: #f59e0b; color: white; }
+    .btn-warning:hover { background: #d97706; }
+    .btn-secondary { background: #64748b; color: white; }
+    .btn-info { background: #0ea5e9; color: white; }
+    .btn-info:hover { background: #0284c7; }
+    .btn-info-dark { background: #0284c7; color: white; }
+    .btn-info-dark:hover { background: #0369a1; }
+    
+    /* Modern Tables */
+    .dashboard-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .dashboard-table th, .dashboard-table td { border-bottom: 1px solid #e2e8f0; padding: 15px; text-align: left; }
+    .dashboard-table th { background: #f8fafc; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+    .dashboard-table tr:last-child td { border-bottom: none; }
+    .dashboard-table tr:hover td { background: #f1f5f9; }
+
+    /* ==========================================================================
+       FORM UI (EDITOR MODE)
+       ========================================================================== */
+    .section { border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 30px; background: #fff; box-shadow: 0 4px 6px -4px rgba(0,0,0,0.02); }
+    .section-title { font-size: 16px; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: #1e293b; text-transform: uppercase; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; letter-spacing: 0.5px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    
+    .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+    .form-group label { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #475569; }
+    .form-group input, .form-group select { padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #f8fafc; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #38bdf8; background: #fff; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+    
+    .dynamic-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 15px; font-size: 13px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+    .dynamic-table th, .dynamic-table td { border-bottom: 1px solid #e2e8f0; padding: 10px 12px; text-align: left; }
+    .dynamic-table th { background: #f8fafc; font-weight: 600; color: #475569; }
+    .dynamic-table td input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; transition: 0.2s; }
+    .dynamic-table td input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+
+    .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 13px; margin-bottom: 20px;}
+    .risk-column { border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; background: #f8fafc; max-height: 350px; overflow-y: auto;}
+    .risk-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 4px 0; }
+    .risk-item input[type="checkbox"], .risk-item input[type="radio"] { cursor: pointer; width: 16px; height: 16px; accent-color: #2563eb; }
+
+    #floating-controls { position: fixed; bottom: 30px; right: 30px; display: none; gap: 15px; z-index: 1000; }
+    #floating-controls .btn { padding: 14px 24px; font-size: 15px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+    /* ==========================================================================
+       STADIUM MANAGER UI
+       ========================================================================== */
+    .stadium-workspace-layout { display: grid; grid-template-columns: 1fr 3fr; gap: 25px; margin-top: 20px;}
+    .stadium-sidebar { background: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; }
+    .stadium-main { border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; background: #fff; box-shadow: 0 4px 6px -4px rgba(0,0,0,0.02);}
+    
+    #stadium-canvas { position: relative; width: 100%; height: 500px; background-color: #e2e8f0; background-size: cover; background-position: center; border: 2px dashed #94a3b8; border-radius: 8px; overflow: hidden; margin-top: 20px; transition: border-color 0.3s;}
+    #stadium-canvas:hover { border-color: #64748b; }
+    .palette-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 12px; font-size: 12px; font-weight: 600; background: #e0e7ff; border: 1px solid #818cf8; color: #3730a3; border-radius: 6px; margin: 4px; cursor: pointer; transition: all 0.2s; }
+    .palette-btn:hover { background: #c7d2fe; transform: translateY(-1px); }
+
+    .map-label { position: absolute; background: linear-gradient(to bottom, #f0fdf4, #dcfce7); border: 1px solid #22c55e; padding: 6px 12px; font-size: 12px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.15); white-space: nowrap; z-index: 10; transform: translate(-50%, -50%); border-radius: 20px; color: #166534; }
+    .workspace-marker { cursor: grab; user-select: none; transition: transform 0.1s; }
+    .workspace-marker:active { cursor: grabbing; box-shadow: 0 8px 20px rgba(0,0,0,0.2); transform: translate(-50%, -50%) scale(1.05); }
+
+    /* ==========================================================================
+       DOCUMENT UI (PREVIEW MODE - PRINTABLE)
+       ========================================================================== */
+    #document-container { display: none; font-size: 13px; line-height: 1.4; color: #000; background: #e2e8f0; padding: 20px 0; font-family: 'Arial', sans-serif;}
+    @page { size: A4; margin: 0; }
+    .page { width: 210mm; height: 297mm; background: white; margin: 0 auto 20mm auto; padding: 20mm; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.3); page-break-after: always; overflow: hidden; }
+    @media print {
+        body { background: white; overflow: visible !important; display: block !important; }
+        .layout-wrapper { display: block !important; height: auto !important; overflow: visible !important; }
+        .sidebar, .mobile-header, .sidebar-overlay { display: none !important; }
+        .main-content { display: block !important; height: auto !important; overflow: visible !important; padding: 0 !important;}
+        .page { margin: 0; box-shadow: none; border: none; height: 297mm; page-break-after: always; }
+        #floating-controls { display: none !important; }
+        #document-container { padding: 0; background: white; }
+    }
+    .page-num { position: absolute; bottom: 20mm; right: 20mm; font-size: 12px; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: bold; }
+    .underline { text-decoration: underline; }
+    .uppercase { text-transform: uppercase; }
+    .mb-1 { margin-bottom: 5px; } .mb-2 { margin-bottom: 10px; } .mb-3 { margin-bottom: 15px; } .mb-4 { margin-bottom: 20px; } .mt-4 { margin-top: 20px; }
+    
+    .title-page { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 40px; text-align: center; }
+    .title-page div { font-size: 16px; font-weight: bold; margin-bottom: 20px; }
+    .title-page img { width: 280px; margin: 30px 0; }
+    ul.custom-list { list-style-type: disc; margin-left: 250px; margin-bottom: 20px; }
+    ul.custom-list li { margin-bottom: 8px; font-size: 13px; }
+    ul.arrows { list-style: none; padding-left: 0; }
+    ul.arrows li { position: relative; padding-left: 20px; margin-bottom: 15px; }
+    ul.arrows li::before { content: "➢"; position: absolute; left: 0; top: 0; font-family: monospace; font-size: 14px; }
+    ul.bullets { list-style-type: disc; padding-left: 40px; }
+    ul.bullets li { margin-bottom: 10px; }
+    .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+    .doc-table th, .doc-table td { border: 1px solid #000; padding: 5px 8px; vertical-align: top; text-align: left; }
+    .event-details { display: grid; grid-template-columns: 300px 1fr; font-weight: bold; font-size: 13px; row-gap: 5px; margin-bottom: 20px; }
+    .risk-table { font-size: 11px; margin-bottom: 10px; width: 100%; border-collapse: collapse; }
+    .risk-table td { border: 1px solid #000; padding: 3px 5px; height: 18px; }
+    .yellow-bg { background-color: #ffff00 !important; }
+    .red-text { color: red !important; }
+    .green-text { color: #65a30d !important; }
+    .rating-col { display: flex; gap: 5px; }
+    .rating-box { width: 16px; text-align: center; }
+    .rating-label { margin-left: 5px; }
+    #out_map_bg { position: relative; width: 100%; height: 500px; background-size: cover; background-position: center; border: 1px solid #999; margin-top: 40px; overflow: hidden; background-color: #e5e7eb; }
+
+    /* ==========================================================================
+       MODAL & FINANCE DOCUMENT (QUOTATION/INVOICE) UI
+       ========================================================================== */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 2000; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 40px 20px; }
+    .modal-content { background: #f3f5f9; width: auto; max-width: 100%; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative; overflow: hidden;}
+    .modal-header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 20px 25px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; }
+    .modal-header h2 { margin: 0; font-size: 20px; color: #0f172a; font-weight: 700; }
+    .close-modal { font-size: 28px; font-weight: bold; cursor: pointer; color: #64748b; line-height: 1; transition: color 0.2s; }
+    .close-modal:hover { color: #ef4444; }
+    .modal-body { padding: 25px; display: flex; flex-direction: column; align-items: center; }
+
+    #invoice-card { width: 210mm; min-height: 297mm; padding: 15mm; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); box-sizing: border-box; position: relative; font-family: Arial, Helvetica, sans-serif; color: #000; }
+    #invoice-card .fin-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    #invoice-card .logo-area img { width: 140px; height: auto; }
+    #invoice-card .company-info { text-align: right; font-size: 11px; line-height: 1.3; font-weight: bold; }
+    #invoice-card .title-section { display: flex; flex-direction: column; align-items: flex-end; margin-top: 10px; }
+    #invoice-card .doc-title-text { margin: 0; font-size: 24px; letter-spacing: 2px; font-weight: normal; text-transform: uppercase; }
+    #invoice-card .date-box { border: 1px solid #000; padding: 5px 15px; margin-top: 5px; font-size: 13px; width: 210px; text-align: left; }
+    #invoice-card .info-grid { margin-top: 20px; width: 50%; }
+    #invoice-card .outline-box { border: 1px solid #000; padding: 8px 12px; margin-bottom: 20px; min-height: 50px; }
+    #invoice-card .box-label { font-weight: bold; font-size: 12px; margin-bottom: 5px; text-transform: uppercase; }
+    #invoice-card .box-content { font-size: 13px; line-height: 1.4; }
+    #invoice-card .quotation-details-box { width: 65%; }
+    #invoice-card .fin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    #invoice-card .fin-table th, #invoice-card .fin-table td { border: 1px solid #000; padding: 6px; text-align: left; font-size: 12px; vertical-align: top; }
+    #invoice-card .fin-table th { background-color: #d9e1f2; font-size: 10px; text-transform: uppercase; }
+    #invoice-card .fin-empty-row td { height: 35px; }
+    #invoice-card .fin-totals td { border: none; padding: 4px 6px; }
+    #invoice-card .fin-totals .label-cell { border: 1px solid black; font-weight: bold; }
+    #invoice-card .fin-totals .value-cell { border: 1px solid black; text-align: right; }
+    #invoice-card .bank-details { margin-top: 40px; font-size: 12px; font-weight: bold; line-height: 1.3; }
+    #invoice-card .footer-message { text-align: center; margin-top: 40px; font-style: italic; font-size: 14px; font-weight: bold; }
+    #invoice-card .disclaimer { margin-top: 50px; font-size: 9px; text-transform: uppercase; line-height: 1.2; color: #333; }
+</style>
+</head>
+<body>
+
+<div class="layout-wrapper">
+    <!-- Mobile Navigation Header -->
+    <div class="mobile-header">
+        <button id="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <h2 style="margin: 0; font-size: 18px; font-weight: bold; color: #fff; letter-spacing: 1px;">Afromed App</h2>
+        <div style="width:26px;"></div> <!-- Spacer -->
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://afromed.life/logo/logo.png" alt="Afromed Logo">
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" onclick="loadDashboard(); closeSidebar();"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="#" onclick="openFinanceModal('Quotation'); closeSidebar();"><i class="fa-solid fa-file-invoice"></i> Quote</a></li>
+            <li><a href="#" onclick="openFinanceModal('Invoice'); closeSidebar();"><i class="fa-solid fa-file-invoice-dollar"></i> Invoice</a></li>
+            <li><a href="#" onclick="alert('Files module coming soon!'); closeSidebar();"><i class="fa-solid fa-folder-open"></i> Files</a></li>
+            <li><a href="#" onclick="alert('Clients List module coming soon!'); closeSidebar();"><i class="fa-solid fa-users"></i> Clients List</a></li>
+            <li><a href="#" onclick="alert('Statement module coming soon!'); closeSidebar();"><i class="fa-solid fa-chart-line"></i> Statement</a></li>
+            <li><a href="index.html"; closeSidebar();"><i class="fa-solid fa-chart-line"></i> Exit</a></li>
+        </ul>
+    </nav>
+
+      <main class="main-content">
+
+        <!-- ==========================================================================
+             DASHBOARD UI
+             ========================================================================== -->
+        <div id="dashboard-container" class="app-container">
+            <div class="header-bar">
+                <h1>Afromed Operational Plans</h1>
+                <div class="header-actions">
+                    <button class="btn btn-warning" onclick="openStadiumManager()"><i class="fa-solid fa-map-location-dot"></i> Manage Venues</button>
+                    <button class="btn btn-info" onclick="openFinanceModal('Quotation')"><i class="fa-solid fa-file-invoice"></i> Create Quote</button>
+                    <button class="btn btn-info-dark" onclick="openFinanceModal('Invoice')"><i class="fa-solid fa-file-invoice-dollar"></i> Create Invoice</button>
+                    <button class="btn btn-primary" onclick="openNewPlan()"><i class="fa-solid fa-plus"></i> New Plan</button>
+                </div>
+            </div>
+            <p id="loading-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading saved plans from database...</p>
+            <table class="dashboard-table" id="dashboard-table" style="display:none;">
+                <thead><tr><th>Match / Event Name</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody><!-- Injected via JS --></tbody>
+            </table>
+        </div>
+
+        <!-- ==========================================================================
+             STADIUM MANAGER UI
+             ========================================================================== -->
+        <div id="stadium-manager-container" class="app-container" style="display:none;">
+            <div class="header-bar">
+                <h1>Manage Stadiums & Layouts</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="loadDashboard()"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                </div>
+            </div>
+            
+            <div class="stadium-workspace-layout">
+                <!-- Left Sidebar -->
+                <div class="stadium-sidebar">
+                    <h3 style="margin-top:0; font-weight:700; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Saved Stadiums</h3>
+                    <ul id="stadium-list-ui" style="padding-left: 20px; font-size:14px; line-height: 1.8;">
+                        <!-- JS Injected -->
+                    </ul>
+                    <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
+                    <button class="btn btn-primary" style="width:100%" onclick="createNewStadium()"><i class="fa-solid fa-plus"></i> Add New Stadium</button>
+                </div>
+                
+                <!-- Workspace -->
+                <div class="stadium-main" id="stadium-editor" style="display:none;">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Stadium Name & Coordinates</label>
+                            <input type="text" list="sa-stadiums" id="stad_name" placeholder="E.g. King Zwelithini Stadium, Umlazi">
+                            <datalist id="sa-stadiums">
+                                <option value="King Zwelithini Stadium, Umlazi (-29.9667, 30.8833)">
+                                <option value="Moses Mabhida Stadium, Durban (-29.8288, 31.0303)">
+                                <option value="Jonsson Kings Park, Durban (-29.8225, 31.0292)">
+                                <option value="FNB Stadium, Johannesburg (-26.2347, 27.9827)">
+                                <option value="Cape Town Stadium, Cape Town (-33.9036, 18.4111)">
+                                <option value="Loftus Versfeld, Pretoria (-25.7533, 28.2227)">
+                                <option value="Nelson Mandela Bay, Gqeberha (-33.9378, 25.5994)">
+                                <option value="Orlando Stadium, Soweto (-26.2307, 27.9254)">
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Upload Stadium Map/Satellite Image</label>
+                            <input type="file" id="stad_image_input" accept="image/*" onchange="handleStadiumImageUpload(event)" style="background:#fff;">
+                            <small style="color:#64748b; margin-top:5px;">Automatically resized to save space.</small>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                        <label style="font-size: 13px; font-weight: 600;">Click to add Medical Resources <span style="font-weight:400; color:#64748b;">(Drag to position, double-click to remove):</span></label>
+                        <div id="palette-container" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span class="palette-btn" onclick="addMarkerToWorkspace('CROWD DOCTOR')"><i class="fa-solid fa-plus"></i> CROWD DOCTOR</span>
+                            <span class="palette-btn" onclick="addMarkerToWorkspace('MEDICAL ROOM ALS')"><i class="fa-solid fa-plus"></i> MEDICAL ROOM ALS</span>
+                            <span class="palette-btn" onclick="addMarkerToWorkspace('1 X BLS')"><i class="fa-solid fa-plus"></i> 1 X BLS</span>
+                            <span class="palette-btn" onclick="addMarkerToWorkspace('4 X BLS')"><i class="fa-solid fa-plus"></i> 4 X BLS</span>
+                            <span class="palette-btn" onclick="addMarkerToWorkspace('2 X AMBULANCE')"><i class="fa-solid fa-plus"></i> 2 X AMBULANCE</span>
+                            <span class="palette-btn" onclick="addMarkerToWorkspace('3X BLS / 1 X ILS')"><i class="fa-solid fa-plus"></i> 3X BLS / 1 X ILS</span>
+                            <span class="palette-btn" onclick="addMarkerToWorkspace('VOC')"><i class="fa-solid fa-plus"></i> VOC</span>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Drag Canvas -->
+                    <div id="stadium-canvas">
+                        <!-- Markers injected here -->
+                    </div>
+
+                    <div style="margin-top: 25px; display:flex; gap:15px;">
+                        <button class="btn btn-success" id="btn-save-stadium" onclick="saveStadium()"><i class="fa-solid fa-floppy-disk"></i> Save Configuration</button>
+                        <button class="btn btn-danger" id="btn-del-stadium" onclick="deleteStadium()" style="display:none;"><i class="fa-solid fa-trash"></i> Delete Stadium</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+             FORM UI (PLAN EDITOR)
+             ========================================================================== -->
+        <div id="editor-container" class="app-container" style="display:none;">
+            <div class="header-bar">
+                <h1 id="editor-title">Create Operational Plan</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="loadDashboard()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="btn btn-success" onclick="savePlanToDb()"><i class="fa-solid fa-cloud-arrow-up"></i> Save to Cloud</button>
+                    <button class="btn btn-primary" onclick="generatePreview()"><i class="fa-solid fa-file-pdf"></i> Preview PDF</button>
+                </div>
+            </div>
+
+            <form id="plan-form">
+                <div class="section">
+                    <div class="section-title">1. Match & Event Details</div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Team A (Home)</label><input type="text" id="in_team_a" value="GOLDEN ARROWS F.C"></div>
+                        <div class="form-group"><label>Team B (Away)</label><input type="text" id="in_team_b" value="CHIPPA UNITED F.C"></div>
+                        <div class="form-group"><label>Event Date</label><input type="text" id="in_event_date" value="01 AUGUST 2026"></div>
+                        
+                        <div class="form-group">
+                            <label>Stadium / Venue Selection</label>
+                            <select id="in_stadium" onchange="updateVenueDetails()">
+                                <option value="">-- Select Saved Stadium --</option>
+                            </select>
+                            <small style="color: #2563eb; margin-top:4px;">*If empty, setup venues in Dashboard first.</small>
+                        </div>
+
+                        <div class="form-group"><label>Time</label><input type="text" id="in_time" value="15:30"></div>
+                        <div class="form-group"><label>Gates Open</label><input type="text" id="in_gates_open" value="12:30"></div>
+                        <div class="form-group"><label>Event Starts</label><input type="text" id="in_event_starts" value="15:30"></div>
+                        <div class="form-group"><label>Shutdown</label><input type="text" id="in_shutdown" value="18:30"></div>
+                        <div class="form-group"><label>Event Organiser Name & Contact</label><input type="text" id="in_organiser" value="GOLDEN ARROWS (Mr. Chris Franks: 083 652 4323)"></div>
+                        <div class="form-group"><label>Build Up Dates</label><input type="text" id="in_build_up" value="N/A"></div>
+                        <div class="form-group"><label>Main Event Dates</label><input type="text" id="in_main_event" value="01 AUGUST 2026"></div>
+                        <div class="form-group"><label>Break Down Dates</label><input type="text" id="in_break_down" value="N/A"></div>
+                        
+                        <div class="form-group"><label>Safety Risk Assessment</label><select id="in_safety_risk"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+                        <div class="form-group"><label>Medical Risk Assessment</label><select id="in_med_risk"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+                        <div class="form-group"><label>Max User Capacity</label><input type="text" id="in_max_cap" value="9500"></div>
+                        <div class="form-group"><label>Max Attendance (Expected)</label><input type="text" id="in_max_att" value="+ / - 4000"></div>
+                    </div>
+                </div>
+
+                <!-- Pre-Event Risks -->
+                <div class="section">
+                    <div class="section-title">2. Pre-Event Risk Assessment Toggles</div>
+                    <div class="risk-grid">
+                        <div class="risk-column" id="col-activity"><b>Activity Risk Category</b><br></div>
+                        <div class="risk-column" id="col-audience"><b>Audience Risk</b><br></div>
+                        <div class="risk-column" id="col-venue"><b>Venue Site Design</b><br></div>
+                        <div class="risk-column" id="col-hazard"><b>Hazards & Potential Impact</b> (Select 1-3)<br></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">3. Impact Areas & Representative</div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Impact Area</label><input type="text" id="in_impact_area" value="KING ZWELITHINI STADIUM, UMLAZI"></div>
+                        <div class="form-group"><label>Official Operational Rep (On-site)</label><input type="text" id="in_rep" value="Mr. S. Ngubo"></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">4. Command Personnel</div>
+                    <table class="dynamic-table" id="personnel-table">
+                        <thead><tr><th>Name</th><th>Responsibility</th><th>Contact Details</th><th width="80">Action</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                    <button type="button" class="btn btn-success" onclick="addPersonnel()"><i class="fa-solid fa-plus"></i> Add Personnel</button>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">5. Venue Specific Medical Plans</div>
+                    <table class="dynamic-table" id="allocation-table">
+                        <thead><tr><th>Satellite Point</th><th>Event Dates</th><th>Hours of Operation</th><th>Personnel</th><th>Vehicles</th><th width="80">Action</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                    <button type="button" class="btn btn-success" onclick="addAllocation()"><i class="fa-solid fa-plus"></i> Add Resource</button>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">6. External Facilities & Waste Management</div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Medical Waste Management Construct #</label><input type="text" id="in_waste_construct" value="AFR 007 [RECIEPT NUMBER K1339668]"></div>
+                        <div class="form-group"><label>Waste Collection Co. & Number</label><input type="text" id="in_waste_co" value="COMPASS WASTE (031 782 4200)"></div>
+                    </div>
+                    
+                    <h4 style="margin: 20px 0 10px; color:#1e293b;">Select & Add Hospitals</h4>
+                    <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                        <select id="hospital-select" style="flex:1;">
+                            <option value="PRINCE MSHIYENI MEMORIAL|MR. GABRIEL KHAWULA|031 907 8111|Provincial">Prince Mshiyeni (Provincial)</option>
+                            <option value="KING EDWARD HOSPITAL|DR T. MAYISE|031- 360 3111|Provincial">King Edward (Provincial)</option>
+                            <option value="ADDINGTON HOSPITAL|DR M NDLANGISA|031 – 327 2000|Provincial">Addington (Provincial)</option>
+                            <option value="ISIPINGO HOSPITAL|DR. RAMESH BHOOLA|031 913 7000|Private">Isipingo Hospital (Private)</option>
+                            <option value="KINGSWAY HOSPITAL|ANNATJIE DEMETRIOU|+27 31 904 7000|Private">Kingsway Hospital (Private)</option>
+                            <option value="CITY HOSPITAL|JAYSHREE POORAI|031-314 3000|Private">City Hospital (Private)</option>
+                        </select>
+                        <button type="button" class="btn btn-primary" onclick="addHospital()"><i class="fa-solid fa-plus"></i> Add Hospital</button>
+                    </div>
+                    <table class="dynamic-table" id="hospitals-table">
+                        <thead><tr><th>Type</th><th>Hospital Name</th><th>Contact Person</th><th>Contact Number</th><th width="80">Action</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+
+        <!-- Floating controls for PDF PREVIEW -->
+        <div id="floating-controls">
+            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print PDF</button>
+            <button class="btn btn-danger" onclick="closePreview()"><i class="fa-solid fa-pen"></i> Edit Form</button>
+        </div>
+
+        <!-- ==========================================================================
+             DOCUMENT OUTPUT (PREVIEW)
+             ========================================================================== -->
+        <div id="document-container">
+            <!-- PAGE 1 -->
+            <div class="page title-page">
+                <div>KWAZULU NATAL- ETHEKWINI DISTRICT</div>
+                <div>AFROMED EMERGENCY MEDICAL SERVICES</div>
+                <div>OPERATIONAL PLAN</div>
+                <div>FOR</div>
+                <div>BETWAY PREMIERSHIP 2026/27</div>
+                <img src="https://afromed.life/logo/logo.png" alt="Afromed Logo">
+                <div style="margin-top: 40px;" class="uppercase" id="out_venue_1">KING ZWELITHINI STADIUM, UMLAZI</div>
+                <div class="uppercase" id="out_match_1">GOLDEN ARROWS F.C VS CHIPPA UNITED F.C</div>
+                <div class="uppercase" id="out_date_1">01 AUGUST 2026</div>
+                <div class="page-num">1</div>
+            </div>
+
+            <!-- PAGE 2 -->
+            <div class="page">
+                <p class="font-bold mb-2">1. &nbsp;&nbsp;&nbsp;&nbsp; BACKGROUND</p>
+                <p style="text-align: justify; margin-bottom: 30px;">
+                    Lamontville Golden Arrows Football Club and Chippa United Football Club are esteemed professional teams competing in the Betway Premiership: the premiership division of South African professional football. As participants in the Premier Soccer League (PSL), these clubs continually battle/ contend at the highest echelon of the domestic game supremacy, prestige, and the coveted league title.
+                </p>
+                <p class="font-bold mb-2 uppercase">EVENT DETAILS</p>
+                <div class="event-details">
+                    <div>VENUE:</div><div id="out_venue_2" class="uppercase">KING ZWELITHINI STADIUM, UMLAZI</div>
+                    <div>DATE:</div><div id="out_date_2" class="uppercase">01 AUGUST 2026</div>
+                    <div>TIME:</div><div id="out_time">15:30</div>
+                    <div>GATES OPEN:</div><div id="out_gates">12:30</div>
+                    <div>EVENT STARTS:</div><div id="out_start">15:30</div>
+                    <div>SHUTDOWN:</div><div id="out_shutdown">18:30</div>
+                    <div>EVENT ORGANISER:</div><div id="out_organiser">GOLDEN ARROWS (Mr. Chris Franks: 083 652 4323)</div>
+                    <div>BUILD UP DATES:</div><div id="out_build">N/A</div>
+                    <div>MAIN EVENT DATES:</div><div id="out_main">01 AUGUST 2026</div>
+                    <div>BREAK DOWN DATES:</div><div id="out_break">N/A</div>
+                    <div>SAFETY AND SECURITY RISK ASESMENT:</div><div id="out_safe_risk">Medium</div>
+                    <div>MEDICAL RISK ASESMENT:</div><div id="out_med_risk">Medium</div>
+                    <div>VENUE MAXIUM USER CAPACITY:</div><div id="out_cap">9500</div>
+                    <div>VENUE MAXIUM ATTENDANCE:</div><div id="out_att">+ / - 4000</div>
+                </div>
+                <p class="font-bold mb-2">2. &nbsp;&nbsp;&nbsp;&nbsp; <span class="underline">MANDATE</span></p>
+                <p style="text-align: justify; margin-bottom: 20px;">
+                    Afromed Emergency Medical Services has been officially mandated to provide comprehensive medical coverage for the upcoming fixture between <span id="out_team_a">Lamontville Golden Arrows F.C</span> and <span id="out_team_b">Chippa United F.C</span> to oversee operations and guarantee the seamless execution of all required emergency protocols. <span id="out_rep">Mr. S. Ngubo</span> has been nominated as the official operational representative on-site.
+                </p>
+                <p class="font-bold mb-2">3.</p>
+                <p class="font-bold mb-2">4. &nbsp;&nbsp;&nbsp;&nbsp; <span class="underline">OBJECTIVES AND RESPONSIBILITIES</span></p>
+                <p class="mb-4">Services will be that will be provided by <b>AFROMED MEDICAL SERVICES</b> for the following:</p>
+                <ul class="custom-list font-bold">
+                    <li>VIPs</li><li>PLAYERS</li><li>PUBLIC</li><li>MEDIA</li><li>STADIUM STAFF</li>
+                </ul>
+                <div class="page-num">2</div>
+            </div>
+
+            <!-- PAGE 3: Map -->
+            <div class="page">
+                <h3 id="out_map_title" style="text-align:center; margin:0; color:#4b5563;" class="uppercase">STADIUM MAP</h3>
+                <div id="out_map_bg"></div>
+                <div class="page-num">3</div>
+            </div>
+
+            <!-- PAGE 4: Risk Table -->
+            <div class="page">
+                <div class="font-bold mb-2 text-center" style="font-size:12px;">
+                    KEY : - &nbsp;&nbsp;&nbsp;&nbsp; <span class="green-text">LOW RISK &lt; 20</span> &nbsp;&nbsp;&nbsp;&nbsp; <span class="yellow-bg" style="padding:2px 5px;">MEDIUM RISK 21- 40</span> &nbsp;&nbsp;&nbsp;&nbsp; <span class="red-text">HIGH RISK 40 - 90</span>
+                </div>
+                <table class="risk-table">
+                    <tr style="background: #f9f9f9; text-align:center;"><td colspan="4" class="font-bold">PRE –EVENT RISK ASSESSMENT &nbsp;&nbsp;&nbsp;&nbsp; AFROMED MEDICAL SERVICES</td></tr>
+                    <tr><td colspan="2"><b>Name of Event:</b><br><span id="out_risk_match">MATCH</span></td><td colspan="2"><b>Date/s:</b><br><span id="out_risk_date">DATE</span></td></tr>
+                    <tr><td colspan="2"><b>Venue: <span id="out_risk_venue">VENUE</span></b></td><td colspan="2"><b>Times: <span id="out_risk_time">15:30</span></b></td></tr>
+                    <tr><td colspan="2" class="font-bold font-italic">Tick applicable Risk Factor...</td><td colspan="2" class="font-bold"><div class="yellow-bg mb-1">**3=High Risk</div><div class="yellow-bg mb-1">**2=Medium risk</div><div class="yellow-bg">**1=Low Risk</div></td></tr>
+                    <tr class="font-bold"><td style="width:25%">Activity Risk Category</td><td style="width:25%">Audience Risk (i.r.o)</td><td style="width:25%">Venue Site Design</td><td style="width:25%">Rate likelihood of hazards</td></tr>
+                    <tbody id="risk-table-body"></tbody>
+                    <tr><td></td><td></td><td class="text-right font-bold">TOTAL</td><td><div class="rating-col font-bold"><div class="rating-box green-text" id="r_tot_1">0</div><div class="rating-box yellow-bg" id="r_tot_2">0</div><div class="rating-box red-text" id="r_tot_3">0</div></div></td></tr>
+                </table>
+                <div class="page-num">4</div>
+            </div>
+
+            <!-- PAGE 5 -->
+            <div class="page">
+                <p class="font-bold underline mb-2">OVERVIEW OF PROVISION HEALTH AND MEDICAL SERVICES</p>
+                <p class="mb-1">Provision of:</p>
+                <ul style="list-style-type: square; padding-left: 40px; margin-top: 0; margin-bottom: 20px;"><li>Emergency Medical Services</li></ul>
+                <p class="font-bold underline mb-2">IMPACT AREAS</p>
+                <ul style="list-style-type: disc; padding-left: 40px; margin-top: 0; margin-bottom: 20px;"><li id="out_impact_area" class="uppercase">STADIUM</li></ul>
+                <p class="font-bold underline mb-2">TREATMENT PROFILE</p>
+                <p style="margin-bottom: 20px;">Injured patient shall be transported to the nearest provincial Hospitals...</p>
+                <p class="font-bold underline mb-2">PLANNING CONSIDERATIONS</p>
+                <p style="margin-bottom: 20px;">Ensuring on-site medical support and emergency response planning...</p>
+                <p class="font-bold underline mb-2">COMMAND PERSONNEL</p>
+                <table class="doc-table">
+                    <thead><tr class="font-bold"><td style="width: 35%; text-align:center;">Name</td><td style="width: 35%; text-align:center;">Responsibility</td><td style="width: 30%; text-align:center;">Contact Details</td></tr></thead>
+                    <tbody id="out_personnel_body"></tbody>
+                    <tfoot><tr class="font-bold"><td colspan="3" id="out_personnel_total">TOTAL STAFF MEMBER= 0</td></tr></tfoot>
+                </table>
+                <p class="font-bold underline mb-2">AREAS OF RESPONSIBILITY</p>
+                <div style="line-height: 1.8;">1. VOC<br>2. GENERAL MEDICAL ROOM<br>3. PLAYERS MEDICAL ROOM</div>
+                <div class="page-num">5</div>
+            </div>
+
+            <!-- PAGE 6 -->
+            <div class="page">
+                <p class="font-bold underline mb-4">MEDICAL FACILITIES OVERVIEW /PLAN</p>
+                <p class="font-bold underline mb-4">VENUE SPECIFIC PLANS, RESOURCES ALLOCATED AS PER RISK MATRIX</p>
+                <table class="doc-table" style="margin-bottom: 40px;">
+                    <thead><tr class="font-bold"><td>Satellite Point</td><td>Event Dates</td><td>Hours of Operation</td><td>Personnel</td><td>Vehicles</td></tr></thead>
+                    <tbody id="out_allocation_body"></tbody>
+                </table>
+                <p class="font-bold underline mb-2">AEROMEDICAL SERVICES LANDING ZONE</p>
+                <p class="mb-4">A landing zone will be established at TBC for the aero-medical response team.</p>
+                <p class="font-bold underline mb-2">MASS CASUALTY PLAN</p>
+                <ul class="arrows"><li>in the event a mass casualty incident...</li><li>all other emergencies, be it medical or trauma...</li></ul>
+                <p class="font-bold underline mb-2 mt-4">EGRESS ROUTE</p>
+                <ul class="arrows" style="margin-bottom: 30px;"><li>In the event of casualty incident, all necessary emergency services...</li></ul>
+                <p class="font-bold underline mb-2">ACCESS ROUTE</p>
+                <div class="page-num">6</div>
+            </div>
+
+            <!-- PAGE 7 -->
+            <div class="page">
+                <ul class="arrows"><li>A clear path for emergency responders to reach the event area.</li></ul>
+                <p class="font-bold underline mb-2 mt-4">CASULATY CLEARING STATION</p>
+                <ul class="arrows mb-4"><li>Sorting patients based on severity</li><li>Stabilization: basic life support</li><li>Emergency care: administering interventions</li></ul>
+                <table class="doc-table" style="margin-bottom: 30px;">
+                    <tr><td colspan="3" class="text-center font-bold">CONTACT DETAILS FOR THE DOH EMS ETHEKWINI</td></tr>
+                    <tr class="font-bold text-center"><td style="width:33%;">NAME</td><td style="width:33%;">DESIGNATION</td><td style="width:34%;">CONTACT NUMBER</td></tr>
+                    <tr><td>Mr. P.T.Shozi</td><td>District Manager EMS eThekwini</td><td>083 296 4002</td></tr>
+                    <tr><td>Mr.N.Padayachi</td><td>Emergency Communications Centre</td><td>084 854 8006</td></tr>
+                    <tr><td>Mr.S.Samlal</td><td>District Disaster Medicine Coordinator</td><td>082 372 4333</td></tr>
+                </table>
+                <p class="font-bold underline mb-2">HOSPITALS</p>
+                <table class="doc-table" style="margin-bottom: 30px;" id="out_hosp_prov">
+                    <thead><tr class="font-bold text-center"><td style="width:33%;">NAME OF HOSPITAL</td><td style="width:33%;">CONTACT PERSON</td><td style="width:34%;">CONTACT NUMBER</td></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <p class="font-bold underline mb-2">ETHEKWINI DISTRICT PRIVATE</p>
+                <table class="doc-table" style="margin-bottom: 30px;" id="out_hosp_priv">
+                    <thead><tr class="font-bold text-center"><td style="width:33%;">NAME OF HOSPITAL</td><td style="width:33%;">CONTACT PERSON</td><td style="width:34%;">CONTACT NUMBER</td></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <p class="font-bold underline mb-2">MEDICAL WASTE MANAGEMENT PLAN</p>
+                <p class="font-bold mb-2 uppercase" id="out_waste_const">CONSTRUCT NUMBER</p>
+                <p style="text-align: justify;">The company has appointed compass waste services to dispose the waste...</p>
+                <div class="page-num">7</div>
+            </div>
+
+            <!-- PAGE 8 -->
+            <div class="page">
+                <p style="margin-bottom: 30px;">On completion, the waste will be collected and disposed by <b id="out_waste_co">COMPASS WASTE</b></p>
+                <p class="font-bold underline mb-2">THE OBJECTIVES OF AFROMED MEDICAL SERVICES ARE TO ENSURE THAT</p>
+                <ul class="bullets" style="margin-bottom: 50px;">
+                    <li>Contingency plans are drafted for emergencies...</li>
+                    <li>Hospitals will be placed on standby...</li>
+                    <li>Ensure compliance of <b>NO. 2 OF 2010: SAFETY AT SPORTS AND RECREATIONAL EVENTS ACT, 2010</b></li>
+                    <li>Ensure compliance for over 1000 attending in relation to <b>NATIONAL HEALTH ACT, 2003</b></li>
+                    <li>Ensure compliance with <b>NATIONAL HEALTH ACT, 2003 EMERGENCY MEDICAL REGULATIONS.</b></li>
+                    <li>Align plans as per the <b>DISASTER MANAGEMENT ACT 57 OF 2002</b></li>
+                </ul>
+                <div style="margin-top: 50px; font-family: monospace; font-size: 14px;">
+                    ___________<br><br>
+                    APPROVED BY:<br>NONHLANHLA XEGO<br>AFROMED MEDICAL SERVICES<br>
+                    DATE: <span id="out_sign_date">DATE</span>
+                </div>
+                <div class="page-num">8</div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+             FINANCE MODAL (QUOTATION / INVOICE) 
+             ========================================================================== -->
+        <div id="finance-modal" class="modal-overlay" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="finance-modal-title">Create Document</h2>
+                    <span class="close-modal" onclick="closeFinanceModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <button class="btn btn-primary" style="font-size: 15px; padding: 12px 24px;" onclick="generateFinancePDF()"><i class="fa-solid fa-file-arrow-down"></i> Download PDF</button>
+                    </div>
+
+                    <!-- Exact Template Replica -->
+                    <div id="invoice-card">
+                        <div class="fin-header">
+                            <div class="logo-area">
+                                <img src="https://www.afromed.life/logo/logo.png" alt="Afromed Logo">
+                            </div>
+                            <div class="company-info">
+                                ADDRESS: PO BOX 61231, PHOENIX 4068<br>
+                                TEL: 073 333 6656 / 073 331 5133<br>
+                                FAX: 086 650 3102<br>
+                                EMAIL: info@afromed.co.za<br>
+                                WEBSITE: www.afromed.co.za
+                            </div>
+                        </div>
+
+                        <div class="title-section">
+                            <!-- ID added here to toggle text -->
+                            <h1 class="doc-title-text" id="finance-doc-title">QUOTATION</h1>
+                            <div class="date-box">DATE: 04 AUGUST 2026</div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="box-label">QOUTATION TO:</div> <!-- Typo preserved as requested -->
+                            <div class="outline-box">
+                                <div class="box-content">
+                                    MS. C. NDLOVU<br>
+                                    031 250 8254
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="quotation-details-box">
+                            <div class="box-label" id="finance-doc-details">QUOTATION DETAILS</div>
+                            <div class="outline-box">
+                                <div class="box-content">
+                                    <strong>EVENT NAME:</strong> STUDENT SPORT<br>
+                                    <strong>VENUE:</strong> HOY PARK GROUND, DURBAN<br>
+                                    <strong>DATE:</strong> 20 SEPTEMBER 2026<br>
+                                    <strong>TIME:</strong> 08:00 - 17:00pm (all events)<br>
+                                    <strong>PAX:</strong> 860-1000
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="fin-table">
+                            <thead>
+                                <tr>
+                                    <th width="6%">ITEM</th>
+                                    <th width="6%">QTY</th>
+                                    <th width="48%">DESCRIPTION</th>
+                                    <th width="15%">UNIT PRICE</th>
+                                    <th width="10%">VAT15%</th>
+                                    <th width="15%">AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <strong>EVENT NAME: STUDENT SPORT</strong><br>
+                                        HOY PARK GROUND, DURBAN<br>
+                                        20 SEPTEMBER 2026<br>
+                                        08:00 - 17:00pm (all events)<br>
+                                        860-1000
+                                    </td>
+                                    <td class="text-right">R 11 304.35</td>
+                                    <td class="text-center">N/A</td>
+                                    <td class="text-right">R 11 304.35</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td></td>
+                                    <td>AMBULANCES FULLY EQUIPPED ON SITE</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td></td>
+                                    <td>BASIC LIFE SUPPORT WITH EWUQUIPMENT ON SITE</td> <!-- Typo preserved -->
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr class="fin-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr class="fin-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr class="fin-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                                
+                                <tr class="fin-totals">
+                                    <td colspan="4"></td>
+                                    <td class="label-cell">VAT</td>
+                                    <td class="value-cell">R 1 695.65</td>
+                                </tr>
+                                <tr class="fin-totals">
+                                    <td colspan="4"></td>
+                                    <td class="label-cell">TOTAL</td>
+                                    <td class="value-cell">R 13 000.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="bank-details">
+                            ACCOUNT: AFROMED TEAM PTY LTD<br>
+                            ACCOUNTNO: 62603308695<br>
+                            BANK: FIRST NATIONAL BANK<br>
+                            BRANCH NAME: MY BRANCH<br>
+                            BRANCHCODE: 25065
+                        </div>
+
+                        <div class="footer-message">
+                            Thank you for your interest in our services.
+                        </div>
+
+                        <div class="disclaimer">
+                            DEAR CUSTOMER, PLEASE BE INFORMED THAT FULL PAYMENT IS DUE ONE DAY BEFORE THE EVENT, AND WHEN A CANCELATION OCCURS A 10% OF YOUR TOTAL AMOUNT ADMIN FEE IS PAYABLE.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main> <!-- /main-content -->
+</div> <!-- /layout-wrapper -->
+
+<script>
+    // ==========================================
+    // SIDEBAR NAVIGATION LOGIC
+    // ==========================================
+    window.toggleSidebar = function() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
+    };
+    
+    window.closeSidebar = function() {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('sidebar-overlay').classList.remove('active');
+    };
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
+        authDomain: "afromed-fda57.firebaseapp.com",
+        projectId: "afromed-fda57",
+        storageBucket: "afromed-fda57.firebasestorage.app",
+        messagingSenderId: "633274573777",
+        appId: "1:633274573777:web:6b244c95612bc92ff976f0",
+        measurementId: "G-3ZSVQDNVFX"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const DB_COLLECTION = "operational_plans";
+    const STADIUM_COLLECTION = "stadiums";
+
+    let currentDocId = null;
+    let currentStadiumId = null;
+    let cachedStadiums = []; 
+    window.currentFinanceMode = 'Quotation'; // Stores state for PDF filename
+
+    // ==========================================
+    // FINANCE MODAL LOGIC (QUOTATION / INVOICE)
+    // ==========================================
+    window.openFinanceModal = function(type) {
+        window.currentFinanceMode = type;
+        document.getElementById('finance-modal').style.display = 'flex';
+        document.getElementById('finance-modal-title').innerText = `Create ${type}`;
+        
+        // Update document text dynamically
+        document.getElementById('finance-doc-title').innerText = type.toUpperCase() === 'INVOICE' ? 'TAX INVOICE' : 'QUOTATION';
+        document.getElementById('finance-doc-details').innerText = `${type.toUpperCase()} DETAILS`;
+    };
+
+    window.closeFinanceModal = function() {
+        document.getElementById('finance-modal').style.display = 'none';
+    };
+
+    window.generateFinancePDF = function() {
+        const element = document.getElementById('invoice-card');
+        const fileName = `Afromed_${window.currentFinanceMode}_Student_Sport.pdf`;
+        
+        const opt = {
+            margin: 0,
+            filename: fileName,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 3, 
+                useCORS: true, 
+                logging: false 
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save();
+    };
+
+    // Close modal if clicked outside the box
+    window.onclick = function(event) {
+        const modal = document.getElementById('finance-modal');
+        if (event.target == modal) {
+            closeFinanceModal();
+        }
+    };
+
+    // ==========================================
+    // STADIUM / VENUE MANAGER LOGIC
+    // ==========================================
+    window.handleStadiumImageUpload = function(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const maxSize = 800; 
+                let width = img.width, height = img.height;
+                if (width > maxSize || height > maxSize) {
+                    if (width > height) { height *= maxSize / width; width = maxSize; }
+                    else { width *= maxSize / height; height = maxSize; }
+                }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                document.getElementById('stadium-canvas').style.backgroundImage = `url(${compressedBase64})`;
+                document.getElementById('stadium-canvas').dataset.img = compressedBase64;
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    window.addMarkerToWorkspace = function(label) {
+        const canvas = document.getElementById('stadium-canvas');
+        const marker = document.createElement('div');
+        marker.className = 'map-label workspace-marker';
+        marker.innerText = label;
+        marker.style.left = '50%';
+        marker.style.top = '50%';
+        
+        marker.ondblclick = () => marker.remove();
+        
+        let isDown = false, offsetX, offsetY;
+        marker.onmousedown = (e) => {
+            isDown = true;
+            const rect = marker.getBoundingClientRect();
+            offsetX = e.clientX - rect.left - (rect.width/2); 
+            offsetY = e.clientY - rect.top - (rect.height/2);
+            marker.style.cursor = 'grabbing';
+            marker.style.zIndex = '100';
+        };
+        document.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            const cRect = canvas.getBoundingClientRect();
+            let x = e.clientX - cRect.left - offsetX;
+            let y = e.clientY - cRect.top - offsetY;
+            x = Math.max(0, Math.min(x, cRect.width));
+            y = Math.max(0, Math.min(y, cRect.height));
+            marker.style.left = (x / cRect.width * 100) + '%';
+            marker.style.top = (y / cRect.height * 100) + '%';
+        });
+        document.addEventListener('mouseup', () => { 
+            isDown = false; 
+            marker.style.cursor = 'grab'; 
+            marker.style.zIndex = '10';
+        });
+
+        canvas.appendChild(marker);
+    };
+
+    async function loadStadiumsList() {
+        const listUi = document.getElementById('stadium-list-ui');
+        const dropDown = document.getElementById('in_stadium');
+        listUi.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+        
+        try {
+            const snap = await getDocs(collection(db, STADIUM_COLLECTION));
+            listUi.innerHTML = '';
+            dropDown.innerHTML = '<option value="">-- Select Saved Stadium --</option>';
+            cachedStadiums = [];
+
+            if(snap.empty) {
+                listUi.innerHTML = '<li style="color:#64748b;">No stadiums saved.</li>';
+                return;
+            }
+            
+            snap.forEach(docSnap => {
+                const data = docSnap.data();
+                data.id = docSnap.id;
+                cachedStadiums.push(data);
+                
+                listUi.innerHTML += `<li style="margin-bottom:8px;">
+                    <a href="#" onclick="editStadium('${data.id}')" style="color:#2563eb; text-decoration:none; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-location-dot" style="color:#94a3b8;"></i> <strong>${data.name}</strong>
+                    </a>
+                </li>`;
+                
+                dropDown.innerHTML += `<option value="${data.id}">${data.name}</option>`;
+            });
+        } catch (e) {
+            console.error("Error loading stadiums", e);
+        }
+    }
+
+    window.openStadiumManager = async function() {
+        document.getElementById('dashboard-container').style.display = 'none';
+        document.getElementById('editor-container').style.display = 'none';
+        document.getElementById('document-container').style.display = 'none';
+        document.getElementById('stadium-manager-container').style.display = 'block';
+        await loadStadiumsList();
+        createNewStadium();
+    };
+
+    window.createNewStadium = function() {
+        currentStadiumId = null;
+        document.getElementById('stad_name').value = '';
+        document.getElementById('stad_image_input').value = '';
+        document.getElementById('stadium-canvas').style.backgroundImage = 'none';
+        document.getElementById('stadium-canvas').dataset.img = '';
+        document.getElementById('stadium-canvas').innerHTML = ''; 
+        document.getElementById('stadium-editor').style.display = 'block';
+        document.getElementById('btn-del-stadium').style.display = 'none';
+    };
+
+    window.editStadium = function(id) {
+        currentStadiumId = id;
+        const s = cachedStadiums.find(x => x.id === id);
+        if(!s) return;
+        
+        document.getElementById('stadium-editor').style.display = 'block';
+        document.getElementById('btn-del-stadium').style.display = 'inline-flex';
+        
+        document.getElementById('stad_name').value = s.name;
+        document.getElementById('stadium-canvas').style.backgroundImage = `url(${s.image})`;
+        document.getElementById('stadium-canvas').dataset.img = s.image;
+        document.getElementById('stadium-canvas').innerHTML = '';
+        
+        if(s.markers) {
+            s.markers.forEach(m => {
+                const canvas = document.getElementById('stadium-canvas');
+                const marker = document.createElement('div');
+                marker.className = 'map-label workspace-marker';
+                marker.innerText = m.label;
+                marker.style.left = m.left;
+                marker.style.top = m.top;
+                
+                marker.ondblclick = () => marker.remove();
+                let isDown = false, offsetX, offsetY;
+                marker.onmousedown = (e) => {
+                    isDown = true;
+                    const rect = marker.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left - (rect.width/2); 
+                    offsetY = e.clientY - rect.top - (rect.height/2);
+                };
+                document.addEventListener('mousemove', (e) => {
+                    if(!isDown) return;
+                    const cRect = canvas.getBoundingClientRect();
+                    let x = e.clientX - cRect.left - offsetX; let y = e.clientY - cRect.top - offsetY;
+                    x = Math.max(0, Math.min(x, cRect.width)); y = Math.max(0, Math.min(y, cRect.height));
+                    marker.style.left = (x / cRect.width * 100) + '%'; marker.style.top = (y / cRect.height * 100) + '%';
+                });
+                document.addEventListener('mouseup', () => isDown = false);
+                canvas.appendChild(marker);
+            });
+        }
+    };
+
+    window.saveStadium = async function() {
+        const btn = document.getElementById('btn-save-stadium');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; 
+        btn.disabled = true;
+        
+        const name = document.getElementById('stad_name').value;
+        const image = document.getElementById('stadium-canvas').dataset.img || "";
+        
+        const markers = [];
+        document.querySelectorAll('#stadium-canvas .workspace-marker').forEach(el => {
+            markers.push({ label: el.innerText, left: el.style.left, top: el.style.top });
+        });
+        
+        const data = { name, image, markers };
+        
+        try {
+            if(currentStadiumId) await updateDoc(doc(db, STADIUM_COLLECTION, currentStadiumId), data);
+            else await addDoc(collection(db, STADIUM_COLLECTION), data);
+            alert("Stadium Saved!");
+            loadStadiumsList();
+        } catch (e) {
+            console.error(e);
+            alert("Error saving stadium.");
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Configuration'; 
+            btn.disabled = false;
+        }
+    };
+
+    window.deleteStadium = async function() {
+        if(!confirm("Delete this stadium? Plans using it will lose map layout.")) return;
+        try {
+            await deleteDoc(doc(db, STADIUM_COLLECTION, currentStadiumId));
+            createNewStadium();
+            loadStadiumsList();
+        } catch (e) { console.error(e); }
+    };
+
+
+    // ==========================================
+    // PLANS DASHBOARD & FORM LOGIC
+    // ==========================================
+    const defaultPersonnel = [
+        {name: "SITHEMBISO NGUBO", role: "Medical Services Co-Ordinator", contact: "073 333 6656"},
+        {name: "LINDIWE MABASO", role: "VOC", contact: ""},
+        {name: "XOLANI MPANZA", role: "ALS / ECP", contact: ""},
+        {name: "SIBUSISO NGCOBO", role: "ILS", contact: ""},
+        {name: "MR DLULI", role: "DOCTOR", contact: ""},
+        {name: "LUNGISILE SHEZI", role: "BLS", contact: ""}
+    ];
+    const defaultAllocations = [
+        {point: "VOC", dates: "01 AUGUST 26", hours: "12:30-18:30", staff: "VOC", vehicles: "2X Ambulance"},
+        {point: "Stadium Level 1", dates: "01 AUGUST 26", hours: "12:30-18:30", staff: "1 X BLS", vehicles: "2X Ambulance"},
+        {point: "Players Field", dates: "01 AUGUST 26", hours: "12:30-18:30", staff: "4 X BLS", vehicles: "2X Ambulance"}
+    ];
+    const riskData = {
+        activity: ["Small Event", "Large Event", "Religious", "Educational", "Promotional", "Sport: Local", "Sport: National", "Sport: International", "Political: Local", "Political: Provincial", "Political: National", "Political: International", "Music Concert", "Festival (Variety)", "Exhibition", "Road Show", "Funeral", "Other"],
+        audience: ["<2000", "2000-10 000", "10 000", "4 000", "Crowd Profile", "Expected Behaviour", "Special Needs"],
+        venue: ["Suitable for expected Capacity", "Indoor", "Outdoor", "Enclosed/Fenced", "Unfenced", "Absence of seating", "General Condition of the Facility", "Geographic location", "Design (Sufficient exits)", "Suitable for special needs people", "Marquee Tent(s) used", "Compliance Fire, OHS, Regs", "Parking Arrangements", "Emergency Vehicle Accessibility", "Evacuation Routes", "Availability of service", "Back-up Generators", "Provision for VOC", "Other specify"],
+        hazards: ["Fire", "Time of day and duration", "Terrorism/Gangsterism", "Power/Electricity Failure", "Crowd surge", "Adverse Weather", "Off site Hazards", "Medical Emergencies", "Tickets", "Traffic and Transport disruptions", "Temporary Structures failure", "Loss of water supply", "Food Hygiene", "Alcohol and substance abuse", "Pyrotechnics", "Postponement", "Turnstile & PA failure", "Pollution", "Insufficient planning"]
+    };
+
+    let personnelData = [...defaultPersonnel];
+    let allocationData = [...defaultAllocations];
+    let hospitalData = [];
+
+    window.loadDashboard = async function() {
+        document.getElementById('stadium-manager-container').style.display = 'none';
+        document.getElementById('editor-container').style.display = 'none';
+        document.getElementById('document-container').style.display = 'none';
+        document.getElementById('floating-controls').style.display = 'none';
+        document.getElementById('dashboard-container').style.display = 'block';
+        
+        await loadStadiumsList(); 
+
+        const tbody = document.querySelector('#dashboard-table tbody');
+        const loading = document.getElementById('loading-msg');
+        const table = document.getElementById('dashboard-table');
+        
+        try {
+            loading.style.display = 'block'; table.style.display = 'none'; tbody.innerHTML = '';
+            const querySnapshot = await getDocs(collection(db, DB_COLLECTION));
+            if (querySnapshot.empty) { loading.innerHTML = "No saved plans found."; } 
+            else {
+                loading.style.display = 'none'; table.style.display = 'table';
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const title = `${data.teamA || "Team"} VS ${data.teamB || "Team"}`;
+                    const dateStr = data.eventDate || "No Date";
+                    const st = cachedStadiums.find(x => x.id === data.stadiumId);
+                    const stName = st ? st.name : 'Unknown Venue';
+                    
+                    tbody.innerHTML += `<tr>
+                        <td><strong style="color:#0f172a; font-size:14px;">${title}</strong><br><small style="color:#64748b;"><i class="fa-solid fa-location-dot"></i> ${stName}</small></td>
+                        <td style="color:#475569;"><i class="fa-regular fa-calendar"></i> ${dateStr}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="editPlan('${docSnap.id}')" style="padding:6px 12px; font-size:12px;"><i class="fa-solid fa-pen"></i> Edit</button> 
+                            <button class="btn btn-danger" onclick="deletePlan('${docSnap.id}')" style="padding:6px 12px; font-size:12px;"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    window.openNewPlan = function() {
+        currentDocId = null;
+        document.getElementById('plan-form').reset();
+        personnelData = [...defaultPersonnel]; allocationData = [...defaultAllocations]; hospitalData = [];
+        renderPersonnel(); renderAllocation(); renderHospitals();
+        document.getElementById('dashboard-container').style.display = 'none';
+        document.getElementById('editor-container').style.display = 'block';
+    }
+
+    window.savePlanToDb = async function() {
+        const btn = document.querySelector('.btn-success'); 
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; 
+        btn.disabled = true;
+        
+        const planDataObj = {
+            teamA: document.getElementById('in_team_a').value,
+            teamB: document.getElementById('in_team_b').value,
+            eventDate: document.getElementById('in_event_date').value,
+            stadiumId: document.getElementById('in_stadium').value,
+            time: document.getElementById('in_time').value,
+            gatesOpen: document.getElementById('in_gates_open').value,
+            eventStarts: document.getElementById('in_event_starts').value,
+            shutdown: document.getElementById('in_shutdown').value,
+            organiser: document.getElementById('in_organiser').value,
+            buildUp: document.getElementById('in_build_up').value,
+            mainEvent: document.getElementById('in_main_event').value,
+            breakDown: document.getElementById('in_break_down').value,
+            safetyRisk: document.getElementById('in_safety_risk').value,
+            medRisk: document.getElementById('in_med_risk').value,
+            maxCap: document.getElementById('in_max_cap').value,
+            maxAtt: document.getElementById('in_max_att').value,
+            impactArea: document.getElementById('in_impact_area').value,
+            rep: document.getElementById('in_rep').value,
+            wasteConstruct: document.getElementById('in_waste_construct').value,
+            wasteCo: document.getElementById('in_waste_co').value,
+            personnel: personnelData.map((_, i) => ({ name: document.getElementById(`p_name_${i}`).value, role: document.getElementById(`p_role_${i}`).value, contact: document.getElementById(`p_contact_${i}`).value })),
+            allocations: allocationData.map((_, i) => ({ point: document.getElementById(`a_point_${i}`).value, dates: document.getElementById(`a_dates_${i}`).value, hours: document.getElementById(`a_hours_${i}`).value, staff: document.getElementById(`a_staff_${i}`).value, vehicles: document.getElementById(`a_vehicles_${i}`).value })),
+            hospitals: hospitalData,
+            riskActivity: Array.from({length: riskData.activity.length}).map((_,i) => document.getElementById(`risk_col-activity_${i}`)?.checked || false),
+            riskAudience: Array.from({length: riskData.audience.length}).map((_,i) => document.getElementById(`risk_col-audience_${i}`)?.checked || false),
+            riskVenue: Array.from({length: riskData.venue.length}).map((_,i) => document.getElementById(`risk_col-venue_${i}`)?.checked || false),
+            riskHazards: Array.from({length: riskData.hazards.length}).map((_,i) => document.getElementById(`risk_h_${i}`)?.value || "0"),
+            updatedAt: new Date().toISOString()
+        };
+
+        try {
+            if (currentDocId) await updateDoc(doc(db, DB_COLLECTION, currentDocId), planDataObj);
+            else await addDoc(collection(db, DB_COLLECTION), planDataObj);
+            loadDashboard();
+        } catch (e) { console.error(e); alert("Error saving."); } 
+        finally { btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save to Cloud'; btn.disabled = false; }
+    }
+
+    window.editPlan = async function(id) {
+        currentDocId = id;
+        try {
+            const docSnap = await getDoc(doc(db, DB_COLLECTION, id));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const setV = (d, v) => { if(document.getElementById(d)) document.getElementById(d).value = v || ""; };
+                setV('in_team_a', data.teamA); setV('in_team_b', data.teamB); setV('in_event_date', data.eventDate);
+                setV('in_stadium', data.stadiumId); setV('in_time', data.time); setV('in_gates_open', data.gatesOpen);
+                setV('in_event_starts', data.eventStarts); setV('in_shutdown', data.shutdown); setV('in_organiser', data.organiser);
+                setV('in_build_up', data.buildUp); setV('in_main_event', data.mainEvent); setV('in_break_down', data.breakDown);
+                setV('in_safety_risk', data.safetyRisk); setV('in_med_risk', data.medRisk); setV('in_max_cap', data.maxCap);
+                setV('in_max_att', data.maxAtt); setV('in_impact_area', data.impactArea); setV('in_rep', data.rep);
+                setV('in_waste_construct', data.wasteConstruct); setV('in_waste_co', data.wasteCo);
+
+                personnelData = data.personnel || []; allocationData = data.allocations || []; hospitalData = data.hospitals || [];
+                renderPersonnel(); renderAllocation(); renderHospitals();
+
+                if(data.riskActivity) data.riskActivity.forEach((v, i) => { const el = document.getElementById(`risk_col-activity_${i}`); if(el) el.checked = v; });
+                if(data.riskAudience) data.riskAudience.forEach((v, i) => { const el = document.getElementById(`risk_col-audience_${i}`); if(el) el.checked = v; });
+                if(data.riskVenue) data.riskVenue.forEach((v, i) => { const el = document.getElementById(`risk_col-venue_${i}`); if(el) el.checked = v; });
+                if(data.riskHazards) data.riskHazards.forEach((v, i) => { const el = document.getElementById(`risk_h_${i}`); if(el) el.value = v; });
+
+                document.getElementById('dashboard-container').style.display = 'none';
+                document.getElementById('editor-container').style.display = 'block';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    window.deletePlan = async function(id) {
+        if(confirm("Delete this plan?")) {
+            await deleteDoc(doc(db, DB_COLLECTION, id));
+            loadDashboard();
+        }
+    }
+
+    // List rendering functions
+    window.updateVenueDetails = function() {
+        const selId = document.getElementById('in_stadium').value;
+        const st = cachedStadiums.find(x => x.id === selId);
+        if(st) document.getElementById('in_impact_area').value = st.name;
+    };
+    window.addPersonnel = function() { personnelData.push({name:"", role:"", contact:""}); renderPersonnel(); };
+    window.removePersonnel = function(idx) { personnelData.splice(idx, 1); renderPersonnel(); };
+    window.addAllocation = function() { allocationData.push({point:"", dates:"", hours:"", staff:"", vehicles:""}); renderAllocation(); };
+    window.removeAllocation = function(idx) { allocationData.splice(idx, 1); renderAllocation(); };
+    window.addHospital = function() { const val = document.getElementById('hospital-select').value.split('|'); hospitalData.push({ name: val[0], contact: val[1], number: val[2], type: val[3] }); renderHospitals(); };
+    window.removeHospital = function(idx) { hospitalData.splice(idx, 1); renderHospitals(); };
+    window.closePreview = function() { document.getElementById('document-container').style.display = 'none'; document.getElementById('floating-controls').style.display = 'none'; document.getElementById('editor-container').style.display = 'block'; window.scrollTo(0,0); };
+
+    function renderPersonnel() {
+        const tbody = document.querySelector('#personnel-table tbody'); tbody.innerHTML = '';
+        personnelData.forEach((p, idx) => { tbody.innerHTML += `<tr><td><input type="text" value="${p.name}" id="p_name_${idx}"></td><td><input type="text" value="${p.role}" id="p_role_${idx}"></td><td><input type="text" value="${p.contact}" id="p_contact_${idx}"></td><td style="text-align:center;"><button type="button" class="btn btn-danger" style="padding:8px 12px;" onclick="removePersonnel(${idx})"><i class="fa-solid fa-xmark"></i></button></td></tr>`; });
+    }
+    function renderAllocation() {
+        const tbody = document.querySelector('#allocation-table tbody'); tbody.innerHTML = '';
+        allocationData.forEach((a, idx) => { tbody.innerHTML += `<tr><td><input type="text" value="${a.point}" id="a_point_${idx}"></td><td><input type="text" value="${a.dates}" id="a_dates_${idx}"></td><td><input type="text" value="${a.hours}" id="a_hours_${idx}"></td><td><input type="text" value="${a.staff}" id="a_staff_${idx}"></td><td><input type="text" value="${a.vehicles}" id="a_vehicles_${idx}"></td><td style="text-align:center;"><button type="button" class="btn btn-danger" style="padding:8px 12px;" onclick="removeAllocation(${idx})"><i class="fa-solid fa-xmark"></i></button></td></tr>`; });
+    }
+    function renderHospitals() {
+        const tbody = document.querySelector('#hospitals-table tbody'); tbody.innerHTML = '';
+        hospitalData.forEach((h, idx) => { tbody.innerHTML += `<tr><td>${h.type}</td><td>${h.name}</td><td>${h.contact}</td><td>${h.number}</td><td style="text-align:center;"><button class="btn btn-danger" style="padding:8px 12px;" onclick="removeHospital(${idx})"><i class="fa-solid fa-xmark"></i></button></td></tr>`; });
+    }
+
+    // ==========================================
+    // PDF PREVIEW GENERATION
+    // ==========================================
+    window.generatePreview = function() {
+        const stId = document.getElementById('in_stadium').value;
+        const st = cachedStadiums.find(x => x.id === stId);
+        const venueName = st ? st.name : "UNKNOWN VENUE";
+
+        const teamA = document.getElementById('in_team_a').value, teamB = document.getElementById('in_team_b').value;
+        const date = document.getElementById('in_event_date').value;
+        
+        document.getElementById('out_venue_1').innerText = venueName;
+        document.getElementById('out_venue_2').innerText = venueName;
+        document.getElementById('out_risk_venue').innerText = venueName;
+        document.getElementById('out_map_title').innerText = venueName;
+        
+        document.getElementById('out_match_1').innerText = `${teamA} VS ${teamB}`;
+        document.getElementById('out_risk_match').innerText = `${teamA} VS ${teamB}`;
+        document.getElementById('out_date_1').innerText = date;
+        document.getElementById('out_date_2').innerText = date;
+        document.getElementById('out_risk_date').innerText = date;
+        
+        document.getElementById('out_time').innerText = document.getElementById('in_time').value;
+        document.getElementById('out_gates').innerText = document.getElementById('in_gates_open').value;
+        document.getElementById('out_start').innerText = document.getElementById('in_event_starts').value;
+        document.getElementById('out_shutdown').innerText = document.getElementById('in_shutdown').value;
+        document.getElementById('out_organiser').innerText = document.getElementById('in_organiser').value;
+        document.getElementById('out_build').innerText = document.getElementById('in_build_up').value;
+        document.getElementById('out_main').innerText = document.getElementById('in_main_event').value;
+        document.getElementById('out_break').innerText = document.getElementById('in_break_down').value;
+        document.getElementById('out_safe_risk').innerText = document.getElementById('in_safety_risk').value;
+        document.getElementById('out_med_risk').innerText = document.getElementById('in_med_risk').value;
+        document.getElementById('out_cap').innerText = document.getElementById('in_max_cap').value;
+        document.getElementById('out_att').innerText = document.getElementById('in_max_att').value;
+        document.getElementById('out_team_a').innerText = teamA;
+        document.getElementById('out_team_b').innerText = teamB;
+        document.getElementById('out_rep').innerText = document.getElementById('in_rep').value;
+        document.getElementById('out_impact_area').innerText = document.getElementById('in_impact_area').value;
+        document.getElementById('out_waste_const').innerText = document.getElementById('in_waste_construct').value;
+        document.getElementById('out_waste_co').innerText = document.getElementById('in_waste_co').value;
+        let today = new Date(); document.getElementById('out_sign_date').innerText = today.getDate() + " " + today.toLocaleString('default', { month: 'long' }).toUpperCase() + " " + today.getFullYear();
+
+        const mapOut = document.getElementById('out_map_bg');
+        mapOut.innerHTML = '';
+        if(st) {
+            mapOut.style.backgroundImage = `url(${st.image})`;
+            if(st.markers) {
+                st.markers.forEach(m => {
+                    mapOut.innerHTML += `<div class="map-label" style="left:${m.left}; top:${m.top}; position:absolute; transform:translate(-50%,-50%);">${m.label}</div>`;
+                });
+            }
+        } else {
+            mapOut.style.backgroundImage = 'none';
+            mapOut.innerHTML = '<div style="padding:40px; text-align:center; color:#666;">No Stadium configured/selected.</div>';
+        }
+
+        const pBody = document.getElementById('out_personnel_body'); pBody.innerHTML = '';
+        personnelData.forEach((p, idx) => { pBody.innerHTML += `<tr><td>${document.getElementById('p_name_'+idx).value}</td><td>${document.getElementById('p_role_'+idx).value}</td><td>${document.getElementById('p_contact_'+idx).value}</td></tr>`; });
+        document.getElementById('out_personnel_total').innerText = `TOTAL STAFF MEMBER= ${personnelData.length}`;
+
+        const aBody = document.getElementById('out_allocation_body'); aBody.innerHTML = '';
+        allocationData.forEach((a, idx) => { aBody.innerHTML += `<tr><td>${document.getElementById('a_point_'+idx).value}</td><td>${document.getElementById('a_dates_'+idx).value}</td><td>${document.getElementById('a_hours_'+idx).value}</td><td>${document.getElementById('a_staff_'+idx).value}</td><td>${document.getElementById('a_vehicles_'+idx).value}</td></tr>`; });
+
+        const provBody = document.querySelector('#out_hosp_prov tbody'); const privBody = document.querySelector('#out_hosp_priv tbody');
+        provBody.innerHTML = ''; privBody.innerHTML = '';
+        hospitalData.forEach(h => { const row = `<tr><td>${h.name}</td><td>${h.contact}</td><td>${h.number}</td></tr>`; if(h.type === 'Provincial') provBody.innerHTML += row; else privBody.innerHTML += row; });
+
+        const isChecked = (group, idx) => document.getElementById(`risk_${group}_${idx}`)?.checked;
+        const getScore = (idx) => document.getElementById(`risk_h_${idx}`)?.value || "0";
+        const maxRows = Math.max(riskData.activity.length, riskData.audience.length, riskData.venue.length, riskData.hazards.length);
+        const tBody = document.getElementById('risk-table-body'); tBody.innerHTML = '';
+        let total1 = 0, total2 = 0, total3 = 0;
+
+        for(let i=0; i<maxRows; i++) {
+            let actHtml = ""; if(i < riskData.activity.length) actHtml = isChecked('col-activity', i) ? `<span class="yellow-bg">&#9632; ${riskData.activity[i]}</span>` : `&#9633; ${riskData.activity[i]}`;
+            let audHtml = ""; if(i < riskData.audience.length) audHtml = isChecked('col-audience', i) ? `<span class="yellow-bg">&#9632; ${riskData.audience[i]}</span>` : `&#9633; ${riskData.audience[i]}`;
+            let venHtml = ""; if(i < riskData.venue.length) venHtml = isChecked('col-venue', i) ? `<span class="yellow-bg">&#9632; ${riskData.venue[i]}</span>` : `&#9633; ${riskData.venue[i]}`;
+            
+            let hazHtml = "";
+            if(i < riskData.hazards.length) {
+                let hazVal = riskData.hazards[i]; let score = getScore(i);
+                if(score === "1") { hazHtml = `<div class="rating-col"><div class="rating-box green-text">&#9632;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">${hazVal}</div></div>`; total1+=1; }
+                else if(score === "2") { hazHtml = `<div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box yellow-bg">&#9632;</div><div class="rating-box">&#9633;</div><div class="rating-label">${hazVal}</div></div>`; total2+=2; }
+                else if(score === "3") { hazHtml = `<div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box red-text">&#9632;</div><div class="rating-label">${hazVal}</div></div>`; total3+=3; }
+                else { hazHtml = `<div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">${hazVal}</div></div>`; }
+            }
+            tBody.innerHTML += `<tr><td>${actHtml}</td><td>${audHtml}</td><td>${venHtml}</td><td>${hazHtml}</td></tr>`;
+        }
+        document.getElementById('r_tot_1').innerText = total1; document.getElementById('r_tot_2').innerText = total2; document.getElementById('r_tot_3').innerText = total3;
+
+        document.getElementById('editor-container').style.display = 'none';
+        document.getElementById('document-container').style.display = 'block';
+        document.getElementById('floating-controls').style.display = 'flex';
+        window.scrollTo(0,0);
+    };
+
+    const createCol = (id, arr, type="checkbox") => {
+        const col = document.getElementById(id); col.innerHTML = `<b>${col.innerHTML}</b>`;
+        arr.forEach((item, i) => {
+            col.innerHTML += type === 'radio3' ? `<div class="risk-item"><label style="flex:1;">${item}</label><select id="risk_h_${i}" style="width:60px; padding:4px; border-radius:4px; border:1px solid #cbd5e1;"><option value="0">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>`
+            : `<div class="risk-item"><input type="checkbox" id="risk_${id}_${i}" value="${item}"> <label>${item}</label></div>`;
+        });
+    }
+    createCol('col-activity', riskData.activity); createCol('col-audience', riskData.audience); createCol('col-venue', riskData.venue); createCol('col-hazard', riskData.hazards, 'radio3');
+
+    loadDashboard();
+</script>
+</body>
+</html>

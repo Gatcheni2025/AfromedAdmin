@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Afromed Operational Plan</title>
+<style>
+    /* Reset & Base Styles */
+    * {
+        box-sizing: border-box;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    body {
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #e2e8f0;
+        color: #000;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    /* Page Setup for Print and Screen */
+    @page {
+        size: A4;
+        margin: 0;
+    }
+    .page {
+        width: 210mm;
+        height: 297mm;
+        background: white;
+        margin: 10mm auto;
+        padding: 20mm;
+        position: relative;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        page-break-after: always;
+        overflow: hidden;
+    }
+    @media print {
+        body { background: white; }
+        .page { margin: 0; box-shadow: none; border: none; height: 297mm; }
+    }
+
+    /* Page Numbers */
+    .page-num {
+        position: absolute;
+        bottom: 20mm;
+        right: 20mm;
+        font-size: 12px;
+    }
+
+    /* Typography Utilities */
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: bold; }
+    .underline { text-decoration: underline; }
+    .uppercase { text-transform: uppercase; }
+    .mb-1 { margin-bottom: 5px; }
+    .mb-2 { margin-bottom: 10px; }
+    .mb-3 { margin-bottom: 15px; }
+    .mb-4 { margin-bottom: 20px; }
+    .mt-4 { margin-top: 20px; }
+    .ml-4 { margin-left: 20px; }
+    
+    /* Specific Page Layouts */
+    .title-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 40px;
+        text-align: center;
+    }
+    .title-page div {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .title-page img {
+        width: 280px;
+        margin: 30px 0;
+    }
+
+    /* Lists */
+    ul.custom-list {
+        list-style-type: disc;
+        margin-left: 250px;
+        margin-bottom: 20px;
+    }
+    ul.custom-list li {
+        margin-bottom: 8px;
+        font-size: 13px;
+    }
+    ul.arrows {
+        list-style: none;
+        padding-left: 0;
+    }
+    ul.arrows li {
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 15px;
+    }
+    ul.arrows li::before {
+        content: "➢";
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-family: monospace;
+        font-size: 14px;
+    }
+    ul.bullets {
+        list-style-type: disc;
+        padding-left: 40px;
+    }
+    ul.bullets li { margin-bottom: 10px; }
+
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        font-size: 12px;
+    }
+    th, td {
+        border: 1px solid #000;
+        padding: 5px 8px;
+        vertical-align: top;
+        text-align: left;
+    }
+    
+    /* Event Details Flex Layout */
+    .event-details {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        font-weight: bold;
+        font-size: 13px;
+        row-gap: 5px;
+        margin-bottom: 20px;
+    }
+
+    /* Risk Table Specifics */
+    .risk-table { font-size: 11px; margin-bottom: 10px; }
+    .risk-table td { padding: 3px 5px; height: 18px; }
+    .yellow-bg { background-color: #ffff00 !important; }
+    .red-text { color: red !important; }
+    .green-text { color: #65a30d !important; }
+    
+    .rating-col {
+        display: flex;
+        gap: 5px;
+    }
+    .rating-box {
+        width: 16px;
+        text-align: center;
+    }
+    .rating-label { margin-left: 5px; }
+
+    /* Map Overlay Styles (Page 3) */
+    .map-container {
+        position: relative;
+        width: 100%;
+        height: 500px;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="%23d1d5db"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="24" fill="%239ca3af" font-family="Arial">STADIUM IMAGE PLACEHOLDER</text></svg>') no-repeat center center;
+        background-size: cover;
+        border: 1px solid #999;
+        margin-top: 40px;
+        overflow: hidden;
+    }
+    /* Fake pitch to make placeholder look better */
+    .map-pitch {
+        position: absolute;
+        top: 25%;
+        left: 20%;
+        width: 60%;
+        height: 50%;
+        background: #4ade80;
+        border: 2px solid white;
+        opacity: 0.6;
+    }
+    .map-label {
+        position: absolute;
+        background: linear-gradient(to bottom, #f0fdf4, #bbf7d0);
+        border: 1px solid #22c55e;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: bold;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+        white-space: nowrap;
+        z-index: 10;
+    }
+    .map-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+    }
+    .map-svg line {
+        stroke: #22c55e;
+        stroke-width: 1.5;
+    }
+
+</style>
+</head>
+<body>
+
+    <!-- PAGE 1 -->
+    <div class="page title-page">
+        <div>KWAZULU NATAL- ETHEKWINI DISTRICT</div>
+        <div>AFROMED EMERGENCY MEDICAL SERVICES</div>
+        <div>OPERATIONAL PLAN</div>
+        <div>FOR</div>
+        <div>BETWAY PREMIERSHIP 2026/27</div>
+        
+        <img src="https://afromed.life/logo/logo.png" alt="Afromed Logo">
+        
+        <div style="margin-top: 40px;">KING ZWELITHINI STADIUM, UMLAZI</div>
+        <div>GOLDEN ARROWS F.C VS CHIPPA UNITED F.C</div>
+        <div>01 AUGUST 2026</div>
+        
+        <div class="page-num">1</div>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div class="page">
+        <p class="font-bold mb-2">1. &nbsp;&nbsp;&nbsp;&nbsp; BACKGROUND</p>
+        <p style="text-align: justify; margin-bottom: 30px;">
+            Lamontville Golden Arrows Football Club and Chippa United Football Club are esteemed professional teams competing in the Betway Premiership: the premiership division of South African professional football. As participants in the Premier Soccer League (PSL), these clubs continually battle/ contend at the highest echelon of the domestic game supremacy, prestige, and the coveted league title.
+        </p>
+
+        <p class="font-bold mb-2 uppercase">EVENT DETAILS</p>
+        <div class="event-details">
+            <div>VENUE:</div><div>KING ZWELITHINI STADIUM, UMLAZI</div>
+            <div>DATE:</div><div>01 AUGUST 2026</div>
+            <div>TIME:</div><div>15:30</div>
+            <div>GATES OPEN:</div><div>12:30</div>
+            <div>EVENT STARTS:</div><div>15:30</div>
+            <div>SHUTDOWN:</div><div>18:30</div>
+            <div>EVENT ORGANISER:</div><div>GOLDEN ARROWS<br>(Mr. Chris Franks: 083 652 4323)</div>
+            <div>BUILD UP DATES:</div><div>N/A</div>
+            <div>MAIN EVENT DATES:</div><div>01 AUGUST 2026</div>
+            <div>BREAK DOWN DATES:</div><div>N/A</div>
+            <div>SAFETY AND SECURITY RISK ASSESMENT:</div><div>Medium</div>
+            <div>MEDICAL RISK ASESMENT:</div><div>Medium</div>
+            <div>VENUE MAXIUM USER CAPACITY:</div><div>9500</div>
+            <div>VENUE MAXIUM ATTENDANCE:</div><div>+ / - 4000</div>
+        </div>
+
+        <p class="font-bold mb-2">2. &nbsp;&nbsp;&nbsp;&nbsp; <span class="underline">MANDATE</span></p>
+        <p style="text-align: justify; margin-bottom: 20px;">
+            Afromed Emergency Medical Services has been officially mandated to provide comprehensive medical coverage for the upcoming fixture between Lamontville Golden Arrows F.C and Chippa United F.C to oversee operations and guarantee the seamless execution of all required emergency protocols. Mr. S. Ngubo has been nominated as the official operational representative on-site.
+        </p>
+
+        <p class="font-bold mb-2">3.</p>
+        
+        <p class="font-bold mb-2">4. &nbsp;&nbsp;&nbsp;&nbsp; <span class="underline">OBJECTIVES AND RESPONSIBILITIES</span></p>
+        <p class="mb-4">Services will be that will be provided by <b>AFROMED MEDICAL SERVICES</b> for the following:</p>
+        
+        <ul class="custom-list font-bold">
+            <li>VIPs</li>
+            <li>PLAYERS</li>
+            <li>PUBLIC</li>
+            <li>MEDIA</li>
+            <li>STADIUM STAFF</li>
+        </ul>
+
+        <div class="page-num">2</div>
+    </div>
+
+    <!-- PAGE 3 -->
+    <div class="page">
+        <div class="map-container">
+            <div class="map-pitch"></div>
+            
+            <svg class="map-svg">
+                <!-- Lines connecting labels to center/pitch -->
+                <line x1="15%" y1="12%" x2="45%" y2="40%" />
+                <line x1="10%" y1="27%" x2="40%" y2="45%" />
+                <line x1="10%" y1="55%" x2="35%" y2="55%" />
+                <line x1="15%" y1="77%" x2="45%" y2="65%" />
+                <line x1="65%" y1="17%" x2="55%" y2="45%" />
+                <line x1="88%" y1="15%" x2="65%" y2="40%" />
+                <line x1="90%" y1="27%" x2="68%" y2="45%" />
+                <line x1="85%" y1="37%" x2="68%" y2="55%" />
+                <line x1="82%" y1="77%" x2="60%" y2="65%" />
+            </svg>
+
+            <!-- Map Labels -->
+            <div class="map-label" style="top: 10%; left: 10%;">CROWD DOCTOR</div>
+            <div class="map-label" style="top: 25%; left: 3%;">MEDICAL ROOM ALS</div>
+            <div class="map-label" style="top: 53%; left: 3%;">1 X BLS</div>
+            <div class="map-label" style="top: 75%; left: 8%;">1 X BLS</div>
+            
+            <div class="map-label" style="top: 15%; left: 60%;">1 X BLS</div>
+            
+            <div class="map-label" style="top: 13%; right: 5%;">4 X BLS</div>
+            <div class="map-label" style="top: 25%; right: 3%;">2 X AMBULANCE</div>
+            <div class="map-label" style="top: 35%; right: 5%;">3X BLS<br>1 X ILS</div>
+            <div class="map-label" style="top: 75%; right: 10%;">VOC</div>
+        </div>
+        
+        <div class="page-num">3</div>
+    </div>
+
+    <!-- PAGE 4 -->
+    <div class="page">
+        <div class="font-bold mb-2 text-center" style="font-size:12px;">
+            KEY : - &nbsp;&nbsp;&nbsp;&nbsp; 
+            <span class="green-text">LOW RISK &lt; 20</span> &nbsp;&nbsp;&nbsp;&nbsp; 
+            <span class="yellow-bg" style="padding:2px 5px;">MEDIUM RISK 21- 40</span> &nbsp;&nbsp;&nbsp;&nbsp; 
+            <span class="red-text">HIGH RISK 40 - 90</span>
+        </div>
+
+        <table class="risk-table">
+            <tr style="background: #f9f9f9; text-align:center;">
+                <td colspan="4" class="font-bold">PRE –EVENT RISK ASSESSMENT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AFROMED MEDICAL SERVICES</td>
+            </tr>
+            <tr>
+                <td colspan="2"><b>Name of Event:</b><br>GOLDEN ARROWS F.C VS CHIPPA UNITED FC</td>
+                <td colspan="2"><b>Date/s:</b><br>01 AUGUST 2026</td>
+            </tr>
+            <tr>
+                <td colspan="2"><b>Venue: KING ZWELITHINI STADIUM, UMLAZI</b></td>
+                <td colspan="2"><b>Times: 15:30</b></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="font-bold font-italic">Tick applicable Risk Factor and Circle the average value for<br>each Risk Category below</td>
+                <td colspan="2" class="font-bold">
+                    <div class="yellow-bg mb-1" style="display:inline-block; width:100%;">**3=High Risk</div>
+                    <div class="yellow-bg mb-1" style="display:inline-block; width:100%;">**2=Medium risk</div>
+                    <div class="yellow-bg" style="display:inline-block; width:100%;">**1=Low Risk</div>
+                </td>
+            </tr>
+            <tr class="font-bold">
+                <td style="width:25%">Activity Risk Category</td>
+                <td style="width:25%">Audience Risk (i.r.o)<br>activity</td>
+                <td style="width:25%">Venue Site Design</td>
+                <td style="width:25%">Rate the likelihood of all other hazards and their potential impact</td>
+            </tr>
+            <tr>
+                <td class="yellow-bg">&#9633; Small Event</td>
+                <td>&#9633; &lt;2000</td>
+                <td>&#9633; Suitable for expected Capacity</td>
+                <td>
+                    <div class="rating-col"><div class="rating-box">1</div><div class="rating-box">2</div><div class="rating-box">3</div></div>
+                </td>
+            </tr>
+            <tr>
+                <td>&#9633; Large Event</td>
+                <td>&#9633; 2000-10 000</td>
+                <td>&#9633; Indoor</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Fire</div></div></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>&#9633; 10 000</td>
+                <td class="yellow-bg">&#9633; Outdoor</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Time of day and duration</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Religious</td>
+                <td class="yellow-bg">&#9633; 4 000</td>
+                <td>&#9633; Enclosed/Fenced</td>
+                <td><div class="rating-col"><div class="rating-box yellow-bg">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Terrorism/Hooliganism/<br>Gangsterism</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Educational</td>
+                <td>&#9633; Expected Behaviour</td>
+                <td>&#9633; Unfenced</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box yellow-bg">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Power/Electricity Failure</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Promotional</td>
+                <td>&#9633; Special Needs</td>
+                <td>&#9633; Absence of seating (has standing areas)</td>
+                <td><div class="rating-col"><div class="rating-box yellow-bg">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Crowd surge/Crowd<br>disorder strike</div></div></td>
+            </tr>
+            <tr>
+                <td class="yellow-bg">&#9633; Sport: Local</td>
+                <td></td>
+                <td>&#9633; General Condition of the Facility</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Adverse Weather conditions</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Sport: National</td>
+                <td></td>
+                <td>&#9633; Geographic location i.e. Residential Area</td>
+                <td><div class="rating-col"><div class="rating-box yellow-bg">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Off site Hazards</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Sport: International</td>
+                <td></td>
+                <td>&#9633; Design (Sufficient exits, Access Control)</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box yellow-bg">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Medical Emergencies</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Political: Local</td>
+                <td></td>
+                <td>&#9633; Suitable for special needs people</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Tickets</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Political: Provincial</td>
+                <td></td>
+                <td>&#9633; Marquee Tent(s) used</td>
+                <td><div class="rating-col"><div class="rating-box yellow-bg">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Traffic and Transport disruptions</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Political: National</td>
+                <td></td>
+                <td>&#9633; Compliance Fire, OHS, Building Regs</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Temporary Structures failure</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Political: International</td>
+                <td></td>
+                <td>&#9633; Parking Arrangements</td>
+                <td><div class="rating-col"><div class="rating-box yellow-bg">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Loss of water supply/sanitation</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Music Concert</td>
+                <td></td>
+                <td>&#9633; Emergency Vehicle Accessibility</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Food Hygiene Problems</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633;Festival (Variety)</td>
+                <td></td>
+                <td>&#9633; Suitable Public Emergency Evacuation Routes</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Alcohol sales and substance abuse</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Exhibition</td>
+                <td></td>
+                <td>&#9633; Availability of service (water, sanitation, electricity,<br>telephones)</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Pyrotechnics/Special effects</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Road Show</td>
+                <td></td>
+                <td>&#9633; Back-up Generators/UPS Systems</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Provision for Cancellation<br>Postponement</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Funeral</td>
+                <td></td>
+                <td>&#9633; Provision for VOC &amp; OPS Systems</td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Turnstile &amp; PA Systems failure</div></div></td>
+            </tr>
+            <tr>
+                <td>&#9633; Other (………………)</td>
+                <td></td>
+                <td></td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Pollution (Noise, litter, Air etc)</div></div></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><div class="rating-col"><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Other environmental impacts<br>specify below</div></div></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><div class="rating-col"><div class="rating-box yellow-bg">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-box">&#9633;</div><div class="rating-label">Insufficient event Planning<br>done</div></div></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td class="text-right font-bold">TOTAL</td>
+                <td>
+                    <div class="rating-col font-bold" style="font-size:12px;">
+                        <div class="rating-box green-text">20</div>
+                        <div class="rating-box yellow-bg">40</div>
+                        <div class="rating-box red-text">90</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="page-num">4</div>
+    </div>
+
+    <!-- PAGE 5 -->
+    <div class="page">
+        <p class="font-bold underline mb-2">OVERVIEW OF PROVISION HEALTH AND MEDICAL SERVICES</p>
+        <p class="mb-1">Provision of:</p>
+        <ul style="list-style-type: square; padding-left: 40px; margin-top: 0; margin-bottom: 20px;">
+            <li>Emergency Medical Services</li>
+        </ul>
+
+        <p class="font-bold underline mb-2">IMPACT AREAS</p>
+        <ul style="list-style-type: disc; padding-left: 40px; margin-top: 0; margin-bottom: 20px;">
+            <li>KING ZWELITHINI STADIUM, UMLAZI</li>
+        </ul>
+
+        <p class="font-bold underline mb-2">TREATMENT PROFILE</p>
+        <p style="margin-bottom: 20px;">Injured patient shall be transported to the nearest provincial Hospitals and those with medical aid can be transported to the nearest private hospitals.</p>
+
+        <p class="font-bold underline mb-2">PLANNING CONSIDERATIONS</p>
+        <p style="margin-bottom: 20px;">Ensuring on -site medical support and emergency response planning, including having paramedics standby, to guarantee guest safety and rapid response in case of medical emergency during the event.</p>
+
+        <p class="font-bold underline mb-2">COMMAND PERSONNEL</p>
+        <table>
+            <tr class="font-bold">
+                <td style="width: 35%; text-align:center;">Name</td>
+                <td style="width: 35%; text-align:center;">Responsibility</td>
+                <td style="width: 30%; text-align:center;">Contact Details</td>
+            </tr>
+            <tr><td>SITHEMBISO NGUBO</td><td>Medical Services Co-Ordinator</td><td>073 333 6656</td></tr>
+            <tr><td>LINDIWE MABASO</td><td>VOC</td><td></td></tr>
+            <tr><td>XOLANI MPANZA</td><td>ALS / ECP</td><td></td></tr>
+            <tr><td>SIBUSISO NGCOBO</td><td>ILS</td><td></td></tr>
+            <tr><td>MR DLULI</td><td>DOCTOR</td><td></td></tr>
+            <tr><td>LUNGISILE SHEZI</td><td>BLS</td><td></td></tr>
+            <tr><td>ZIYANDA CINGO</td><td>BLS</td><td></td></tr>
+            <tr><td>PHILISIWE NYAWO</td><td>BLS</td><td></td></tr>
+            <tr><td>THABISO NDLOVU</td><td>BLS</td><td></td></tr>
+            <tr><td>THUSI MONDLI</td><td>BLS</td><td></td></tr>
+            <tr><td>CELE LINDOKUHLE</td><td>BLS</td><td></td></tr>
+            <tr><td>MKHATSHANE ANDILE</td><td>BLS</td><td></td></tr>
+            <tr><td>BIYELA NOKUVELA</td><td>BLS</td><td></td></tr>
+            <tr><td>ZUNGU ZAMA</td><td>BLS</td><td></td></tr>
+            <tr><td>DUBE SIBONELO</td><td>BLS</td><td></td></tr>
+            <tr><td>YENGWA ZANELE</td><td>BLS</td><td></td></tr>
+            <tr><td>SIBISI THEMBELIHLE</td><td>BLS</td><td></td></tr>
+            <tr class="font-bold"><td colspan="3">TOTAL STAFF MEMBER= 17</td></tr>
+        </table>
+
+        <p class="font-bold underline mb-2">AREAS OF RESPONSIBILITY</p>
+        <div style="line-height: 1.8;">
+            1. VOC<br>
+            2. GENERAL MEDICAL ROOM<br>
+            3. PLAYERS MEDICAL ROOM
+        </div>
+        
+        <div class="page-num">5</div>
+    </div>
+
+    <!-- PAGE 6 -->
+    <div class="page">
+        <p class="font-bold underline mb-4">MEDICAL FACILITIES OVERVIEW /PLAN</p>
+        
+        <p class="font-bold underline mb-4">VENUE SPECIFIC PLANS, RESOURCES ALLOCATED AS PER MEDICAL RISK ASSESMENT AND RISK MATRIX</p>
+        
+        <table style="margin-bottom: 40px;">
+            <tr class="font-bold">
+                <td>Satellite Point</td>
+                <td>Event Dates</td>
+                <td>Hours of<br>Operation</td>
+                <td>Personnel</td>
+                <td>Vehicles</td>
+            </tr>
+            <tr>
+                <td>VOC</td>
+                <td>01 AUGUST 26</td>
+                <td>12:30-18:30</td>
+                <td>VOC</td>
+                <td>2X Ambulance</td>
+            </tr>
+            <tr>
+                <td>Stadium Level 1</td>
+                <td>01 AUGUST 26</td>
+                <td>12:30-18:30</td>
+                <td>1 X BLS</td>
+                <td>2X Ambulance</td>
+            </tr>
+            <tr>
+                <td>Stadium Level 2</td>
+                <td>01 AUGUST 26</td>
+                <td>12:30-18:30</td>
+                <td>1 X BLS</td>
+                <td>2 x ambulance</td>
+            </tr>
+            <tr>
+                <td>Players Field</td>
+                <td>01 AUGUST 26</td>
+                <td>12:30-18:30</td>
+                <td>4 X BLS</td>
+                <td>2X Ambulance</td>
+            </tr>
+            <tr>
+                <td>Players Field</td>
+                <td>01 AUGUST 26</td>
+                <td>12:30-18:30</td>
+                <td>3 X BLS<br>1 X ILS</td>
+                <td>2 x ambulance</td>
+            </tr>
+            <tr>
+                <td>Players Field<br>(crowd doctor)</td>
+                <td>01 AUGUST 26</td>
+                <td>12:30-18:30</td>
+                <td>DOCTOR</td>
+                <td>Own vehicle</td>
+            </tr>
+            <tr>
+                <td>Emergency gate</td>
+                <td>01 AUGUST 26</td>
+                <td>12:30-18:30</td>
+                <td>2 X BLS</td>
+                <td>2 x ambulance</td>
+            </tr>
+            <tr>
+                <td>Medical room</td>
+                <td>01 AUGUST 26</td>
+                <td>12:30-18:30</td>
+                <td>1 X ALS</td>
+                <td>2X Ambulance</td>
+            </tr>
+        </table>
+
+        <p class="font-bold underline mb-2">AEROMEDICAL SERVICES LANDING ZONE</p>
+        <p class="mb-4">A landing zone will be established at TBC for the aero-medical response team.</p>
+
+        <p class="font-bold underline mb-2">MASS CASUALTY PLAN</p>
+        <ul class="arrows">
+            <li>in the event a mass casualty incident the EMS EMERGENCY communication centre will be contacted at (031) 1017/112</li>
+            <li>all other emergencies, be it medical or trauma, shall referred to the appropriate medical facilities as directed by DOH EMS officials</li>
+        </ul>
+
+        <p class="font-bold underline mb-2 mt-4">EGRESS ROUTE</p>
+        <ul class="arrows" style="margin-bottom: 30px;">
+            <li>In the event of casualty incident, all necessary emergency services shall be informed and mobilized to the venue.</li>
+        </ul>
+
+        <p class="font-bold underline mb-2">ACCESS ROUTE</p>
+
+        <div class="page-num">6</div>
+    </div>
+
+    <!-- PAGE 7 -->
+    <div class="page">
+        <ul class="arrows">
+            <li>A clear path for emergency responders to reach the event area. Designated parking for emergency vehicles.</li>
+        </ul>
+
+        <p class="font-bold underline mb-2 mt-4">CASULATY CLEARING STATION</p>
+        <ul class="arrows mb-4">
+            <li>Sorting patients based on the severity of their injuries or conditions</li>
+            <li>Stabilization: providing basic life support such as wound care, splinting and resuscitation</li>
+            <li>Emergency care: administering urgent medical interventions to stabilize patients.</li>
+        </ul>
+
+        <table style="margin-bottom: 30px;">
+            <tr>
+                <td colspan="3" class="text-center font-bold">CONTACT DETAILS FOR THE DOH EMS ETHEKWINI</td>
+            </tr>
+            <tr class="font-bold text-center">
+                <td style="width:33%;">NAME</td>
+                <td style="width:33%;">DESIGNATION</td>
+                <td style="width:34%;">CONTACT NUMBER</td>
+            </tr>
+            <tr><td>Mr. P.T.Shozi</td><td>District Manager EMS eThekwini</td><td>083 296 4002</td></tr>
+            <tr><td>Mr.N.Padayachi</td><td>Emergency Communications Centre</td><td>084 854 8006</td></tr>
+            <tr><td>Mr.S.Samlal</td><td>District Disaster Medicine Coordinator</td><td>082 372 4333</td></tr>
+        </table>
+
+        <p class="font-bold underline mb-2">HOSPITALS</p>
+        <table style="margin-bottom: 30px;">
+            <tr class="font-bold text-center">
+                <td style="width:33%;">NAME OF HOSPITAL</td>
+                <td style="width:33%;">CONTACT PERSON</td>
+                <td style="width:34%;">CONTACT NUMBER</td>
+            </tr>
+            <tr><td>PRINCE MSHIYENI MEMORIAL HOSPITAL</td><td>MR. GABRIEL KHAWULA</td><td>031 907 8111</td></tr>
+            <tr><td>KING EDWARD HOSPITAL</td><td>DR T. MAYISE</td><td>031- 360 3111</td></tr>
+            <tr><td>ADDINGTON HOSPITAL</td><td>DR M NDLANGISA</td><td>031 – 327 2000</td></tr>
+        </table>
+
+        <p class="font-bold underline mb-2">ETHEKWINI DISTRICT PRIVATE</p>
+        <table style="margin-bottom: 30px;">
+            <tr>
+                <td style="width:33%;">NAME OF HOSPITAL</td>
+                <td style="width:33%;">CONTACT PERSON</td>
+                <td style="width:34%;">CONTACT NUMBER</td>
+            </tr>
+            <tr><td>ISIPINGO HOSPITAL</td><td>DR. RAMESH BHOOLA</td><td>031 913 7000</td></tr>
+            <tr><td>KINGSWAY HOSPITAL</td><td>ANNATJIE DEMETRIOU</td><td>+27 31 904 7000</td></tr>
+            <tr><td>CITY HOSPITAL</td><td>JAYSHREE POORAI</td><td>031-314 3000</td></tr>
+        </table>
+
+        <p class="font-bold underline mb-2">MEDICAL WASTE MANAGEMENT PLAN</p>
+        <p class="font-bold mb-2">CONSTRUCT NUMBER AFR 007 [RECIEPT NUMBER K1339668]</p>
+        <p style="text-align: justify;">
+            The company has appointed compass waste services to dispose the waste, sharp medical waste to be dispose in the sharp's container provided by compass waste services and the rest will be disposed on the red medical bags.
+        </p>
+
+        <div class="page-num">7</div>
+    </div>
+
+    <!-- PAGE 8 -->
+    <div class="page">
+        <p style="margin-bottom: 30px;">On completion, the waste will be collected and disposed by <b>COMPASS WASTE (031 782 4200)</b></p>
+        
+        <p class="font-bold underline mb-2">THE OBJECTIVES OF AFROMED MEDICAL SERVICES ARE TO ENSURE THAT</p>
+        
+        <ul class="bullets" style="margin-bottom: 50px;">
+            <li>Contingency plans are drafted for emergencies, mass casualty situations and mass deaths.</li>
+            <li>Hospitals will be placed on standby for mass casualty situations.</li>
+            <li>Ensure compliance of <b>NO. 2 OF 2010: SAFETY AT SPORTS AND RECREATIONAL EVENTS ACT, 2010</b></li>
+            <li>Ensure compliance for over 1000 attending in relation to <b>NATIONAL HEALTH ACT, 2003 (ACT NO. 61 OF 2003) REGULATIONS RELATING TO EMERGENCY CARE AT MASS GATHERING EVENTS</b></li>
+            <li>Ensure compliance with <b>NATIONAL HEALTH ACT, 2003 (ACT NO. 61 OF 2003) EMERGENCY MEDICAL REGULATIONS.</b></li>
+            <li>Align plans as per the <b>DISASTER MANAGEMENT ACT 57 OF 2002</b></li>
+        </ul>
+
+        <div style="margin-top: 50px; font-family: monospace; font-size: 14px;">
+            ___________<br><br>
+            APPROVED BY:<br>
+            NONHLANHLA XEGO<br>
+            AFROMED MEDICAL SERVICES<br>
+            DATE: 24 AUGUST 2026
+        </div>
+
+        <div class="page-num">8</div>
+    </div>
+
+</body>
+</html>

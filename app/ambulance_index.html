@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ambulance Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Mapbox GL JS & Directions Plugin -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" type="text/css">
+    <style>
+        body { margin: 0; padding: 0; font-family: sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .sidebar { position: absolute; top: 10px; left: 10px; width: 300px; background: rgba(15, 23, 42, 0.9); color: white; padding: 15px; border-radius: 10px; max-height: calc(100vh - 40px); overflow-y: auto; }
+        .request-item { background: #334155; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+        .accept-btn { width: 100%; padding: 8px; background: #16a34a; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 5px; }
+        h2, h3 { margin-top: 0; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div class="sidebar">
+    <h2>Incoming Requests</h2>
+    <div id="requests-list">
+        <p>Listening for new requests...</p>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+    const firebaseConfig = { /* PASTE YOUR CONFIG AGAIN HERE */ };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    mapboxgl.accessToken = "pk.YOUR_PUBLIC_MAPBOX_TOKEN"; // YOUR MAPBOX TOKEN
+
+    let map;
+    let directions;
+    let driverId = null;
+    let driverVehicleId = null;
+    let driverMarker;
+
+    // THIS FUNCTION IS CALLED BY KOTLIN
+    async function updateNativeLocation(lat, lng) {
+        if (driverVehicleId) {
+            const vehicleRef = db.collection('vehicles').doc(driverVehicleId);
+            await vehicleRef.update({
+                location: new firebase.firestore.GeoPoint(lat, lng)
+            });
+
+            if(map && driverMarker) {
+                driverMarker.setLngLat([lng, lat]);
+                map.panTo([lng, lat]);
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        driverId = urlParams.get('uid');
+
+        if (!driverId) {
+            document.body.innerHTML = "<h1>Error: No Driver ID provided.</h1>";
+            return;
+        }
+
+        // Find which vehicle this driver is assigned to
+        const vehicleSnapshot = await db.collection('vehicles').where('driverId', '==', driverId).limit(1).get();
+        if (!vehicleSnapshot.empty) {
+            driverVehicleId = vehicleSnapshot.docs[0].id;
+        } else {
+            document.body.innerHTML = "<h1>Error: You are not assigned to a vehicle.</h1>";
+            return;
+        }
+
+        initializeMap();
+        listenForRequests();
+    });
+
+    function initializeMap() {
+        map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11', // A lighter style for directions
+            center: [28.04, -26.20],
+            zoom: 9
+        });
+
+        directions = new MapboxDirections({
+            accessToken: mapboxgl.accessToken,
+            controls: { instructions: false, profileSwitcher: false }
+        });
+        map.addControl(directions, 'top-right');
+
+        // Add a marker for the driver
+        driverMarker = new mapboxgl.Marker({ color: '#f59e0b' }).setLngLat([28.04, -26.20]).addTo(map);
+    }
+
+    function listenForRequests() {
+        const requestsListEl = document.getElementById('requests-list');
+        db.collection('requests').where('status', '==', 'pending')
+        .onSnapshot(snapshot => {
+            requestsListEl.innerHTML = '<h3>New Requests</h3>';
+            if(snapshot.empty) {
+                requestsListEl.innerHTML += '<p>No pending requests.</p>';
+            }
+            snapshot.forEach(doc => {
+                const request = doc.data();
+                const requestId = doc.id;
+                const requestEl = document.createElement('div');
+                requestEl.className = 'request-item';
+                requestEl.innerHTML = `
+                    <strong>Request from:</strong> User ${request.userId.substring(0,6)}... <br>
+                    <strong>Time:</strong> ${request.timestamp.toDate().toLocaleTimeString()}
+                    <button class="accept-btn" onclick="acceptRequest('${requestId}')">Accept Request</button>
+                `;
+                requestsListEl.appendChild(requestEl);
+            });
+        });
+    }
+
+    async function acceptRequest(requestId) {
+        try {
+            const requestRef = db.collection('requests').doc(requestId);
+            const requestDoc = await requestRef.get();
+            const requestData = requestDoc.data();
+
+            // Update request to show it's accepted by this driver
+            await requestRef.update({
+                status: 'accepted',
+                driverId: driverId,
+                vehicleId: driverVehicleId
+            });
+
+            // Update this driver's vehicle status
+            await db.collection('vehicles').doc(driverVehicleId).update({
+                status: 'on_trip'
+            });
+
+            // Set route on map
+            const patientLocation = [requestData.location.longitude, requestData.location.latitude];
+            const driverLocation = driverMarker.getLngLat();
+
+            directions.setOrigin([driverLocation.lng, driverLocation.lat]);
+            directions.setDestination(patientLocation);
+
+            // Remove all other requests from the list
+             document.getElementById('requests-list').innerHTML = `<h3>En Route to Patient</h3><p>Request ID: ${requestId}</p><button onclick="completeRequest('${requestId}')">Mark as Complete</button>`;
+
+        } catch(error) {
+            console.error("Error accepting request: ", error);
+            alert("Could not accept request.");
+        }
+    }
+
+    async function completeRequest(requestId) {
+        // Logic to mark trip as complete and driver as available again
+        await db.collection('vehicles').doc(driverVehicleId).update({ status: 'available' });
+        await db.collection('requests').doc(requestId).update({ status: 'completed' });
+        directions.removeRoutes();
+        listenForRequests(); // Start listening for new requests again
+    }
+
+</script>
+</body>
+</html>

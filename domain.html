@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Pricing Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        .dashboard-header {
+            background-color: var(--text-main);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .search-mockup {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Domain List Styles */
+        .domain-list {
+            padding: 2rem;
+        }
+
+        .domain-list h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .domain-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .domain-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: var(--primary-color);
+        }
+
+        .domain-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .domain-ext {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--success);
+            background: #d1fae5;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            margin-top: 0.5rem;
+        }
+
+        .status::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .pricing-action {
+            text-align: right;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background-color: var(--success);
+            cursor: not-allowed;
+        }
+
+        /* Cart Styles */
+        .cart-summary {
+            background: var(--bg-color);
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .domain-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .pricing-action {
+                text-align: center;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1>Domain Registration</h1>
+            <div class="search-mockup">
+                🔍 Search results for: <strong>"Afromed"</strong>
+            </div>
+        </div>
+
+        <!-- Domain Results -->
+        <div class="domain-list">
+            <h2>Available Domains</h2>
+            <div id="domain-container">
+                <!-- Domains will be injected here via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="cart-summary">
+            <div>
+                <h3>Order Summary</h3>
+                <span style="color: var(--text-muted); font-size: 0.9rem;" id="item-count">0 items selected</span>
+            </div>
+            <div style="text-align: right;">
+                <div class="total-price" id="total-price">R0</div>
+                <button class="btn" style="margin-top: 0.5rem; background-color: var(--text-main);">Checkout Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Domain Data starting at R1899
+        const domains = [
+            { id: 1, name: "afromed", tld: ".co", price: 1899, popular: false },
+            { id: 2, name: "afro-med", tld: ".co.za", price: 1899, popular: false },
+            { id: 3, name: "Afromed", tld: ".com", price: 2199, popular: true }
+        ];
+
+        let cartTotal = 0;
+        let cartItems = 0;
+
+        // Function to format currency to ZAR
+        const formatPrice = (price) => `R${price.toLocaleString()}`;
+
+        // Function to render domains to the DOM
+        function renderDomains() {
+            const container = document.getElementById('domain-container');
+            container.innerHTML = ''; // Clear container
+
+            domains.forEach(domain => {
+                const card = document.createElement('div');
+                card.className = 'domain-card';
+                
+                card.innerHTML = `
+                    <div class="domain-info">
+                        <h3>${domain.name}<span class="domain-ext">${domain.tld}</span></h3>
+                        <div class="status">Available</div>
+                        ${domain.popular ? '<span style="margin-left:10px; font-size: 0.8rem; background: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 12px; font-weight:bold;">High Demand</span>' : ''}
+                    </div>
+                    <div class="pricing-action">
+                        <div class="price">${formatPrice(domain.price)}<span style="font-size: 0.8rem; color: #64748b; font-weight: normal;">/yr</span></div>
+                        <button class="btn" id="btn-${domain.id}" onclick="addToCart(${domain.id}, ${domain.price})">
+                            Add to Cart
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Function to handle adding to cart
+        function addToCart(id, price) {
+            // Update Totals
+            cartTotal += price;
+            cartItems += 1;
+
+            // Update UI Elements
+            document.getElementById('total-price').innerText = formatPrice(cartTotal);
+            document.getElementById('item-count').innerText = `${cartItems} item${cartItems > 1 ? 's' : ''} selected`;
+
+            // Change Button State
+            const btn = document.getElementById(`btn-${id}`);
+            btn.innerText = "✓ Added";
+            btn.disabled = true;
+        }
+
+        // Initialize dashboard
+        renderDomains();
+    </script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Afromed Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <style>
+        :root { --primary: #2563eb; --primary-light: #3b82f6; --secondary: #06b6d4; --bg: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --staff-color: #ef4444; --student-color: #8b5cf6; --driver-color: #f59e0b; }
+        body { margin: 0; min-height: 100vh; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .login-card { width: 100%; max-width: 440px; background: var(--card-bg); padding: 40px; border-radius: 32px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); text-align: center; border: 1px solid var(--border); position: relative; z-index: 10; }
+        .logo { width: 90px; height: 90px; margin: 0 auto 28px; background: #ffffff; border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08); overflow: hidden; padding: 15px; box-sizing: border-box; border: 1px solid var(--border); }
+        .logo img { width: 100%; height: 100%; object-fit: contain; }
+        h2 { margin: 0 0 8px; font-weight: 800; font-size: 28px; letter-spacing: -0.5px; }
+        p { color: var(--text-muted); font-size: 15px; margin-bottom: 32px; font-weight: 500; }
+        .role-tabs { display: flex; background: #f1f5f9; padding: 6px; border-radius: 16px; margin-bottom: 30px; gap: 4px; }
+        .role-tab { flex: 1; padding: 12px 8px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 12px; transition: all 0.2s ease; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .role-tab.active { background: white; color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .role-tab[role="staff"].active { color: var(--staff-color); }
+        .role-tab[role="student"].active { color: var(--student-color); }
+        .role-tab[role="driver"].active { color: var(--driver-color); }
+        .input-group { margin-bottom: 20px; position: relative; text-align: left; }
+        .input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); margin-left: 4px; }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        input { width: 100%; padding: 16px 16px 16px 48px; border-radius: 16px; border: 1px solid var(--border); background: #ffffff; color: var(--text-main); box-sizing: border-box; font-size: 15px; outline: none; transition: all 0.2s ease; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .btn-primary { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 10px; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+        .divider { display: flex; align-items: center; margin: 30px 0; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 16px; }
+        .google-btn { width: 100%; padding: 14px; border-radius: 16px; border: 1px solid var(--border); background: white; color: var(--text-main); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.2s ease; }
+        .google-btn:hover { background: #fafafa; border-color: #cbd5e1; }
+        .footer-link { margin-top: 32px; font-size: 14px; color: var(--text-muted); font-weight: 500; }
+        .footer-link a { color: var(--primary); text-decoration: none; font-weight: 700; }
+        .msg-box { font-size: 13px; margin-top: 16px; min-height: 20px; font-weight: 600; padding: 12px; border-radius: 12px; display: none; }
+        .msg-error { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; display: block; }
+        .hidden { display: none !important; }
+        
+        #global-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        #global-loader.active { opacity: 1; pointer-events: all; }
+        .loader-ring { position: absolute; width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--primary) 0deg, var(--secondary) 90deg, var(--student-color) 180deg, var(--staff-color) 270deg, var(--primary) 360deg); animation: spin 1.5s linear infinite; box-shadow: 0 0 25px rgba(37, 99, 235, 0.25); }
+        .loader-ring::before { content: ''; position: absolute; inset: 5px; background: #ffffff; border-radius: 50%; }
+        .loader-logo { position: relative; width: 75px; height: 75px; z-index: 10; border-radius: 50%; object-fit: contain; animation: pulse-logo 1.5s infinite; }
+        .loader-text { margin-top: 30px; font-size: 16px; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse-logo { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.08); } }
+    </style>
+</head>
+<body>
+
+<div id="global-loader">
+    <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <div class="loader-ring"></div>
+        <img src="assets/afrologo.png" alt="Logo" class="loader-logo">
+    </div>
+    <div class="loader-text">Authenticating...</div>
+</div>
+
+<div class="login-card">
+    <div class="logo"><img src="assets/afrologo.png" alt="Logo"></div>
+    <h2 id="title">Welcome Back</h2>
+    <p id="subtitle">Sign in to access your portal</p>
+
+    <div class="role-tabs">
+        <div class="role-tab active" role="emergency" onclick="setRole('emergency')"><i class="fa-solid fa-heart-pulse"></i>Emergency</div>
+        <div class="role-tab" role="student" onclick="setRole('student')"><i class="fa-solid fa-user-graduate"></i>Student</div>
+        <div class="role-tab" role="driver" onclick="setRole('driver')"><i class="fa-solid fa-truck-medical"></i>Driver</div>
+    </div>
+
+    <div id="auth-forms">
+        <div class="input-group" id="email-group">
+            <label id="identity-label">Email Address</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-envelope" id="identity-icon"></i>
+                <input type="email" id="identity" placeholder="e.g. name@email.com" autocomplete="username">
+            </div>
+        </div>
+
+    <div class="input-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+                <!-- Added pointer-events:none so the lock doesn't block clicks -->
+                <i class="fa-solid fa-lock" style="pointer-events: none;"></i>
+                
+                <!-- Added padding-right: 48px so text doesn't hide under the eye -->
+                <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" style="padding-right: 48px;">
+                
+                <!-- Added left: auto; to stop the invisible stretching bug -->
+                <i class="fa-solid fa-eye" id="toggle-password" style="position: absolute; left: auto; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; z-index: 10; padding: 5px;"></i>
+            </div>
+        </div>
+
+        <button class="btn-primary" id="btn-login" onclick="handleLoginFlow()"><span>Continue</span> <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <div id="msg" class="msg-box"></div>
+
+    <!-- Hidden for Driver and Student roles -->
+    <div id="social-login">
+        <div class="divider">OR</div>
+        <button class="google-btn" onclick="handleGoogleLogin()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="G"> Continue with Google
+        </button>
+    </div>
+
+    <!-- Hidden for Driver and Student roles -->
+    <div class="footer-link" id="footer-join">Don't have an account? <a href="signup.html">Join Now</a></div>
+</div>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
+        authDomain: "afromed-fda57.firebaseapp.com",
+        databaseURL: "https://afromed-fda57-default-rtdb.firebaseio.com",
+        projectId: "afromed-fda57",
+        storageBucket: "afromed-fda57.firebasestorage.app",
+        messagingSenderId: "633274573777",
+        appId: "1:633274573777:web:6b244c95612bc92ff976f0",
+        measurementId: "G-3ZSVQDNVFX"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    
+    let currentRole = 'emergency';
+
+    function setRole(role) {
+        currentRole = role;
+        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.role-tab[role="${role}"]`).classList.add('active');
+
+        const identityLabel = document.getElementById('identity-label');
+        const identityInput = document.getElementById('identity');
+        const iconInput = document.getElementById('identity-icon');
+        const socialLogin = document.getElementById('social-login');
+        const footerJoin = document.getElementById('footer-join');
+
+        if (role === 'driver') {
+            socialLogin.classList.add('hidden');
+            footerJoin.classList.add('hidden');
+            identityLabel.innerText = "Phone Number";
+            identityInput.placeholder = "e.g. 0700000000";
+            identityInput.type = "tel";
+            iconInput.className = "fa-solid fa-phone";
+        } else if (role === 'student') {
+            socialLogin.classList.add('hidden');
+            footerJoin.classList.add('hidden');
+            identityLabel.innerText = "Student Email";
+            identityInput.placeholder = "student@email.com";
+            identityInput.type = "email";
+            iconInput.className = "fa-solid fa-envelope";
+        } else {
+            socialLogin.classList.remove('hidden');
+            footerJoin.classList.remove('hidden');
+            identityLabel.innerText = "Email Address";
+            identityInput.placeholder = "name@email.com";
+            identityInput.type = "email";
+            iconInput.className = "fa-solid fa-envelope";
+        }
+    }
+
+    async function handleLoginFlow() {
+        let identity = document.getElementById('identity').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        if (!identity || !password) return showMsg("Credentials required", "error");
+
+        let isDriver = currentRole === 'driver';
+        let isStudent = currentRole === 'student';
+
+        // Format driver phone number
+        if (isDriver) {
+            let sanitized = identity.replace(/\D/g, '');
+            if (sanitized.startsWith('27') && sanitized.length >= 11) sanitized = '0' + sanitized.substring(2);
+            if (!identity.includes('@')) identity = `${sanitized}@afromed.ems`;
+        }
+
+        setLoading(true);
+
+        try {
+            // ATTEMPT 1: Standard Firebase Login
+            const cred = await auth.signInWithEmailAndPassword(identity, password);
+            checkRoleAndRedirect(cred.user);
+
+        } catch (error) {
+            const errCode = error.code || "";
+            const errMsg = error.message || "";
+            
+            // Check if Firebase threw the generic "Invalid Credentials" or "Not Found" error
+            const isAuthError = errCode === 'auth/invalid-login-credentials' || 
+                                errMsg.includes('INVALID_LOGIN_CREDENTIALS') || 
+                                errCode === 'auth/wrong-password' || 
+                                errCode === 'auth/user-not-found' ||
+                                errCode === 'auth/internal-error';
+
+            if (isAuthError) {
+                
+                // =======================================================
+                // 🚑 AUTO-HEALER FOR STUDENTS (Fixes your screenshot issue)
+                // =======================================================
+                if (isStudent) {
+                    try {
+                        // Check if they are in the database (like Test@afromed.co.za)
+                        const checkDb = await db.collection('college_students').where('email', '==', identity).get();
+                        
+                        if (!checkDb.empty) {
+                            // They are in the DB but missing from Auth! Let's create their account right now.
+                            try {
+                                const newCred = await auth.createUserWithEmailAndPassword(identity, password);
+                                const sData = checkDb.docs[0].data();
+                                
+                                // Sync their DB profile securely
+                                await db.collection('users').doc(newCred.user.uid).set({ 
+                                    name: sData.name, 
+                                    email: sData.email, 
+                                    role: 'student' 
+                                }, { merge: true });
+                                
+                                checkRoleAndRedirect(newCred.user);
+                                return;
+                            } catch (createErr) {
+                                // If email-already-in-use triggers, the account DOES exist, they just typed the wrong password.
+                                if (createErr.code === 'auth/email-already-in-use') {
+                                    showMsg("Incorrect password.", "error");
+                                } else {
+                                    showMsg("Error repairing account.", "error");
+                                }
+                                setLoading(false);
+                                return;
+                            }
+                        } else {
+                            showMsg("Student email not found in College Database.", "error");
+                            setLoading(false);
+                            return;
+                        }
+                    } catch(e) { console.error(e); }
+                }
+
+                // =======================================================
+                // 🚑 AUTO-HEALER FOR DRIVERS
+                // =======================================================
+                else if (isDriver) {
+                    try {
+                        let phoneOnly = identity.split('@')[0];
+                        const checkDb = await db.collection('staff').where('phone', '==', phoneOnly).get();
+                        
+                        if (!checkDb.empty) {
+                            // Driver is in DB. Try to create their missing auth account.
+                            try {
+                                const newCred = await auth.createUserWithEmailAndPassword(identity, password);
+                                const oldData = checkDb.docs[0].data();
+                                await db.collection('users').doc(newCred.user.uid).set({...oldData, role: 'driver'}, {merge: true});
+                                await db.collection('staff').doc(newCred.user.uid).set(oldData, {merge: true});
+                                checkRoleAndRedirect(newCred.user);
+                                return;
+                            } catch (createErr) {
+                                // If account exists, maybe Admin changed their password. Let's sync it.
+                                try {
+                                    const fallbackCred = await auth.signInWithEmailAndPassword(identity, 'APP123');
+                                    const userDoc = await db.collection('users').doc(fallbackCred.user.uid).get();
+                                    
+                                    if (userDoc.exists && userDoc.data().tempPassword === password) {
+                                        try { await fallbackCred.user.updatePassword(password); } catch(e) {}
+                                        checkRoleAndRedirect(fallbackCred.user);
+                                        return;
+                                    }
+                                } catch(fallbackErr) {}
+                                
+                                showMsg("Incorrect password.", "error");
+                                setLoading(false);
+                                return;
+                            }
+                        } else {
+                            showMsg("Driver phone number not found in HR system.", "error");
+                            setLoading(false);
+                            return;
+                        }
+                    } catch (e) { console.error(e); }
+                } 
+                
+                else {
+                    showMsg("Invalid email or password.", "error");
+                    setLoading(false);
+                    return;
+                }
+            } 
+            
+            else if (errCode === 'auth/too-many-requests') {
+                showMsg("Account locked due to too many failed attempts. Try again later.", "error");
+                setLoading(false);
+            } else {
+                showMsg("Error: " + errMsg, "error");
+                setLoading(false);
+            }
+        }
+    }
+
+    async function checkRoleAndRedirect(user) {
+        try {
+            const doc = await db.collection('users').doc(user.uid).get();
+            let role = currentRole;
+
+            if (doc.exists) {
+                const userData = doc.data();
+                role = userData.role || currentRole;
+                if (role === 'staff' || userData.staffRole === 'driver' || userData.staffRole === 'paramedic') role = 'driver';
+            }
+
+            localStorage.setItem("userUid", user.uid);
+            localStorage.setItem("userName", user.displayName || "User");
+
+            if (role === 'student') window.location.replace("school.html");
+            else if (role === 'driver') window.location.replace("driver.html");
+            else window.location.replace("index.html");
+            
+        } catch (e) {
+            showMsg("Database Error: " + e.message, "error");
+            setLoading(false);
+        }
+    }
+
+    function handleGoogleLogin() {
+        setLoading(true);
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(res => checkRoleAndRedirect(res.user))
+            .catch(e => { showMsg(e.message, "error"); setLoading(false); });
+    }
+
+    function showMsg(msg, type) {
+        const el = document.getElementById('msg');
+        el.innerText = msg;
+        el.className = `msg-box msg-${type}`;
+        setTimeout(() => el.style.display = 'none', 6000);
+    }
+
+    function setLoading(state) {
+        document.getElementById('btn-login').disabled = state;
+        document.getElementById('global-loader').classList.toggle('active', state);
+    }
+
+    document.getElementById('toggle-password').addEventListener('click', function() {
+        const input = document.getElementById('password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+        this.classList.toggle('fa-eye-slash'); this.classList.toggle('fa-eye');
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Afromed.life is KwaZulu-Natal’s premier integrated emergency healthcare, professional training and community development group. Afromed EMS (24/7 ALS), HWSETA-accredited Afromed Emergency College, and Afromed Development (NPO 245-061) deliver clinical excellence, youth empowerment and sustainable impact across eThekwini and northern KZN since 2012.">
+    <meta name="keywords" content="Afromed, emergency medical services Durban, HWSETA training KZN, paramedic training, event medical cover, community health KZN, Afromed College, first aid courses Durban, ALS ambulance KZN">
+    <title>Afromed.life | Integrated Emergency Healthcare, HWSETA Training &amp; Community Development | KwaZulu-Natal</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Poppins:wght@500;600;700&amp;display=swap');
+        
+        :root {
+            --primary-navy: #0F172A;
+            --accent-emerald: #059669;
+            --accent-sky: #0284C7;
+            --accent-red: #DC2626;
+        }
+        
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .heading-font { font-family: 'Poppins', 'Inter', system-ui, sans-serif; font-weight: 600; letter-spacing: -0.025em; }
+        
+        .section-header {
+            font-size: 2.5rem;
+            line-height: 1.05;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+        }
+        
+        .modern-card {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                       box-shadow 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        .modern-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(15 23 42 / 0.1), 0 8px 10px -6px rgb(15 23 42 / 0.1);
+        }
+        
+        .pillar-card {
+            position: relative;
+            overflow: hidden;
+        }
+        .pillar-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--accent-color));
+            transition: height 0.3s ease;
+        }
+        .pillar-card:hover::before { height: 7px; }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.2s ease;
+        }
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #059669;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover:after { width: 100%; }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            line-height: 2.6rem;
+            font-weight: 700;
+            color: #0F172A;
+        }
+        
+        .modal {
+            animation: modalPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalPopIn {
+            from { opacity: 0; transform: scale(0.92) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .service-item {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .service-item:hover {
+            transform: translateX(4px);
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+        }
+        
+        .professional-shadow {
+            box-shadow: 0 10px 15px -3px rgb(15 23 42 / 0.08), 
+                       0 4px 6px -4px rgb(15 23 42 / 0.08);
+        }
+        
+        .nav-scrolled {
+            box-shadow: 0 1px 0 0 rgb(15 23 42 / 0.06);
+            background-color: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+        }
+        
+        .healthcare-gradient {
+            background: linear-gradient(135deg, #0F172A 0%, #1e3a5f 100%);
+        }
+        
+        .stat-number {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .modal-tab {
+            transition: all 0.2s ease;
+        }
+        .modal-tab.active {
+            background-color: #0F172A;
+            color: white;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+        }
+        
+        .modal-panel { display: none; }
+        .modal-panel.active { display: block; animation: fadeInPanel 0.35s ease forwards; }
+        @keyframes fadeInPanel {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .impact-number {
+            font-variant-numeric: tabular-nums;
+            transition: all 0.3s ease;
+        }
+        
+        .preloader-logo {
+            width: 92px;
+            height: 92px;
+            background: #0F172A;
+            border: 3px solid #059669;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            position: relative;
+            box-shadow: 0 0 0 12px rgba(5, 150, 105, 0.1);
+        }
+        
+        .preloader-logo::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border: 2px solid rgba(5, 150, 105, 0.3);
+            border-radius: 28px;
+            animation: pulse-ring 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.15); opacity: 0.15; }
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .trust-badge {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .netcare-style-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .netcare-style-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgb(15 23 42 / 0.15);
+        }
+        
+        .sub-nav {
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .content-section {
+            scroll-margin-top: 80px;
+        }
+        
+        .detail-card {
+            transition: all 0.3s ease;
+        }
+        
+        .professional-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #334155;
+        }
+        
+        .play-store-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .play-store-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+        }
+        
+        .healthcare-card {
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .healthcare-card:hover {
+            border-color: #059669;
+            box-shadow: 0 10px 15px -3px rgb(15 23 42 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+    <!-- PRELOADER -->
+    <div id="preloader" class="fixed inset-0 bg-slate-900 z-[9999] flex items-center justify-center">
+        <div class="text-center">
+            <div class="preloader-logo">
+                <div class="text-white text-5xl font-black tracking-tighter">A</div>
+            </div>
+            <div class="text-white text-4xl font-semibold tracking-tighter">afromed<span class="text-emerald-500">.life</span></div>
+            <div class="text-emerald-400/80 text-sm tracking-[4px] font-medium mt-1">INTEGRATED HEALTHCARE GROUP</div>
+            
+            <div class="w-64 h-1 bg-white/10 rounded-full mx-auto mt-8 overflow-hidden">
+                <div class="h-full w-0 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full animate-[preloader-progress_1.2s_cubic-bezier(0.4,0,0.2,1)_forwards]"></div>
+            </div>
+            <div class="text-white/40 text-xs tracking-widest mt-3">DURBAN • KWAZULU-NATAL • EST. 2012 • BHF MEMBER</div>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <nav id="navbar" class="bg-white border-b border-slate-100 sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-screen-2xl mx-auto">
+            <div class="px-8 py-4 flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center gap-x-3 cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                    <div class="w-11 h-11 bg-slate-900 rounded-2xl flex items-center justify-center shadow-inner ring-1 ring-slate-800">
+                        <div class="text-white text-2xl font-black tracking-tighter">A</div>
+                    </div>
+                    <div>
+                        <div class="flex items-baseline">
+                            <span class="text-3xl font-semibold tracking-tighter text-slate-900">afromed</span>
+                            <span class="text-3xl font-semibold tracking-tighter text-emerald-600">.life</span>
+                        </div>
+                        <div class="text-[10px] font-semibold text-slate-500 -mt-1 tracking-[1.5px]">HOLDINGS • KZN</div>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center gap-x-7 text-sm font-medium">
+                    <a href="#about" class="nav-link text-slate-600 hover:text-slate-900">About</a>
+                    <a href="#companies" class="nav-link text-slate-600 hover:text-slate-900">Companies</a>
+                    <a href="#ems-deep" class="nav-link text-slate-600 hover:text-slate-900">EMS</a>
+                    <a href="#college-deep" class="nav-link text-slate-600 hover:text-slate-900">College</a>
+                    <a href="#development-deep" class="nav-link text-slate-600 hover:text-slate-900">Development</a>
+                    <a href="#impact" class="nav-link text-slate-600 hover:text-slate-900">Impact</a>
+                    <a href="#careers" class="nav-link text-slate-600 hover:text-slate-900">Careers</a>
+                    <a href="#news" class="nav-link text-slate-600 hover:text-slate-900">News</a>
+                </div>
+
+                <div class="flex items-center gap-x-3">
+                    <!-- Emergency -->
+                    <a href="tel:0733336656" 
+                       class="hidden md:flex items-center gap-x-2.5 px-5 h-11 text-sm font-semibold rounded-2xl bg-red-600 hover:bg-red-700 text-white transition-all shadow-sm">
+                        <i class="fas fa-phone-alt"></i>
+                        <span class="font-mono tracking-wider">073 333 6656</span>
+                    </a>
+                    
+                    <!-- App Download -->
+                    <button onclick="document.getElementById('college-deep').scrollIntoView({ behavior: 'smooth' }); setTimeout(() => document.getElementById('app-download-section').scrollIntoView({ behavior: 'smooth' }), 800)"
+                            class="hidden md:flex items-center gap-x-2 px-4 h-11 text-sm font-semibold rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transition-all">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>College App</span>
+                    </button>
+                    
+                    <!-- CTA -->
+                    <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })" 
+                            class="px-6 h-11 text-sm font-semibold rounded-2xl bg-slate-900 hover:bg-slate-800 text-white transition-all active:scale-[0.985] shadow-sm">
+                        Partner With Us
+                    </button>
+                    
+                    <!-- Mobile -->
+                    <button id="mobile-menu-btn"
+                            class="lg:hidden w-11 h-11 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-2xl transition-colors"
+                            aria-label="Toggle menu">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t bg-white px-6 py-6">
+            <div class="flex flex-col gap-y-4 text-sm font-medium">
+                <a href="#about" class="py-1 text-slate-700">About the Group</a>
+                <a href="#companies" class="py-1 text-slate-700">Our Companies</a>
+                <a href="#ems-deep" class="py-1 text-slate-700">Afromed EMS</a>
+                <a href="#college-deep" class="py-1 text-slate-700">Afromed Emergency College</a>
+                <a href="#development-deep" class="py-1 text-slate-700">Afromed Development</a>
+                <a href="#impact" class="py-1 text-slate-700">Impact &amp; Reach</a>
+                <a href="#careers" class="py-1 text-slate-700">Careers &amp; Training</a>
+                <a href="#news" class="py-1 text-slate-700">News &amp; Updates</a>
+                <div class="pt-4 border-t flex flex-col gap-y-3">
+                    <a href="tel:0733336656" class="flex items-center justify-center gap-x-2 py-3.5 bg-red-600 text-white rounded-2xl font-semibold text-sm">
+                        <i class="fas fa-ambulance"></i>
+                        <span>Emergency: 073 333 6656</span>
+                    </a>
+                    <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }); document.getElementById('mobile-menu').classList.add('hidden')"
+                            class="py-3.5 bg-slate-900 text-white rounded-2xl font-semibold text-sm">
+                        Contact Leadership
+                    </button>
+                    <button onclick="document.getElementById('college-deep').scrollIntoView({ behavior: 'smooth' }); document.getElementById('mobile-menu').classList.add('hidden')"
+                            class="py-3.5 border border-emerald-600 text-emerald-700 rounded-2xl font-semibold text-sm flex items-center justify-center gap-x-2">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Download College App</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="relative bg-slate-900 text-white overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(#334155_0.7px,transparent_1px)] bg-[length:6px_6px] opacity-25"></div>
+        
+        <div class="max-w-screen-2xl mx-auto px-8 pt-16 pb-20 md:pt-24 md:pb-28 relative z-10">
+            <div class="max-w-5xl">
+                <div class="inline-flex items-center gap-x-2 px-5 h-9 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-[2px] mb-6">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    DURBAN, KWAZULU-NATAL • EST. 2012 • FULL BHF MEMBER • HWSETA ACCREDITED
+                </div>
+                
+                <h1 class="text-6xl md:text-7xl lg:text-7xl leading-[1.02] tracking-tighter font-semibold mb-6">
+                    Every second counts.<br>
+                    <span class="text-emerald-400">Every community matters.</span><br>
+                    <span class="text-white/90 text-5xl md:text-6xl">Every life we touch, we strengthen.</span>
+                </h1>
+                
+                <p class="max-w-3xl text-xl md:text-2xl text-slate-300 mb-10 leading-tight">
+                    Afromed.life is KwaZulu-Natal’s integrated emergency healthcare group — 
+                    delivering advanced life support, HWSETA-accredited professional training that builds careers, 
+                    and sustainable community health development through three specialised, synergistic operating companies.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="document.getElementById('companies').scrollIntoView({ behavior: 'smooth' })" 
+                            class="group flex-1 sm:flex-none items-center justify-center gap-x-3 px-9 h-14 bg-white text-slate-900 font-semibold rounded-3xl flex hover:bg-emerald-50 active:bg-white transition-all text-base shadow-xl shadow-black/20">
+                        Explore Our Companies
+                        <i class="fas fa-arrow-right group-active:translate-x-1 transition-transform"></i>
+                    </button>
+                    
+                    <button onclick="document.getElementById('college-deep').scrollIntoView({ behavior: 'smooth' })" 
+                            class="flex-1 sm:flex-none items-center justify-center gap-x-3 px-8 h-14 border border-white/40 hover:bg-white/10 font-semibold rounded-3xl flex transition-all text-base">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Browse Training Programmes</span>
+                    </button>
+                    
+                    <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })" 
+                            class="flex-1 sm:flex-none items-center justify-center px-8 h-14 border border-white/40 hover:bg-white/10 font-semibold rounded-3xl flex transition-all text-base">
+                        Partner With Us
+                    </button>
+                </div>
+                
+                <!-- Trust bar -->
+                <div class="flex flex-wrap items-center gap-x-8 gap-y-3 mt-12 text-sm">
+                    <div class="flex items-center gap-x-2 text-emerald-400">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="font-medium text-white">Full BHF Member</span>
+                    </div>
+                    <div class="flex items-center gap-x-2 text-emerald-400">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="font-medium text-white">HWSETA Accredited Provider</span>
+                    </div>
+                    <div class="flex items-center gap-x-2 text-emerald-400">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="font-medium text-white">NPO 245-061</span>
+                    </div>
+                    <div class="flex items-center gap-x-2 text-emerald-400">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="font-medium text-white">Youth Employment Focus</span>
+                    </div>
+                    <div class="text-slate-400 text-sm">40+ team members • 35+ communities • 1,200+ students trained</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-900/70 to-transparent"></div>
+    </header>
+
+    <!-- QUICK ACCESS / FIND SUPPORT -->
+    <section class="max-w-screen-2xl mx-auto px-8 pt-14 pb-10">
+        <div class="max-w-3xl mx-auto text-center mb-8">
+            <div class="text-emerald-600 text-xs font-bold tracking-[2.5px]">HOW CAN WE HELP YOU TODAY?</div>
+            <h2 class="section-header mt-2 text-slate-900">Find the right support, fast.</h2>
+            <p class="text-slate-600 mt-3">Whether you need immediate emergency response, professional training, community health support or strategic partnership — we are ready.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 max-w-7xl mx-auto">
+            <div onclick="document.getElementById('ems-deep').scrollIntoView({ behavior: 'smooth' })" 
+                 class="group bg-white border border-slate-200 hover:border-red-200 p-5 rounded-3xl cursor-pointer modern-card flex flex-col healthcare-card">
+                <div class="w-11 h-11 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fas fa-ambulance text-2xl"></i>
+                </div>
+                <div class="font-semibold text-lg mb-1">24/7 Emergency Response</div>
+                <div class="text-sm text-slate-600 flex-1">Advanced life support, trauma care and rapid response across eThekwini and northern KZN. BHF recognised.</div>
+                <div class="text-red-600 text-sm font-semibold mt-4 flex items-center gap-x-1.5 group-hover:gap-x-2 transition-all">Call now or request quote <i class="fas fa-arrow-right text-xs"></i></div>
+            </div>
+            
+            <div onclick="document.getElementById('ems-deep').scrollIntoView({ behavior: 'smooth' })" 
+                 class="group bg-white border border-slate-200 hover:border-red-200 p-5 rounded-3xl cursor-pointer modern-card flex flex-col healthcare-card">
+                <div class="w-11 h-11 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fas fa-calendar-check text-2xl"></i>
+                </div>
+                <div class="font-semibold text-lg mb-1">Event &amp; Corporate Medical</div>
+                <div class="text-sm text-slate-600 flex-1">Professional medical coverage for sports, festivals, corporate events and large gatherings. Tiered packages available.</div>
+                <div class="text-red-600 text-sm font-semibold mt-4 flex items-center gap-x-1.5 group-hover:gap-x-2 transition-all">Request event quote <i class="fas fa-arrow-right text-xs"></i></div>
+            </div>
+            
+            <div onclick="document.getElementById('college-deep').scrollIntoView({ behavior: 'smooth' })" 
+                 class="group bg-white border border-slate-200 hover:border-sky-200 p-5 rounded-3xl cursor-pointer modern-card flex flex-col healthcare-card">
+                <div class="w-11 h-11 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fas fa-graduation-cap text-2xl"></i>
+                </div>
+                <div class="font-semibold text-lg mb-1">Professional Training</div>
+                <div class="text-sm text-slate-600 flex-1">HWSETA-accredited courses in emergency care, SHE, forestry safety, incident investigation and early childhood development.</div>
+                <div class="text-sky-600 text-sm font-semibold mt-4 flex items-center gap-x-1.5 group-hover:gap-x-2 transition-all">Browse programmes <i class="fas fa-arrow-right text-xs"></i></div>
+            </div>
+            
+            <div onclick="document.getElementById('development-deep').scrollIntoView({ behavior: 'smooth' })" 
+                 class="group bg-white border border-slate-200 hover:border-emerald-200 p-5 rounded-3xl cursor-pointer modern-card flex flex-col healthcare-card">
+                <div class="w-11 h-11 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fas fa-hands-helping text-2xl"></i>
+                </div>
+                <div class="font-semibold text-lg mb-1">Community Health Support</div>
+                <div class="text-sm text-slate-600 flex-1">Medical camps, health education, telemedicine and transport for vulnerable communities across 35+ areas in KZN.</div>
+                <div class="text-emerald-600 text-sm font-semibold mt-4 flex items-center gap-x-1.5 group-hover:gap-x-2 transition-all">Partner on a project <i class="fas fa-arrow-right text-xs"></i></div>
+            </div>
+            
+            <div onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })" 
+                 class="group bg-white border border-slate-200 hover:border-amber-200 p-5 rounded-3xl cursor-pointer modern-card flex flex-col healthcare-card">
+                <div class="w-11 h-11 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fas fa-briefcase text-2xl"></i>
+                </div>
+                <div class="font-semibold text-lg mb-1">Strategic Partnerships</div>
+                <div class="text-sm text-slate-600 flex-1">CSI, municipal collaboration, investment or large-scale health programme partnerships with government and corporates.</div>
+                <div class="text-amber-600 text-sm font-semibold mt-4 flex items-center gap-x-1.5 group-hover:gap-x-2 transition-all">Speak to leadership <i class="fas fa-arrow-right text-xs"></i></div>
+            </div>
+            
+            <div onclick="document.getElementById('careers').scrollIntoView({ behavior: 'smooth' })" 
+                 class="group bg-white border border-slate-200 hover:border-purple-200 p-5 rounded-3xl cursor-pointer modern-card flex flex-col healthcare-card">
+                <div class="w-11 h-11 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fas fa-user-md text-2xl"></i>
+                </div>
+                <div class="font-semibold text-lg mb-1">Careers &amp; Opportunities</div>
+                <div class="text-sm text-slate-600 flex-1">Join our growing team of paramedics, trainers, community health practitioners and support staff. Youth-focused employer.</div>
+                <div class="text-purple-600 text-sm font-semibold mt-4 flex items-center gap-x-1.5 group-hover:gap-x-2 transition-all">View opportunities <i class="fas fa-arrow-right text-xs"></i></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-100 bg-white content-section">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="text-emerald-600 text-xs font-bold tracking-[2.5px]">THE HOLDING COMPANY</div>
+                <h2 class="section-header mt-2">Strategic integration.<br>Measurable community impact.</h2>
+            </div>
+            
+            <div class="prose prose-slate max-w-none text-[15.5px] text-slate-600">
+                <p class="text-lg">Afromed.life is the strategic holding company that unites three specialised operating entities to deliver end-to-end emergency healthcare solutions across KwaZulu-Natal. Established in 2012 and headquartered in Durban’s Avoca Hills, we combine 24/7 advanced life support operations, HWSETA-accredited professional training, and targeted community development under one values-driven group.</p>
+                
+                <p class="mt-4">Our integrated model creates powerful synergies that standalone organisations cannot replicate. Graduates from our College move directly into operational roles within EMS and community programmes, while on-the-ground intelligence from our Development arm informs proactive emergency deployment and preventive health initiatives. This closed-loop approach delivers better clinical outcomes, stronger local capacity, and sustainable youth employment pathways.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-5 mt-10">
+                <div class="bg-slate-50 border border-slate-100 p-6 rounded-3xl healthcare-card">
+                    <div class="font-semibold mb-2 flex items-center gap-x-2 text-lg"><i class="fas fa-bullseye text-emerald-600"></i> Our Mission</div>
+                    <p class="text-sm text-slate-600">To deliver integrated, high-quality emergency medical care, build professional healthcare capacity through accredited training, and drive sustainable community health development across KwaZulu-Natal — leaving no community behind.</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-100 p-6 rounded-3xl healthcare-card">
+                    <div class="font-semibold mb-2 flex items-center gap-x-2 text-lg"><i class="fas fa-eye text-emerald-600"></i> Our Vision</div>
+                    <p class="text-sm text-slate-600">A KwaZulu-Natal where every community has rapid access to life-saving care, skilled local responders, and proactive health support. A province where young people see healthcare as a viable, dignified career and communities are active partners in their own wellbeing.</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-100 p-6 rounded-3xl healthcare-card">
+                    <div class="font-semibold mb-2 flex items-center gap-x-2 text-lg"><i class="fas fa-heart text-emerald-600"></i> Our Values</div>
+                    <div class="text-sm text-slate-600 space-y-1.5">
+                        <div class="flex gap-2"><span class="text-emerald-600">•</span> Clinical Excellence &amp; Patient Safety First</div>
+                        <div class="flex gap-2"><span class="text-emerald-600">•</span> Youth Empowerment &amp; Local Capacity Building</div>
+                        <div class="flex gap-2"><span class="text-emerald-600">•</span> Community Trust, Cultural Respect &amp; Dignity</div>
+                        <div class="flex gap-2"><span class="text-emerald-600">•</span> Integrity, Accountability &amp; Transparency</div>
+                        <div class="flex gap-2"><span class="text-emerald-600">•</span> Innovation that Serves People, Not Technology</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-10 p-8 bg-slate-900 text-white rounded-3xl">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="uppercase tracking-[2px] text-emerald-400 text-xs font-bold mb-2">FOUNDED BY VISIONARIES</div>
+                        <h3 class="text-3xl font-semibold tracking-tight">Young Black entrepreneurs building generational impact in KZN healthcare.</h3>
+                        <p class="mt-4 text-slate-300">Sthembiso Emmanuel Ngubo and Nelisiwe Gloria Ngcobo established Afromed in 2012 with a clear purpose: to combine world-class clinical standards with deep community roots and a commitment to developing the next generation of KZN healthcare professionals.</p>
+                    </div>
+                    <div class="text-sm text-slate-300 space-y-3">
+                        <div class="flex gap-3"><i class="fas fa-check text-emerald-400 mt-1"></i> <span>Over 18 years combined critical care ambulance experience</span></div>
+                        <div class="flex gap-3"><i class="fas fa-check text-emerald-400 mt-1"></i> <span>Strong focus on clinical governance and continuous improvement</span></div>
+                        <div class="flex gap-3"><i class="fas fa-check text-emerald-400 mt-1"></i> <span>Proven track record with major events (PSL, Durban Rocks, corporate)</span></div>
+                        <div class="flex gap-3"><i class="fas fa-check text-emerald-400 mt-1"></i> <span>Direct pipeline from training to employment within the group</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SYNERGIES / THE AFROMED ADVANTAGE -->
+    <section class="max-w-screen-2xl mx-auto px-8 py-16 bg-white border-t border-slate-100 content-section">
+        <div class="max-w-3xl mx-auto text-center mb-10">
+            <div class="text-emerald-600 text-xs font-bold tracking-[2.5px]">THE AFROMED ADVANTAGE</div>
+            <h2 class="section-header mt-2">Integrated value that standalone organisations cannot deliver</h2>
+            <p class="text-slate-600 mt-3">Our three pillars do not operate in silos. They reinforce each other to create a virtuous cycle of training, response, community trust and employment.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
+            <div class="bg-white border border-slate-100 p-6 rounded-3xl professional-shadow healthcare-card">
+                <div class="flex gap-4">
+                    <div class="mt-1 text-red-500"><i class="fas fa-link text-2xl"></i></div>
+                    <div>
+                        <div class="font-semibold">Trained Responders → Operational Excellence</div>
+                        <p class="text-sm text-slate-600 mt-1.5">College graduates are fast-tracked into EMS roles. They arrive with simulation-trained skills, local knowledge and a values alignment that accelerates team integration and maintains consistently high clinical standards across our fleet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white border border-slate-100 p-6 rounded-3xl professional-shadow healthcare-card">
+                <div class="flex gap-4">
+                    <div class="mt-1 text-sky-500"><i class="fas fa-link text-2xl"></i></div>
+                    <div>
+                        <div class="font-semibold">Community Intelligence → Targeted Response</div>
+                        <p class="text-sm text-slate-600 mt-1.5">Development teams identify emerging health needs in townships and rural areas. This intelligence enables proactive EMS deployment, preventive education programmes and targeted medical camps that reduce emergency burden over time.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white border border-slate-100 p-6 rounded-3xl professional-shadow healthcare-card">
+                <div class="flex gap-4">
+                    <div class="mt-1 text-emerald-500"><i class="fas fa-link text-2xl"></i></div>
+                    <div>
+                        <div class="font-semibold">Shared Infrastructure &amp; Procurement</div>
+                        <p class="text-sm text-slate-600 mt-1.5">Centralised purchasing for medical equipment, vehicles, training supplies and consumables reduces costs while ensuring uniform high-quality standards group-wide. Knowledge and protocols are shared seamlessly.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white border border-slate-100 p-6 rounded-3xl professional-shadow healthcare-card">
+                <div class="flex gap-4">
+                    <div class="mt-1 text-amber-500"><i class="fas fa-link text-2xl"></i></div>
+                    <div>
+                        <div class="font-semibold">Youth Employment &amp; Skills Pipeline</div>
+                        <p class="text-sm text-slate-600 mt-1.5">Young people trained through the College gain direct employment pathways in EMS, community health projects and training facilitation. This breaks cycles of unemployment while building sustainable local clinical capacity and leadership.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OUR COMPANIES OVERVIEW -->
+    <section id="companies" class="bg-white py-16 border-y border-slate-100 content-section">
+        <div class="max-w-screen-2xl mx-auto px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-y-4">
+                <div>
+                    <div class="text-emerald-600 text-xs font-bold tracking-[2.5px]">OUR OPERATING COMPANIES</div>
+                    <h2 class="section-header">Three specialised pillars.<br>One unified purpose.</h2>
+                </div>
+                <p class="max-w-lg text-slate-600">Each company operates with deep expertise while benefiting from centralised strategy, shared resources, talent pipelines and brand strength under the Afromed.life holding company.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- EMS Card -->
+                <div onclick="document.getElementById('ems-deep').scrollIntoView({ behavior: 'smooth' })" class="pillar-card group cursor-pointer bg-white border border-slate-200 hover:border-red-200 rounded-3xl p-8 modern-card flex flex-col h-full healthcare-card" style="--accent-color: #DC2626">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="w-14 h-14 bg-red-600 text-white rounded-2xl flex items-center justify-center shadow-inner">
+                            <i class="fas fa-ambulance text-3xl"></i>
+                        </div>
+                        <div class="px-4 py-1 text-xs font-bold tracking-wider bg-red-100 text-red-700 rounded-2xl self-start">EST. 2012</div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-2xl tracking-tight mb-1">Afromed EMS</h3>
+                        <p class="text-red-600 font-medium text-sm mb-4">Advanced Life Support &amp; Event Medical Services</p>
+                        <p class="text-slate-600 leading-relaxed text-[15px]">KwaZulu-Natal’s trusted provider of 24/7 advanced life support, trauma response, patient transportation and professional event medical coverage for major sporting and corporate events across eThekwini and northern KZN.</p>
+                    </div>
+                    <div class="pt-6 mt-auto border-t flex items-center justify-between text-sm">
+                        <div class="flex items-baseline"><span class="font-mono font-semibold text-2xl text-red-600">17</span><span class="text-slate-500 ml-1.5 text-xs">specialised vehicles</span></div>
+                        <div class="flex items-center text-red-600 font-semibold group-hover:gap-x-1.5 gap-x-1 transition-all">Learn more <i class="fas fa-arrow-right text-xs ml-1"></i></div>
+                    </div>
+                </div>
+
+                <!-- College Card -->
+                <div onclick="document.getElementById('college-deep').scrollIntoView({ behavior: 'smooth' })" class="pillar-card group cursor-pointer bg-white border border-slate-200 hover:border-sky-200 rounded-3xl p-8 modern-card flex flex-col h-full healthcare-card" style="--accent-color: #0284C7">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="w-14 h-14 bg-sky-600 text-white rounded-2xl flex items-center justify-center shadow-inner">
+                            <i class="fas fa-graduation-cap text-3xl"></i>
+                        </div>
+                        <div class="px-4 py-1 text-xs font-bold tracking-wider bg-sky-100 text-sky-700 rounded-2xl self-start">HWSETA</div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-2xl tracking-tight mb-1">Afromed Emergency College</h3>
+                        <p class="text-sky-600 font-medium text-sm mb-4">Professional Health, Safety &amp; Emergency Training</p>
+                        <p class="text-slate-600 leading-relaxed text-[15px]">Fully HWSETA-accredited training institution delivering practical, simulation-based programmes that produce competent emergency responders, SHE practitioners, forestry safety officers and early childhood development professionals.</p>
+                    </div>
+                    <div class="pt-6 mt-auto border-t flex items-center justify-between text-sm">
+                        <div class="flex items-baseline"><span class="font-mono font-semibold text-2xl text-sky-600">7+</span><span class="text-slate-500 ml-1.5 text-xs">accredited programmes</span></div>
+                        <div class="flex items-center text-sky-600 font-semibold group-hover:gap-x-1.5 gap-x-1 transition-all">Learn more <i class="fas fa-arrow-right text-xs ml-1"></i></div>
+                    </div>
+                </div>
+
+                <!-- Development Card -->
+                <div onclick="document.getElementById('development-deep').scrollIntoView({ behavior: 'smooth' })" class="pillar-card group cursor-pointer bg-white border border-slate-200 hover:border-emerald-200 rounded-3xl p-8 modern-card flex flex-col h-full healthcare-card" style="--accent-color: #059669">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="w-14 h-14 bg-emerald-600 text-white rounded-2xl flex items-center justify-center shadow-inner">
+                            <i class="fas fa-hands-helping text-3xl"></i>
+                        </div>
+                        <div class="px-4 py-1 text-xs font-bold tracking-wider bg-emerald-100 text-emerald-700 rounded-2xl self-start">NPO 245-061</div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-2xl tracking-tight mb-1">Afromed Development</h3>
+                        <p class="text-emerald-600 font-medium text-sm mb-4">Community Health, Education &amp; Sustainable Impact</p>
+                        <p class="text-slate-600 leading-relaxed text-[15px]">Non-profit arm delivering health education, quarterly medical outreach camps, first aid distribution, telemedicine support and targeted medical transport for vulnerable communities across Durban and surrounding regions.</p>
+                    </div>
+                    <div class="pt-6 mt-auto border-t flex items-center justify-between text-sm">
+                        <div class="flex items-baseline"><span class="font-mono font-semibold text-2xl text-emerald-600">35+</span><span class="text-slate-500 ml-1.5 text-xs">communities reached</span></div>
+                        <div class="flex items-center text-emerald-600 font-semibold group-hover:gap-x-1.5 gap-x-1 transition-all">Learn more <i class="fas fa-arrow-right text-xs ml-1"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-6 text-xs text-slate-500">Scroll down for detailed information on each pillar, or click the cards above to jump directly to the in-depth sections.</div>
+        </div>
+    </section>
+
+    <!-- ==================== EMS DEEP SECTION ==================== -->
+    <section id="ems-deep" class="max-w-screen-2xl mx-auto px-8 py-16 bg-white border-t border-slate-100 content-section">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-x-3 mb-4">
+                <div class="w-12 h-12 bg-red-600 text-white rounded-2xl flex items-center justify-center"><i class="fas fa-ambulance text-2xl"></i></div>
+                <div>
+                    <div class="text-red-600 text-xs font-bold tracking-[2px]">AFROMED EMS</div>
+                    <h2 class="text-4xl font-semibold tracking-tight">24/7 Advanced Life Support &amp; Event Medical Services</h2>
+                </div>
+            </div>
+            <p class="text-lg text-slate-600 max-w-4xl">Headquartered in Durban with a secondary base in Manguzi (northern KZN), Afromed EMS has been a trusted provider of advanced life support and emergency medical services across KwaZulu-Natal since 2012. We operate a modern fleet of 17 specialised vehicles and maintain full membership with the Board of Healthcare Funders (BHF).</p>
+            
+            <!-- EMS Sub Navigation Tabs -->
+            <div class="mt-8 border-b border-slate-200">
+                <div class="flex flex-wrap gap-x-1 text-sm font-medium">
+                    <button onclick="switchEmsTab('overview')" class="ems-tab active px-6 py-3 rounded-t-2xl bg-white border-b-2 border-red-600 text-red-700 font-semibold" id="ems-tab-overview">Overview &amp; History</button>
+                    <button onclick="switchEmsTab('fleet')" class="ems-tab px-6 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="ems-tab-fleet">Fleet &amp; Capabilities</button>
+                    <button onclick="switchEmsTab('services')" class="ems-tab px-6 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="ems-tab-services">Core Clinical Services</button>
+                    <button onclick="switchEmsTab('events')" class="ems-tab px-6 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="ems-tab-events">Event &amp; Corporate Medical</button>
+                    <button onclick="switchEmsTab('governance')" class="ems-tab px-6 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="ems-tab-governance">Quality &amp; Governance</button>
+                    <button onclick="switchEmsTab('engage')" class="ems-tab px-6 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="ems-tab-engage">Partner With EMS</button>
+                </div>
+            </div>
+            
+            <!-- EMS Tab Panels -->
+            <div class="pt-8">
+                <!-- Overview -->
+                <div id="ems-panel-overview" class="ems-panel">
+                    <div class="grid md:grid-cols-12 gap-8">
+                        <div class="md:col-span-7">
+                            <h3 class="font-semibold text-xl mb-4">Our Story</h3>
+                            <p class="text-slate-600">Founded in 2012 by Sthembiso Emmanuel Ngubo and Nelisiwe Gloria Ngcobo — two young Black social entrepreneurs and professional colleagues with over 18 years combined critical care ambulance experience — Afromed EMS has grown into one of KwaZulu-Natal’s most respected private emergency medical service providers.</p>
+                            <p class="mt-3 text-slate-600">We operate from two strategic bases: our primary Avoca Hills headquarters serving the greater eThekwini Metro and surrounding areas 24/7, and our Manguzi branch providing critical coverage for the uMkhanyakude District and northern KZN border regions.</p>
+                            
+                            <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+                                <div class="bg-red-50 border border-red-100 p-4 rounded-2xl">
+                                    <div class="font-bold text-red-700">KEY HIGHLIGHTS</div>
+                                    <ul class="mt-2 space-y-1.5 text-red-700 text-sm">
+                                        <li class="flex gap-2"><i class="fas fa-check mt-1 text-red-500 text-xs"></i> 24/7 ALS &amp; BLS coverage</li>
+                                        <li class="flex gap-2"><i class="fas fa-check mt-1 text-red-500 text-xs"></i> Full BHF SA Membership</li>
+                                        <li class="flex gap-2"><i class="fas fa-check mt-1 text-red-500 text-xs"></i> 40+ dedicated staff (majority youth)</li>
+                                        <li class="flex gap-2"><i class="fas fa-check mt-1 text-red-500 text-xs"></i> Major event medical provider (PSL, festivals)</li>
+                                        <li class="flex gap-2"><i class="fas fa-check mt-1 text-red-500 text-xs"></i> Strong clinical governance protocols</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div class="font-bold mb-2">Our Bases</div>
+                                    <div class="text-sm space-y-3">
+                                        <div><strong>Avoca Hills (Head Office)</strong><br>64 Courtown Crescent, Avoca Hills, Newlands East, 4051<br>Serves eThekwini Metro &amp; surrounds 24/7</div>
+                                        <div><strong>Manguzi Branch</strong><br>Northern KZN coverage — uMkhanyakude District &amp; border areas</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-5 bg-slate-50 border border-slate-100 p-6 rounded-3xl text-sm">
+                            <div class="font-semibold mb-3">Why Clients Choose Afromed EMS</div>
+                            <div class="space-y-3 text-slate-600">
+                                <div class="flex gap-3"><span class="font-mono text-red-600 font-bold w-5">01</span> <span>Cohesive, young, values-driven team culture with rapid decision-making</span></div>
+                                <div class="flex gap-3"><span class="font-mono text-red-600 font-bold w-5">02</span> <span>Proven provincial leadership and nationwide recognition</span></div>
+                                <div class="flex gap-3"><span class="font-mono text-red-600 font-bold w-5">03</span> <span>Full BHF membership — recognised by all major medical schemes</span></div>
+                                <div class="flex gap-3"><span class="font-mono text-red-600 font-bold w-5">04</span> <span>Genuine commitment to community upliftment alongside clinical excellence</span></div>
+                                <div class="flex gap-3"><span class="font-mono text-red-600 font-bold w-5">05</span> <span>Zero major clinical incidents reported in recent major events</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fleet -->
+                <div id="ems-panel-fleet" class="ems-panel hidden">
+                    <h3 class="font-semibold text-xl mb-4">Our Modern Specialised Fleet</h3>
+                    <p class="text-slate-600 mb-6">We maintain a modern, well-equipped fleet of 17 specialised vehicles operated by qualified paramedics and emergency care practitioners. All vehicles undergo rigorous maintenance and equipment checks to ensure readiness at all times.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border rounded-2xl p-5 healthcare-card">
+                            <div class="font-semibold flex items-center gap-x-2"><i class="fas fa-ambulance text-red-600"></i> 11 × Advanced Life Support Ambulances</div>
+                            <div class="text-xs text-slate-500 mt-2">Fully equipped with cardiac monitors, ventilators, defibrillators, advanced airway equipment and medication. Staffed by qualified paramedics and ECPs capable of advanced interventions on scene and during transport.</div>
+                        </div>
+                        <div class="border rounded-2xl p-5 healthcare-card">
+                            <div class="font-semibold flex items-center gap-x-2"><i class="fas fa-car text-red-600"></i> 6 × Rapid Response Vehicles</div>
+                            <div class="text-xs text-slate-500 mt-2">First-on-scene capability for rapid trauma and medical response. Equipped with ALS packs, oxygen, AEDs and communication systems. Ideal for high-density urban response and event support.</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-xs text-slate-500">Additional patient transport vehicles and 4x4 capability available for difficult terrain and rural response. All vehicles are BHF compliant and regularly audited.</div>
+                </div>
+                
+                <!-- Services -->
+                <div id="ems-panel-services" class="ems-panel hidden">
+                    <h3 class="font-semibold text-xl mb-4">Core Clinical Services</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div class="service-item flex gap-3 p-4 rounded-2xl border bg-white healthcare-card"><i class="fas fa-heartbeat mt-1 text-red-500 w-5"></i><div><span class="font-medium">Advanced &amp; Basic Life Support (ALS/BLS)</span><br><span class="text-xs text-slate-500">On-scene stabilisation, advanced airway management, cardiac monitoring, pain management, IV therapy and safe transport to appropriate facilities.</span></div></div>
+                        <div class="service-item flex gap-3 p-4 rounded-2xl border bg-white healthcare-card"><i class="fas fa-hospital mt-1 text-red-500 w-5"></i><div><span class="font-medium">Inter-Facility &amp; Patient Transportation</span><br><span class="text-xs text-slate-500">Safe, coordinated transfers between facilities with full clinical handover. Includes high-care, ventilated and bariatric patients where required.</span></div></div>
+                        <div class="service-item flex gap-3 p-4 rounded-2xl border bg-white healthcare-card"><i class="fas fa-first-aid mt-1 text-red-500 w-5"></i><div><span class="font-medium">Trauma Care &amp; Aftercare</span><br><span class="text-xs text-slate-500">Specialised response to traumatic injuries, spinal immobilisation, haemorrhage control and full continuum of care with follow-up coordination.</span></div></div>
+                        <div class="service-item flex gap-3 p-4 rounded-2xl border bg-white healthcare-card"><i class="fas fa-users mt-1 text-red-500 w-5"></i><div><span class="font-medium">Community CSI &amp; Youth Development</span><br><span class="text-xs text-slate-500">First aid kit distribution, school safety programmes, youth first responder training and post-incident support in partnership with local structures.</span></div></div>
+                    </div>
+                </div>
+                
+                <!-- Events -->
+                <div id="ems-panel-events" class="ems-panel hidden">
+                    <h3 class="font-semibold text-xl mb-4">Event &amp; Sports Medical Coverage</h3>
+                    <p class="mb-4 text-slate-600">We provide tiered, professional medical cover for sporting events, music festivals, corporate functions, school events and large public gatherings. Our packages are customised to event size, risk profile and duration.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-6">
+                        <div class="border rounded-2xl p-5 healthcare-card"><div class="font-semibold text-red-600">Bronze Package</div><div class="text-xs mt-1.5">First aid teams + basic equipment for smaller events and low-risk gatherings. Ideal for school sports and community functions.</div></div>
+                        <div class="border rounded-2xl p-5 healthcare-card"><div class="font-semibold text-red-600">Silver Package</div><div class="text-xs mt-1.5">ALS teams + doctor on site + dedicated treatment area. Suitable for mid-size corporate and sporting events.</div></div>
+                        <div class="border rounded-2xl p-5 healthcare-card"><div class="font-semibold text-red-600">Gold Package</div><div class="text-xs mt-1.5">Full medical command post + multiple ALS teams + on-site doctor/nurse + evacuation plan. For major festivals and PSL matches.</div></div>
+                    </div>
+                    
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-2xl text-sm">Recent clients include PSL matches, Durban Rocks festival, corporate golf days, school sports tournaments and large music events. Our teams have supported over 12,000 attendees across multi-day festivals with zero major hospitalisations in recent deployments.</div>
+                </div>
+                
+                <!-- Governance -->
+                <div id="ems-panel-governance" class="ems-panel hidden">
+                    <h3 class="font-semibold text-xl mb-4">Quality, Clinical Governance &amp; Patient Safety</h3>
+                    <p class="text-slate-600">Patient safety and clinical excellence are non-negotiable. We maintain robust governance frameworks aligned with BHF requirements and best-practice standards for private emergency medical services in South Africa.</p>
+                    
+                    <div class="mt-6 grid md:grid-cols-2 gap-5 text-sm">
+                        <div class="bg-white border p-5 rounded-2xl">
+                            <div class="font-semibold mb-2">Clinical Governance Framework</div>
+                            <ul class="space-y-1 text-slate-600">
+                                <li>• Regular clinical audits and case reviews</li>
+                                <li>• Standardised protocols for ALS/BLS interventions</li>
+                                <li>• Continuous professional development for all practitioners</li>
+                                <li>• Incident reporting and root-cause analysis</li>
+                                <li>• Equipment maintenance and drug accountability logs</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white border p-5 rounded-2xl">
+                            <div class="font-semibold mb-2">Accreditations &amp; Memberships</div>
+                            <ul class="space-y-1 text-slate-600">
+                                <li>• Full Member – Board of Healthcare Funders (BHF)</li>
+                                <li>• HWSETA-aligned training for internal staff</li>
+                                <li>• Compliance with National Health Act and EMS regulations</li>
+                                <li>• Regular external audits and quality reviews</li>
+                            </ul>
+                            <div class="mt-3 text-xs text-emerald-600 font-medium">Zero major clinical incidents reported across major 2025–2026 event deployments.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Engage -->
+                <div id="ems-panel-engage" class="ems-panel hidden">
+                    <div class="max-w-2xl">
+                        <h3 class="font-semibold text-xl mb-4">Partner With Afromed EMS</h3>
+                        <p class="text-slate-600">Whether you require 24/7 emergency medical cover, event medical services, corporate standby or community health collaboration, our leadership team is ready to discuss tailored solutions.</p>
+                        
+                        <div class="mt-6 flex flex-col gap-3">
+                            <a href="tel:0733336656" class="flex items-center justify-center gap-x-3 px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-2xl transition-colors"><i class="fas fa-phone"></i> <span>Emergency Line: 073 333 6656</span></a>
+                            <button onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" class="flex items-center justify-center gap-x-3 px-6 py-3.5 border border-red-200 hover:bg-red-50 text-red-600 font-semibold rounded-2xl transition-colors">Request EMS Quote or Partnership Discussion</button>
+                            <a href="mailto:ems@afromed.co.za" class="flex items-center justify-center gap-x-3 px-6 py-3.5 border border-red-200 hover:bg-red-50 text-red-600 font-semibold rounded-2xl transition-colors">Email: ems@afromed.co.za</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== COLLEGE DEEP SECTION (MAJOR EXPANSION) ==================== -->
+    <section id="college-deep" class="max-w-screen-2xl mx-auto px-8 py-16 bg-slate-50 border-t border-slate-100 content-section">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-x-3 mb-4">
+                <div class="w-12 h-12 bg-sky-600 text-white rounded-2xl flex items-center justify-center"><i class="fas fa-graduation-cap text-2xl"></i></div>
+                <div>
+                    <div class="text-sky-600 text-xs font-bold tracking-[2px]">AFROMED EMERGENCY COLLEGE</div>
+                    <h2 class="text-4xl font-semibold tracking-tight">Excellence in Emergency Care, Safety &amp; Community Training</h2>
+                </div>
+            </div>
+            <p class="text-lg text-slate-600 max-w-4xl">Established in 2016, Afromed Emergency College is a fully HWSETA-accredited training provider equipping individuals with vital life-saving and safety skills through hands-on, simulation-based programmes. Our facilitators are practising emergency medical professionals and health inspectors with deep field experience.</p>
+            
+            <!-- College Sub Navigation -->
+            <div class="mt-8 border-b border-slate-200">
+                <div class="flex flex-wrap gap-x-1 text-sm font-medium">
+                    <button onclick="switchCollegeTab('overview')" class="college-tab active px-5 py-3 rounded-t-2xl bg-white border-b-2 border-sky-600 text-sky-700 font-semibold" id="college-tab-overview">Overview &amp; Philosophy</button>
+                    <button onclick="switchCollegeTab('programmes')" class="college-tab px-5 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="college-tab-programmes">Accredited Programmes</button>
+                    <button onclick="switchCollegeTab('digital')" class="college-tab px-5 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="college-tab-digital">Digital Learning &amp; App</button>
+                    <button onclick="switchCollegeTab('pathways')" class="college-tab px-5 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="college-tab-pathways">Career Pathways</button>
+                    <button onclick="switchCollegeTab('admissions')" class="college-tab px-5 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="college-tab-admissions">Admissions &amp; Apply</button>
+                    <button onclick="switchCollegeTab('engage-college')" class="college-tab px-5 py-3 rounded-t-2xl text-slate-600 hover:text-slate-900" id="college-tab-engage-college">Contact College</button>
+                </div>
+            </div>
+            
+            <div class="pt-8">
+                <!-- College Overview -->
+                <div id="college-panel-overview" class="college-panel">
+                    <div class="grid md:grid-cols-12 gap-8">
+                        <div class="md:col-span-7">
+                            <h3 class="font-semibold text-xl mb-3">Why Choose Afromed Emergency College?</h3>
+                            <p class="text-slate-600">We bridge theoretical curriculum design with practical, high-stress scenario training. Every programme is designed to produce competent, safety-oriented practitioners who are immediately valuable in clinical, industrial, agricultural and community settings.</p>
+                            
+                            <div class="mt-6 grid grid-cols-3 gap-4 text-center">
+                                <div class="bg-white border p-4 rounded-2xl"><div class="text-3xl font-bold text-sky-600">7+</div><div class="text-xs mt-1 text-slate-500">HWSETA Accredited Programmes</div></div>
+                                <div class="bg-white border p-4 rounded-2xl"><div class="text-3xl font-bold text-sky-600">100%</div><div class="text-xs mt-1 text-slate-500">Practical &amp; Simulation Focus</div></div>
+                                <div class="bg-white border p-4 rounded-2xl"><div class="text-3xl font-bold text-sky-600">NATIONWIDE</div><div class="text-xs mt-1 text-slate-500">Recognised Qualifications</div></div>
+                            </div>
+                            
+                            <div class="mt-6 text-sm text-slate-600">Our realistic simulation labs and scenario-based assessments prepare learners for the real pressures of emergency response, workplace safety incidents and community health challenges. We do not just issue certificates — we build capability and confidence.</div>
+                        </div>
+                        <div class="md:col-span-5">
+                            <div class="bg-white border border-sky-100 p-6 rounded-3xl">
+                                <div class="uppercase text-sky-600 text-xs tracking-widest font-bold mb-3">THE AFROMED COLLEGE DIFFERENCE</div>
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex gap-3"><i class="fas fa-check text-sky-600 mt-0.5"></i> <span>Practising professionals as facilitators — not just theorists</span></div>
+                                    <div class="flex gap-3"><i class="fas fa-check text-sky-600 mt-0.5"></i> <span>Small cohort sizes for personalised attention</span></div>
+                                    <div class="flex gap-3"><i class="fas fa-check text-sky-600 mt-0.5"></i> <span>Direct employment pathways into Afromed EMS &amp; partner organisations</span></div>
+                                    <div class="flex gap-3"><i class="fas fa-check text-sky-600 mt-0.5"></i> <span>Mobile-first e-learning with offline capability</span></div>
+                                    <div class="flex gap-3"><i class="fas fa-check text-sky-600 mt-0.5"></i> <span>Strong focus on youth employment and transformation</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Programmes -->
+                <div id="college-panel-programmes" class="college-panel hidden">
+                    <h3 class="font-semibold text-xl mb-4">HWSETA Accredited Programmes</h3>
+                    <p class="text-slate-600 mb-6">All programmes are fully accredited by the Health and Welfare Sector Education and Training Authority (HWSETA) and nationally recognised. They combine blended theory with intensive practical simulation.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-white border rounded-2xl p-5 healthcare-card">
+                            <div class="flex justify-between items-start">
+                                <div><span class="font-semibold">Advanced Emergency First Aid Responder</span> <span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded">HWSETA</span></div>
+                                <div class="text-xs text-sky-600 font-medium">5-day intensive</div>
+                            </div>
+                            <div class="text-sm text-slate-600 mt-2">Advanced trauma assessment, airway management systems, spinal immobilisation, multi-casualty incident management and comprehensive simulated assessment. Ideal for safety officers, workplace response captains and those seeking to advance in emergency care.</div>
+                            <div class="text-xs text-emerald-600 mt-2 font-medium">Fulfills high-risk corporate compliance • Validates advanced clinical skills</div>
+                        </div>
+                        
+                        <div class="bg-white border rounded-2xl p-5 healthcare-card">
+                            <div class="flex justify-between items-start">
+                                <div><span class="font-semibold">Basic Emergency First Aid Responder</span> <span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded">HWSETA</span></div>
+                                <div class="text-xs text-sky-600 font-medium">2–3 days</div>
+                            </div>
+                            <div class="text-sm text-slate-600 mt-2">Core life-saving techniques: CPR (adult, child, infant), choking management, wound care, burns, fractures and common medical emergencies. Meets OHSA requirements for general workplace first aiders.</div>
+                            <div class="text-xs text-emerald-600 mt-2 font-medium">Instant life-saving capacity • Core OHSA safety law compliance</div>
+                        </div>
+                        
+                        <div class="bg-white border rounded-2xl p-5 healthcare-card">
+                            <div class="flex justify-between items-start">
+                                <div><span class="font-semibold">Forestry SHE Representative</span> <span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded">HWSETA</span></div>
+                            </div>
+                            <div class="text-sm text-slate-600 mt-2">Specialised Safety, Health and Environment protocols for high-hazard logging, silviculture and plantation operations. Covers forestry-specific hazards, legal requirements and practical risk mitigation.</div>
+                            <div class="text-xs text-emerald-600 mt-2 font-medium">Protects plantation operations • Mitigates complex agricultural hazards</div>
+                        </div>
+                        
+                        <div class="bg-white border rounded-2xl p-5 healthcare-card">
+                            <div class="flex justify-between items-start">
+                                <div><span class="font-semibold">Forestry Hazard &amp; Risk Assessor</span> <span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded">HWSETA</span></div>
+                            </div>
+                            <div class="text-sm text-slate-600 mt-2">Techniques to detect physical, machine-related and environmental risks in harvesting zones. Learners develop protective action plans and systemic proactive safety metrics.</div>
+                            <div class="text-xs text-emerald-600 mt-2 font-medium">Lowers heavy liability claims • Establishes proactive safety metrics</div>
+                        </div>
+                        
+                        <div class="bg-white border rounded-2xl p-5 healthcare-card">
+                            <div class="flex justify-between items-start">
+                                <div><span class="font-semibold">Incident Investigator Course (NQF aligned)</span> <span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded">HWSETA</span></div>
+                            </div>
+                            <div class="text-sm text-slate-600 mt-2">Scientific investigation methodologies to identify root causes of workplace incidents, analyse data and prepare legally sound documentation suitable for audits and regulatory processes.</div>
+                            <div class="text-xs text-emerald-600 mt-2 font-medium">Prevents recurrence • Maintains legal integrity during audits</div>
+                        </div>
+                        
+                        <div class="bg-white border rounded-2xl p-5 healthcare-card">
+                            <div class="flex justify-between items-start">
+                                <div><span class="font-semibold">Early Childhood Practitioner + Paediatric First Aid</span> <span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded">HWSETA</span></div>
+                            </div>
+                            <div class="text-sm text-slate-600 mt-2">Child psychology fundamentals, physical development milestones, nutritional planning and specific paediatric first aid response. Supports crèche and preschool licensing compliance.</div>
+                            <div class="text-xs text-emerald-600 mt-2 font-medium">High professional growth • Ensures crèche/preschool licensing compliance</div>
+                        </div>
+                        
+                        <div class="bg-white border rounded-2xl p-5 healthcare-card">
+                            <div class="flex justify-between items-start">
+                                <div><span class="font-semibold">New Venture Creation (NQF 4)</span> <span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded">HWSETA</span></div>
+                            </div>
+                            <div class="text-sm text-slate-600 mt-2">Foundational business accounting, legal frameworks, marketing strategies and operational planning for health, safety and first aid entrepreneurs. Ideal for those wanting to start their own training or safety consultancy.</div>
+                            <div class="text-xs text-emerald-600 mt-2 font-medium">Translates practical skills into viable businesses • Builds financial literacy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Digital & App -->
+                <div id="college-panel-digital" class="college-panel hidden">
+                    <div id="app-download-section">
+                        <div class="bg-white border border-sky-200 rounded-3xl p-8">
+                            <div class="flex flex-col lg:flex-row gap-8 items-center">
+                                <div class="flex-1">
+                                    <div class="uppercase tracking-[2px] text-sky-600 text-xs font-bold">MOBILE-FIRST LEARNING</div>
+                                    <h3 class="text-3xl font-semibold tracking-tight mt-2">Afromed E-Learning App<br>Study anywhere. Practise everywhere.</h3>
+                                    <p class="mt-3 text-slate-600">Our dedicated mobile app gives learners full access to course content, progress tracking, interactive medical calculators, digital certificate wallet, offline module downloads and direct live chat with qualified lecturers.</p>
+                                    
+                                    <div class="mt-5 flex flex-wrap gap-2 text-xs">
+                                        <div class="px-3 py-1 bg-sky-50 text-sky-700 rounded-xl border border-sky-100">Offline Module Downloads</div>
+                                        <div class="px-3 py-1 bg-sky-50 text-sky-700 rounded-xl border border-sky-100">Digital Certificate Wallet</div>
+                                        <div class="px-3 py-1 bg-sky-50 text-sky-700 rounded-xl border border-sky-100">Live Lecturer Chat &amp; Groups</div>
+                                        <div class="px-3 py-1 bg-sky-50 text-sky-700 rounded-xl border border-sky-100">Progress Tracking &amp; Notifications</div>
+                                        <div class="px-3 py-1 bg-sky-50 text-sky-700 rounded-xl border border-sky-100">Interactive Medical Calculators</div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <a href="https://play.google.com/store" target="_blank" 
+                                           class="play-store-btn inline-flex items-center gap-x-3 bg-black text-white px-6 h-14 rounded-2xl font-semibold text-sm hover:bg-slate-800 transition-all">
+                                            <i class="fab fa-google-play text-2xl"></i>
+                                            <div class="leading-tight">
+                                                <div class="text-[10px] tracking-wider opacity-80">GET IT ON</div>
+                                                <div class="font-bold -mt-0.5">Google Play</div>
+                                            </div>
+                                        </a>
+                                        <div class="text-xs text-slate-500 mt-2">Search “Afromed E-Learning” or visit the Play Store link above.</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-shrink-0 text-center">
+                                    <div class="w-40 h-40 mx-auto bg-gradient-to-br from-sky-600 to-sky-700 rounded-3xl flex items-center justify-center shadow-inner relative">
+                                        <div class="text-white text-center">
+                                            <i class="fas fa-mobile-alt text-6xl mb-2"></i>
+                                            <div class="text-sm font-semibold tracking-wider">AFROMED</div>
+                                            <div class="text-[10px] -mt-1 opacity-80">E-LEARNING</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-sky-600 font-medium mt-3">Available on Android</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pathways -->
+                <div id="college-panel-pathways" class="college-panel hidden">
+                    <h3 class="font-semibold text-xl mb-4">Career Pathways &amp; Employment Support</h3>
+                    <p class="text-slate-600">Our graduates are in high demand. Many move directly into roles within Afromed EMS, partner organisations or launch their own health and safety ventures.</p>
+                    
+                    <div class="mt-6 grid md:grid-cols-2 gap-5">
+                        <div class="bg-white border p-6 rounded-2xl">
+                            <div class="font-semibold mb-3">Direct Employment Pathways</div>
+                            <ul class="text-sm text-slate-600 space-y-2">
+                                <li class="flex gap-2"><i class="fas fa-arrow-right text-sky-600 text-xs mt-1.5"></i> Priority recruitment into Afromed EMS operational roles (paramedic, ECP, event medic)</li>
+                                <li class="flex gap-2"><i class="fas fa-arrow-right text-sky-600 text-xs mt-1.5"></i> Placement opportunities with partner clinics, mines, forestry companies and event companies</li>
+                                <li class="flex gap-2"><i class="fas fa-arrow-right text-sky-600 text-xs mt-1.5"></i> CV &amp; interview preparation workshops included in final module</li>
+                                <li class="flex gap-2"><i class="fas fa-arrow-right text-sky-600 text-xs mt-1.5"></i> Ongoing mentorship from practising paramedics and SHE professionals</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white border p-6 rounded-2xl">
+                            <div class="font-semibold mb-3">Further Study &amp; Articulation</div>
+                            <ul class="text-sm text-slate-600 space-y-2">
+                                <li class="flex gap-2"><i class="fas fa-arrow-right text-sky-600 text-xs mt-1.5"></i> Recognition of Prior Learning (RPL) pathways to higher qualifications</li>
+                                <li class="flex gap-2"><i class="fas fa-arrow-right text-sky-600 text-xs mt-1.5"></i> Clear progression routes toward Diploma in Emergency Medical Care</li>
+                                <li class="flex gap-2"><i class="fas fa-arrow-right text-sky-600 text-xs mt-1.5"></i> Business skills from New Venture Creation support independent practice</li>
+                                <li class="flex gap-2"><i class="fas fa-arrow-right text-sky-600 text-xs mt-1.5"></i> Alumni network and continuous professional development opportunities</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Admissions -->
+                <div id="college-panel-admissions" class="college-panel hidden">
+                    <h3 class="font-semibold text-xl mb-4">Admissions &amp; Enrolment Process</h3>
+                    <div class="max-w-3xl">
+                        <div class="space-y-4 text-sm">
+                            <div class="flex gap-4"><div class="w-8 h-8 flex-shrink-0 bg-sky-600 text-white rounded-full flex items-center justify-center font-bold">1</div><div><span class="font-semibold">Submit Online Application</span><br>Complete the form on our website or contact our registrar. Provide ID, highest qualification and any relevant prior experience.</div></div>
+                            <div class="flex gap-4"><div class="w-8 h-8 flex-shrink-0 bg-sky-600 text-white rounded-full flex items-center justify-center font-bold">2</div><div><span class="font-semibold">Assessment &amp; Interview</span><br>Shortlisted applicants complete a basic numeracy/literacy assessment and a short interview (in-person or virtual) to ensure programme fit.</div></div>
+                            <div class="flex gap-4"><div class="w-8 h-8 flex-shrink-0 bg-sky-600 text-white rounded-full flex items-center justify-center font-bold">3</div><div><span class="font-semibold">Offer &amp; Registration</span><br>Successful applicants receive an offer letter with programme dates, fees and payment options. Secure your place with a deposit.</div></div>
+                            <div class="flex gap-4"><div class="w-8 h-8 flex-shrink-0 bg-sky-600 text-white rounded-full flex items-center justify-center font-bold">4</div><div><span class="font-semibold">Orientation &amp; Commencement</span><br>Attend orientation (includes app setup, uniform/kit collection if applicable) and begin your structured learning journey.</div></div>
+                        </div>
+                        
+                        <div class="mt-6 p-5 bg-sky-50 border border-sky-100 rounded-2xl text-sm">
+                            <div class="font-semibold">Fees &amp; Funding</div>
+                            <p class="mt-1 text-sky-700">Programme fees vary by duration and complexity. We offer flexible payment plans, HWSETA grant guidance where applicable, and limited bursary support for deserving youth from partner communities. Corporate clients may sponsor groups for in-house or customised training.</p>
+                            <button onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" class="mt-3 text-sky-600 font-semibold text-sm">Enquire about fees, dates or corporate training →</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Engage College -->
+                <div id="college-panel-engage-college" class="college-panel hidden">
+                    <div class="max-w-xl">
+                        <h3 class="font-semibold text-xl mb-4">Speak to the College Team</h3>
+                        <p class="text-slate-600">Ready to enrol, discuss customised corporate training, or explore partnership opportunities for your organisation or community?</p>
+                        
+                        <div class="mt-6 flex flex-col gap-3">
+                            <button onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" class="flex items-center justify-center gap-x-3 px-6 py-3.5 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-2xl transition-colors">Enquire About Training or Enrolment</button>
+                            <a href="tel:0315651080" class="flex items-center justify-center gap-x-3 px-6 py-3.5 border border-sky-200 hover:bg-sky-50 text-sky-600 font-semibold rounded-2xl transition-colors">Call +27 31 565 1080</a>
+                            <a href="mailto:info@afromed.co.za" class="flex items-center justify-center gap-x-3 px-6 py-3.5 border border-sky-200 hover:bg-sky-50 text-sky-600 font-semibold rounded-2xl transition-colors">Email info@afromed.co.za</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEVELOPMENT DEEP -->
+    <section id="development-deep" class="max-w-screen-2xl mx-auto px-8 py-16 bg-white border-t border-slate-100 content-section">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-x-3 mb-4">
+                <div class="w-12 h-12 bg-emerald-600 text-white rounded-2xl flex items-center justify-center"><i class="fas fa-hands-helping text-2xl"></i></div>
+                <div>
+                    <div class="text-emerald-600 text-xs font-bold tracking-[2px]">AFROMED DEVELOPMENT (NPO 245-061)</div>
+                    <h2 class="text-4xl font-semibold tracking-tight">Community Health, Education &amp; Sustainable Impact</h2>
+                </div>
+            </div>
+            
+            <p class="text-lg text-slate-600">Afromed Development is the non-profit arm of the group, dedicated to delivering vital community health services, education and sustainable development programmes that address health disparities and build resilient communities across KwaZulu-Natal.</p>
+            
+            <div class="mt-8 grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-semibold mb-3">Key Community Initiatives</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="p-4 border-l-4 border-emerald-500 bg-emerald-50 rounded-r-2xl">Community Health Education &amp; CPR / First Aid Training Workshops in schools, churches and community halls</div>
+                        <div class="p-4 border-l-4 border-emerald-500 bg-emerald-50 rounded-r-2xl">Quarterly Medical Camps &amp; Health Screenings (BP, blood sugar, BMI, basic consultations) in partnership with local clinics</div>
+                        <div class="p-4 border-l-4 border-emerald-500 bg-emerald-50 rounded-r-2xl">Telemedicine Services enabling remote consultations and prescriptions for hard-to-reach communities</div>
+                        <div class="p-4 border-l-4 border-emerald-500 bg-emerald-50 rounded-r-2xl">Medical Transport Support for low-income patients requiring regular dialysis, chronic care or specialist appointments</div>
+                        <div class="p-4 border-l-4 border-emerald-500 bg-emerald-50 rounded-r-2xl">Emergency Preparedness Training &amp; Community Disaster Response Support</div>
+                        <div class="p-4 border-l-4 border-emerald-500 bg-emerald-50 rounded-r-2xl">First Aid Kit Distribution &amp; Replenishment programmes for schools, businesses and community groups</div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3">Our Footprint</h3>
+                    <p class="text-sm text-slate-600 mb-4">We currently serve communities across eThekwini Metro and northern KZN with a strong, trusted presence in:</p>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">Avoca Hills &amp; surrounds</div>
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">Inanda</div>
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">Umlazi</div>
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">Phoenix</div>
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">Chatsworth</div>
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">Manguzi &amp; uMkhanyakude</div>
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">KwaMashu</div>
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">Verulam &amp; Tongaat</div>
+                        <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-2xl">and many more wards</div>
+                    </div>
+                    
+                    <div class="mt-6 p-5 bg-emerald-900 text-white rounded-2xl text-sm">
+                        <div class="font-semibold">Impact at a Glance (since inception)</div>
+                        <div class="grid grid-cols-2 gap-y-2 mt-3 text-emerald-200 text-sm">
+                            <div>38+ communities reached</div>
+                            <div>47+ medical &amp; health camps</div>
+                            <div>1,240+ students &amp; community members trained</div>
+                            <div>33+ sustainable jobs created via projects</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <button onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" class="px-8 py-3 bg-emerald-600 text-white rounded-2xl font-semibold text-sm hover:bg-emerald-700 transition-colors">Partner on a Community Health Project</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- IMPACT STATS -->
+    <section id="impact" class="bg-slate-900 py-16 text-white content-section">
+        <div class="max-w-screen-2xl mx-auto px-8">
+            <div class="max-w-xl mb-10">
+                <div class="uppercase tracking-[2.5px] text-emerald-400 text-xs font-bold mb-3">MEASURABLE IMPACT SINCE 2012</div>
+                <h2 class="text-white text-4xl md:text-5xl font-semibold tracking-tighter">Numbers that reflect our commitment to KZN.</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div class="bg-white/5 backdrop-blur border border-white/10 p-6 rounded-3xl">
+                    <div class="text-emerald-400 text-sm font-medium mb-1">YEARS OF SERVICE</div>
+                    <div id="stat-years" class="metric-value stat-number impact-number">14</div>
+                    <div class="text-white/60 text-sm">Since establishment in 2012</div>
+                </div>
+                <div class="bg-white/5 backdrop-blur border border-white/10 p-6 rounded-3xl">
+                    <div class="text-emerald-400 text-sm font-medium mb-1">SPECIALISED VEHICLES</div>
+                    <div id="stat-vehicles" class="metric-value stat-number impact-number">17</div>
+                    <div class="text-white/60 text-sm">Ambulances + rapid response units</div>
+                </div>
+                <div class="bg-white/5 backdrop-blur border border-white/10 p-6 rounded-3xl">
+                    <div class="text-emerald-400 text-sm font-medium mb-1">HWSETA PROGRAMMES</div>
+                    <div id="stat-programs" class="metric-value stat-number impact-number">7</div>
+                    <div class="text-white/60 text-sm">Fully accredited courses</div>
+                </div>
+                <div class="bg-white/5 backdrop-blur border border-white/10 p-6 rounded-3xl">
+                    <div class="text-emerald-400 text-sm font-medium mb-1">TEAM MEMBERS</div>
+                    <div id="stat-team" class="metric-value stat-number impact-number">42</div>
+                    <div class="text-white/60 text-sm">Permanent + project staff (youth-focused)</div>
+                </div>
+                <div class="bg-white/5 backdrop-blur border border-white/10 p-6 rounded-3xl">
+                    <div class="text-emerald-400 text-sm font-medium mb-1">COMMUNITIES SERVED</div>
+                    <div id="stat-communities" class="metric-value stat-number impact-number">38</div>
+                    <div class="text-white/60 text-sm">Across eThekwini &amp; northern KZN</div>
+                </div>
+                <div class="bg-white/5 backdrop-blur border border-white/10 p-6 rounded-3xl">
+                    <div class="text-emerald-400 text-sm font-medium mb-1">STUDENTS TRAINED</div>
+                    <div id="stat-students" class="metric-value stat-number impact-number">1240</div>
+                    <div class="text-white/60 text-sm">Since College inception</div>
+                </div>
+            </div>
+            
+            <div class="text-center text-white/40 text-xs mt-8 tracking-wider">All figures represent combined group performance • Updated July 2026 • Youth employment remains a core strategic priority</div>
+        </div>
+    </section>
+
+    <!-- LEADERSHIP -->
+    <section class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-100 content-section">
+        <div class="max-w-3xl mx-auto text-center mb-10">
+            <div class="text-emerald-600 text-xs font-bold tracking-[2.5px]">FOUNDED BY VISIONARIES</div>
+            <h2 class="section-header mt-2">Young Black entrepreneurs building generational impact</h2>
+        </div>
+
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
+            <div class="bg-white border border-slate-100 rounded-3xl p-8 flex gap-6 professional-shadow healthcare-card">
+                <div class="flex-shrink-0">
+                    <div class="w-20 h-20 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
+                        <img src="https://picsum.photos/id/1005/80/80" alt="Sthembiso Emmanuel Ngubo, Co-Founder &amp; Group Executive" class="object-cover w-full h-full">
+                    </div>
+                </div>
+                <div>
+                    <div class="font-semibold text-xl">Sthembiso Emmanuel Ngubo</div>
+                    <div class="text-emerald-600 text-sm font-medium">Co-Founder &amp; Group Executive</div>
+                    <p class="mt-3 text-sm text-slate-600 leading-relaxed">Over 18 years combined critical care ambulance experience. Passionate social entrepreneur focused on disrupting cycles of violence through youth development, professional medical services and community upliftment across KwaZulu-Natal. Leads strategy, operations and clinical governance.</p>
+                </div>
+            </div>
+            
+            <div class="bg-white border border-slate-100 rounded-3xl p-8 flex gap-6 professional-shadow healthcare-card">
+                <div class="flex-shrink-0">
+                    <div class="w-20 h-20 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
+                        <img src="https://picsum.photos/id/1011/80/80" alt="Nelisiwe Gloria Ngcobo, Co-Founder &amp; Group Executive" class="object-cover w-full h-full">
+                    </div>
+                </div>
+                <div>
+                    <div class="font-semibold text-xl">Nelisiwe Gloria Ngcobo</div>
+                    <div class="text-emerald-600 text-sm font-medium">Co-Founder &amp; Group Executive</div>
+                    <p class="mt-3 text-sm text-slate-600 leading-relaxed">Professional colleague and co-visionary with deep expertise in critical care operations and management. Leads with a strong focus on clinical governance, community programmes and building sustainable healthcare access for all South Africans. Oversees CSI and partnerships.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWS -->
+    <section id="news" class="bg-slate-50 py-16 border-t border-slate-100 content-section">
+        <div class="max-w-screen-2xl mx-auto px-8">
+            <div class="flex items-end justify-between mb-8">
+                <div>
+                    <div class="text-emerald-600 text-xs font-bold tracking-[2.5px]">LATEST FROM AFROMED</div>
+                    <h2 class="section-header mt-1">News, insights &amp; impact stories</h2>
+                </div>
+                <a href="#" class="hidden md:block text-sm font-semibold text-emerald-600 hover:text-emerald-700">View all updates →</a>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 professional-shadow healthcare-card">
+                    <div class="text-xs text-emerald-600 font-semibold">02 JULY 2026</div>
+                    <div class="font-semibold text-lg mt-2 leading-tight">Afromed EMS provides full medical cover for major Durban music festival</div>
+                    <p class="text-sm text-slate-600 mt-3">Our team of 28 practitioners supported over 12,000 attendees across three days with zero major incidents requiring hospitalisation. Gold package deployment included on-site command post and rapid response capability.</p>
+                    <div class="text-emerald-600 text-xs font-semibold mt-4">READ FULL STORY →</div>
+                </div>
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 professional-shadow healthcare-card">
+                    <div class="text-xs text-emerald-600 font-semibold">18 JUNE 2026</div>
+                    <div class="font-semibold text-lg mt-2 leading-tight">New Advanced Emergency First Aid Responder cohort graduates</div>
+                    <p class="text-sm text-slate-600 mt-3">42 learners completed the intensive HWSETA-accredited programme. 31 have already secured placements within Afromed EMS and partner organisations. Strong focus on practical simulation assessment.</p>
+                    <div class="text-emerald-600 text-xs font-semibold mt-4">READ FULL STORY →</div>
+                </div>
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 professional-shadow healthcare-card">
+                    <div class="text-xs text-emerald-600 font-semibold">05 JUNE 2026</div>
+                    <div class="font-semibold text-lg mt-2 leading-tight">Medical camp in Inanda reaches 680 community members in one day</div>
+                    <p class="text-sm text-slate-600 mt-3">In partnership with local clinics, our Development team conducted screenings, distributed first aid kits and provided health education across five wards. Telemedicine follow-up arranged for 47 patients.</p>
+                    <div class="text-emerald-600 text-xs font-semibold mt-4">READ FULL STORY →</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CAREERS -->
+    <section id="careers" class="max-w-screen-2xl mx-auto px-8 py-16 bg-white border-t border-slate-100 content-section">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="text-emerald-600 text-xs font-bold tracking-[2.5px]">HUMAN CAPITAL &amp; YOUTH DEVELOPMENT</div>
+                <h2 class="section-header mt-2">Building the next generation of KZN healthcare professionals</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <p class="text-slate-600">Our College is more than a training provider — it is a direct pipeline into meaningful employment within the Afromed Group and the broader healthcare sector. Every graduate receives practical, simulation-based training aligned to real operational demands.</p>
+                    
+                    <div class="mt-6 space-y-4 text-sm">
+                        <div class="flex gap-4"><div class="text-emerald-600 mt-1"><i class="fas fa-check-circle"></i></div><div><span class="font-semibold">Direct employment pathway</span><br><span class="text-slate-600">High-performing graduates are prioritised for EMS and community health roles.</span></div></div>
+                        <div class="flex gap-4"><div class="text-emerald-600 mt-1"><i class="fas fa-check-circle"></i></div><div><span class="font-semibold">Simulation-first methodology</span><br><span class="text-slate-600">High-stress scenario training that prepares learners for real incidents.</span></div></div>
+                        <div class="flex gap-4"><div class="text-emerald-600 mt-1"><i class="fas fa-check-circle"></i></div><div><span class="font-semibold">E-learning mobile platform</span><br><span class="text-slate-600">Offline access, digital certificates, progress tracking and live lecturer support.</span></div></div>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-900 text-white p-8 rounded-3xl">
+                    <div class="uppercase text-emerald-400 text-xs tracking-widest font-bold mb-4">CURRENT OPPORTUNITIES</div>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-3"><div>Paramedic / ECP positions (Durban &amp; Manguzi)</div><span class="text-xs px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded">Open</span></div>
+                        <div class="flex justify-between items-center border-b border-white/10 pb-3"><div>Training Facilitators (First Aid &amp; SHE)</div><span class="text-xs px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded">Open</span></div>
+                        <div class="flex justify-between items-center border-b border-white/10 pb-3"><div>Community Health Project Coordinators</div><span class="text-xs px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded">Open</span></div>
+                        <div class="flex justify-between items-center"><div>Graduate Internship Programme (Annual intake)</div><span class="text-xs px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded">Open</span></div>
+                    </div>
+                    <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })" class="mt-6 w-full py-3 bg-white text-slate-900 rounded-2xl font-semibold text-sm hover:bg-emerald-50 transition-colors">Apply or Enquire About Careers</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="bg-slate-900 py-16 text-white content-section">
+        <div class="max-w-screen-2xl mx-auto px-8">
+            <div class="max-w-2xl mx-auto text-center mb-10">
+                <div class="text-emerald-400 tracking-[2.5px] text-xs font-bold">LET’S BUILD HEALTHIER COMMUNITIES TOGETHER</div>
+                <h2 class="text-4xl font-semibold tracking-tighter mt-3">Ready to partner with Afromed.life?</h2>
+                <p class="mt-4 text-slate-300">Whether you need emergency medical support, professional training solutions, community development collaboration, strategic investment or youth employment partnerships — we are ready.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto">
+                <form id="contact-form" onsubmit="handleContactForm(event)" class="bg-white/5 border border-white/10 backdrop-blur-xl p-8 md:p-10 rounded-3xl">
+                    <div class="grid md:grid-cols-2 gap-x-6 gap-y-5">
+                        <div>
+                            <label class="block text-xs tracking-wider font-medium text-white/70 mb-1.5">FULL NAME</label>
+                            <input type="text" id="name" required class="w-full bg-white/90 text-slate-900 placeholder:text-slate-400 border-0 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 h-12 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider font-medium text-white/70 mb-1.5">EMAIL ADDRESS</label>
+                            <input type="email" id="email" required class="w-full bg-white/90 text-slate-900 placeholder:text-slate-400 border-0 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 h-12 text-sm">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs tracking-wider font-medium text-white/70 mb-1.5">PHONE NUMBER</label>
+                            <input type="tel" id="phone" class="w-full bg-white/90 text-slate-900 placeholder:text-slate-400 border-0 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 h-12 text-sm">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs tracking-wider font-medium text-white/70 mb-1.5">INTEREST AREA</label>
+                            <select id="interest" required class="w-full bg-white/90 text-slate-900 border-0 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 h-12 text-sm appearance-none">
+                                <option value="">Please select...</option>
+                                <option value="EMS Services">Emergency Medical Services (Events / Corporate / 24/7 Response)</option>
+                                <option value="Training">Professional Training &amp; College Enrolment (HWSETA)</option>
+                                <option value="Development">Community Development Partnership / NPO Collaboration</option>
+                                <option value="Investment">Strategic Investment / Holding Company Opportunities</option>
+                                <option value="Youth Employment">Youth Employment &amp; Skills Pipeline Partnership</option>
+                                <option value="Careers">Careers / Employment Opportunities</option>
+                                <option value="Other">Other Partnership Opportunity</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <label class="block text-xs tracking-wider font-medium text-white/70 mb-1.5">MESSAGE / PROJECT DETAILS</label>
+                        <textarea id="message" rows="5" required placeholder="Tell us how you would like to collaborate or the support you require..." class="w-full resize-y bg-white/90 text-slate-900 placeholder:text-slate-400 border-0 focus:ring-2 focus:ring-emerald-500 rounded-3xl px-5 py-4 text-sm"></textarea>
+                    </div>
+                    
+                    <div class="mt-6 flex flex-col sm:flex-row items-center gap-4">
+                        <button type="submit" class="flex-1 h-14 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 transition-colors font-semibold rounded-3xl text-base flex items-center justify-center gap-x-2 shadow-inner">
+                            <span>Send Message to Leadership</span>
+                        </button>
+                        <div class="text-center text-xs text-white/50 max-w-[200px]">Our team typically responds within 24 hours on business days.</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t">
+        <div class="max-w-screen-2xl mx-auto px-8 py-14">
+            <div class="flex flex-col md:flex-row justify-between gap-y-10">
+                <div>
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <div class="w-9 h-9 bg-slate-900 rounded-2xl flex items-center justify-center">
+                            <span class="text-white font-black text-xl">A</span>
+                        </div>
+                        <span class="font-semibold text-2xl tracking-tighter">afromed<span class="text-emerald-600">.life</span></span>
+                    </div>
+                    <div class="text-sm text-slate-500 max-w-xs">Strategic holding company for integrated emergency healthcare, professional training and community development in South Africa.</div>
+                    
+                    <div class="mt-6 flex gap-x-5 text-xl text-slate-400">
+                        <a href="#" class="hover:text-slate-600"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="hover:text-slate-600"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="hover:text-slate-600"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-8 text-sm">
+                    <div>
+                        <div class="font-semibold text-xs tracking-widest text-slate-400 mb-3">COMPANIES</div>
+                        <div class="space-y-[7px] text-slate-600">
+                            <a href="#ems-deep" class="block hover:text-emerald-600">Afromed EMS</a>
+                            <a href="#college-deep" class="block hover:text-emerald-600">Afromed Emergency College</a>
+                            <a href="#development-deep" class="block hover:text-emerald-600">Afromed Development (NPO)</a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="font-semibold text-xs tracking-widest text-slate-400 mb-3">HEAD OFFICE</div>
+                        <div class="text-slate-600 leading-relaxed">
+                            64 Courtown Crescent<br>
+                            Avoca Hills, Newlands East<br>
+                            Durban, KwaZulu-Natal<br><br>
+                            <span class="font-mono text-xs">031 565 1080</span><br>
+                            <a href="mailto:info@afromed.co.za" class="hover:text-emerald-600">info@afromed.co.za</a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="font-semibold text-xs tracking-widest text-slate-400 mb-3">QUICK LINKS</div>
+                        <div class="space-y-[7px] text-slate-600">
+                            <a href="#about" class="block hover:text-emerald-600">About the Group</a>
+                            <a href="#impact" class="block hover:text-emerald-600">Group Impact</a>
+                            <a href="#careers" class="block hover:text-emerald-600">Careers &amp; Training</a>
+                            <a href="#news" class="block hover:text-emerald-600">News &amp; Updates</a>
+                            <a href="#college-deep" class="block hover:text-emerald-600">Download College App</a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="font-semibold text-xs tracking-widest text-slate-400 mb-3">ACCREDITATIONS</div>
+                        <div class="text-xs text-slate-600 space-y-1">
+                            <div>Full Member – Board of Healthcare Funders (BHF)</div>
+                            <div>HWSETA Accredited Training Provider</div>
+                            <div>NPO 245-061</div>
+                            <div>B-BBEE Level 4 Contributor</div>
+                            <div>Tax Exempt – Public Benefit Organisation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-14 pt-8 border-t text-xs text-slate-400 flex flex-col md:flex-row items-center justify-between gap-y-2">
+                <div>© 2026 Afromed.life Holdings (Pty) Ltd. All rights reserved. Proudly South African. Every community matters.</div>
+                <div class="flex gap-x-5">
+                    <span>Privacy Policy</span>
+                    <span>Terms of Service</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Toast -->
+    <div id="success-toast" class="hidden fixed bottom-6 right-6 bg-emerald-600 text-white px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-x-3 z-[200]">
+        <i class="fas fa-check-circle text-xl"></i>
+        <div>
+            <div class="font-semibold">Message received. Thank you!</div>
+            <div class="text-xs text-emerald-200">A member of the leadership team will contact you shortly.</div>
+        </div>
+    </div>
+
+    <script>
+        function initializeTailwind() {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            'heading': ['Poppins', 'Inter', 'system-ui', 'sans-serif']
+                        }
+                    }
+                }
+            };
+        }
+
+        function initPreloader() {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.transition = 'opacity 0.6s ease, visibility 0.6s ease';
+                preloader.style.opacity = '0';
+                preloader.style.visibility = 'hidden';
+                
+                setTimeout(() => {
+                    document.querySelectorAll('.reveal').forEach((el, i) => {
+                        setTimeout(() => {
+                            el.classList.add('visible');
+                        }, i * 80);
+                    });
+                }, 300);
+            }, 1350);
+        }
+
+        function initNavbar() {
+            const navbar = document.getElementById('navbar');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    navbar.classList.add('nav-scrolled');
+                } else {
+                    navbar.classList.remove('nav-scrolled');
+                }
+            });
+            
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = mobileBtn.querySelector('i');
+                    if (mobileMenu.classList.contains('hidden')) {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    } else {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    }
+                });
+                
+                document.querySelectorAll('#mobile-menu a, #mobile-menu button').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                        const icon = mobileBtn.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    });
+                });
+            }
+        }
+
+        function animateCounter(element, target, duration = 1600) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        function initCounters() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const stats = [
+                            { id: 'stat-years', target: 14 },
+                            { id: 'stat-vehicles', target: 17 },
+                            { id: 'stat-programs', target: 7 },
+                            { id: 'stat-team', target: 42 },
+                            { id: 'stat-communities', target: 38 },
+                            { id: 'stat-students', target: 1240 }
+                        ];
+                        
+                        stats.forEach(stat => {
+                            const el = document.getElementById(stat.id);
+                            if (el && !el.dataset.animated) {
+                                el.dataset.animated = 'true';
+                                animateCounter(el, stat.target);
+                            }
+                        });
+                        
+                        observer.disconnect();
+                    }
+                });
+            }, { threshold: 0.6 });
+            
+            const impactSection = document.getElementById('impact');
+            if (impactSection) observer.observe(impactSection);
+        }
+
+        function initScrollReveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+            
+            reveals.forEach(el => observer.observe(el));
+        }
+
+        // EMS Tab System
+        let currentEmsTab = 'overview';
+        
+        function switchEmsTab(tabName) {
+            // Hide all panels
+            document.querySelectorAll('.ems-panel').forEach(panel => panel.classList.add('hidden'));
+            // Deactivate all tabs
+            document.querySelectorAll('.ems-tab').forEach(tab => {
+                tab.classList.remove('active', 'border-b-2', 'border-red-600', 'text-red-700');
+                tab.classList.add('text-slate-600');
+            });
+            
+            // Show selected panel
+            const panel = document.getElementById('ems-panel-' + tabName);
+            if (panel) panel.classList.remove('hidden');
+            
+            // Activate selected tab
+            const activeTab = document.getElementById('ems-tab-' + tabName);
+            if (activeTab) {
+                activeTab.classList.add('active', 'border-b-2', 'border-red-600', 'text-red-700');
+                activeTab.classList.remove('text-slate-600');
+            }
+            
+            currentEmsTab = tabName;
+        }
+        
+        // College Tab System
+        let currentCollegeTab = 'overview';
+        
+        function switchCollegeTab(tabName) {
+            // Hide all panels
+            document.querySelectorAll('.college-panel').forEach(panel => panel.classList.add('hidden'));
+            // Deactivate all tabs
+            document.querySelectorAll('.college-tab').forEach(tab => {
+                tab.classList.remove('active', 'border-b-2', 'border-sky-600', 'text-sky-700');
+                tab.classList.add('text-slate-600');
+            });
+            
+            // Show selected panel
+            const panel = document.getElementById('college-panel-' + tabName);
+            if (panel) panel.classList.remove('hidden');
+            
+            // Activate selected tab
+            const activeTab = document.getElementById('college-tab-' + tabName);
+            if (activeTab) {
+                activeTab.classList.add('active', 'border-b-2', 'border-sky-600', 'text-sky-700');
+                activeTab.classList.remove('text-slate-600');
+            }
+            
+            currentCollegeTab = tabName;
+            
+            // Special handling for app download section
+            if (tabName === 'digital') {
+                setTimeout(() => {
+                    const appSection = document.getElementById('app-download-section');
+                    if (appSection) appSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+
+        function handleContactForm(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = `<span class="flex items-center justify-center gap-x-2"><i class="fas fa-spinner fa-spin"></i> Sending to Leadership...</span>`;
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                form.reset();
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                const toast = document.getElementById('success-toast');
+                toast.style.display = 'flex';
+                toast.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    toast.style.transition = 'all 0.4s ease';
+                    toast.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        toast.style.display = 'none';
+                        toast.style.opacity = '1';
+                        toast.style.transition = '';
+                    }, 350);
+                }, 5200);
+                
+                window.scrollTo({ top: document.body.scrollHeight - 280, behavior: 'smooth' });
+            }, 1450);
+        }
+
+        function initKeyboardControls() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape") {
+                    // Close any open modals if we add them later
+                }
+                
+                if (e.key.toLowerCase() === 'g' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    document.getElementById('companies').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
+
+        function initializeWebsite() {
+            initializeTailwind();
+            initPreloader();
+            initNavbar();
+            initCounters();
+            initScrollReveal();
+            initKeyboardControls();
+            
+            // Initialize first tabs
+            setTimeout(() => {
+                const firstEmsTab = document.getElementById('ems-tab-overview');
+                if (firstEmsTab) firstEmsTab.classList.add('active', 'border-b-2', 'border-red-600', 'text-red-700');
+                
+                const firstCollegeTab = document.getElementById('college-tab-overview');
+                if (firstCollegeTab) firstCollegeTab.classList.add('active', 'border-b-2', 'border-sky-600', 'text-sky-700');
+            }, 500);
+            
+            // Make sure all panels start correctly hidden except first
+            document.querySelectorAll('.ems-panel').forEach((panel, index) => {
+                if (index > 0) panel.classList.add('hidden');
+            });
+            document.querySelectorAll('.college-panel').forEach((panel, index) => {
+                if (index > 0) panel.classList.add('hidden');
+            });
+            
+            console.log('%c[Afromed.life] Premium professional upgraded website initialized — Netcare-inspired design with deep content across EMS, College and Development pillars.', 'color:#64748b');
+            
+            // Expose useful functions
+            window.AfromedLife = {
+                showEmsSection: (tab) => { document.getElementById('ems-deep').scrollIntoView({behavior:'smooth'}); setTimeout(() => switchEmsTab(tab), 600); },
+                showCollegeSection: (tab) => { document.getElementById('college-deep').scrollIntoView({behavior:'smooth'}); setTimeout(() => switchCollegeTab(tab), 600); },
+                scrollToContact: () => document.getElementById('contact').scrollIntoView({behavior: 'smooth'}),
+                downloadApp: () => window.open('https://play.google.com/store', '_blank')
+            };
+        }
+
+        window.onload = initializeWebsite;
+    </script>
+</body>
+</html>

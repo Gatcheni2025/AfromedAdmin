@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Afromed Dashboard - Premium Response</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="data:,">
+
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- DESIGN TOKENS & VARIABLES --- */
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #f0f9ff;
+            --primary-gradient: linear-gradient(135deg, #0ea5e9, #2563eb);
+            --danger: #ef4444;
+            --danger-dark: #b91c1c;
+            --danger-light: #fef2f2;
+            --danger-gradient: linear-gradient(135deg, #ef4444, #e11d48);
+            --warning: #f59e0b;
+            --success: #10b981;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --light-bg: #f8fafc;
+            --surface: rgba(255, 255, 255, 0.85);
+            --border: rgba(226, 232, 240, 0.9);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 25px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 25px 50px rgba(15, 23, 42, 0.15);
+            --radius-lg: 28px;
+            --radius-md: 20px;
+            --radius-sm: 12px;
+        }
+
+        /* --- APP THEME & RESET --- */
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--light-bg); overflow: hidden; }
+        h1, h2, h3, h4, p { margin: 0; }
+
+        /* --- PRELOADER --- */
+        #preloader { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .splash-icon { width: 110px; height: 110px; background: var(--primary-gradient); border-radius: 35px; display: flex; align-items: center; justify-content: center; font-size: 50px; color: white; box-shadow: 0 20px 40px rgba(14, 165, 233, 0.3); animation: pulseFloat 2s infinite; }
+        .splash-title { margin-top: 35px; font-size: 28px; font-weight: 800; color: var(--dark); letter-spacing: -0.5px; }
+        .splash-subtitle { margin-top: 10px; font-size: 15px; color: var(--gray); font-weight: 500; text-align: center; }
+        @keyframes pulseFloat { 0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 20px 40px rgba(14, 165, 233, 0.3); } 50% { transform: translateY(-10px) scale(1.02); box-shadow: 0 30px 50px rgba(14, 165, 233, 0.4); } }
+
+        /* --- MAP & GLASS UI --- */
+        #map { position: absolute; inset: 0; z-index: 1; }
+        .glass-panel { background: var(--surface); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); box-shadow: var(--shadow-md); }
+
+        .top-search-bar { position: absolute; top: 45px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; border-radius: var(--radius-md); z-index: 10; display: flex; flex-direction: column; padding: 8px 16px; }
+        .loc-row { display: flex; align-items: center; gap: 16px; padding: 12px 0; cursor: pointer; transition: 0.2s; }
+        .loc-row:first-child { border-bottom: 1px solid var(--gray-light); }
+        .loc-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .loc-text { flex: 1; overflow: hidden; }
+        .loc-text h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray); font-weight: 800; margin-bottom: 3px; }
+        .loc-text p { font-size: 15px; color: var(--dark); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* LOCATION SEARCH MODAL */
+        #address-search-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); z-index: 300; align-items: flex-start; justify-content: center; padding-top: 80px; backdrop-filter: blur(6px); }
+        #address-search-modal.active { display: flex; animation: fadeIn 0.3s; }
+        .search-box { background: white; width: 92%; max-width: 440px; padding: 25px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
+        .search-box input { width: 100%; padding: 16px; border: 2px solid var(--gray-light); border-radius: 14px; font-size: 15px; font-weight: 600; outline: none; transition: 0.2s; }
+        .search-box input:focus { border-color: var(--primary); }
+        .suggestions-list { list-style: none; padding: 0; margin: 15px 0 0; max-height: 250px; overflow-y: auto; }
+        .suggestion-item { padding: 14px 12px; border-bottom: 1px solid var(--gray-light); cursor: pointer; font-size: 14px; font-weight: 600; color: var(--dark); display: flex; align-items: center; gap: 12px; }
+        .suggestion-item:hover { background: var(--primary-light); color: var(--primary); border-radius: 10px; border-bottom-color: transparent; }
+
+        /* --- BOTTOM NAV & FLOATING BUTTONS --- */
+        .bottom-nav { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; height: 75px; border-radius: 38px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 60; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.8); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 22px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex: 1; height: 100%; position: relative; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+        .nav-item span { font-size: 11px; margin-top: 4px; font-weight: 800; opacity: 0; transition: 0.3s; position: absolute; bottom: 12px; }
+        .nav-item.active i { transform: translateY(-8px); }
+        .nav-item.active span { opacity: 1; transform: translateY(2px); }
+        .nav-spacer { width: 75px; flex-shrink: 0; } /* Spacer strictly for SOS button */
+
+        .sos-container { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 70; }
+        .sos-btn { width: 80px; height: 80px; background: var(--danger-gradient); border-radius: 50%; border: 6px solid var(--light-bg); box-shadow: 0 15px 30px rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; letter-spacing: 1px; cursor: pointer; transition: transform 0.2s; position: relative; }
+        .sos-btn::before, .sos-btn::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid var(--danger); animation: rippleSOS 2.5s infinite cubic-bezier(0.4, 0, 0.2, 1); z-index: -1; }
+        .sos-btn::after { animation-delay: 1.25s; }
+        .sos-btn:active { transform: scale(0.9); }
+        @keyframes rippleSOS { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
+
+        .add-alert-btn { position: absolute; bottom: 125px; right: 25px; width: 55px; height: 55px; background: white; color: var(--dark); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: var(--shadow-md); cursor: pointer; z-index: 55; border: 1px solid var(--gray-light); transition: 0.2s; }
+        .add-alert-btn:active { transform: scale(0.9); }
+
+        /* --- ACTIVE TRIP CARD --- */
+        #active-trip-card { display: none; position: absolute; top: 135px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 65; overflow: hidden; border: 1px solid var(--border); }
+        #active-trip-card.active { display: block; animation: slideDown 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .trip-header { background: var(--primary-light); padding: 20px; border-bottom: 1px solid #bae6fd; }
+        .trip-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .trip-status { color: var(--primary-dark); font-weight: 800; font-size: 17px; display: flex; align-items: center; gap: 10px; }
+        .trip-eta { background: white; color: var(--primary-dark); padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 800; box-shadow: var(--shadow-sm); }
+        .trip-progress { display: flex; justify-content: space-between; position: relative; margin: 0 10px; }
+        .trip-progress::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: #cbd5e1; transform: translateY(-50%); z-index: 1; }
+        .progress-dot { width: 12px; height: 12px; background: #cbd5e1; border-radius: 50%; z-index: 2; position: relative; }
+        .progress-dot.active { background: var(--primary); box-shadow: 0 0 0 4px #bae6fd; }
+
+        .trip-body { padding: 20px; }
+        .driver-info-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .driver-avatar { width: 60px; height: 60px; border-radius: 20px; background: var(--light-bg); display: flex; align-items: center; justify-content: center; font-size: 26px; color: var(--primary); border: 1px solid var(--gray-light); }
+        .driver-details { flex: 1; }
+        .driver-name { font-weight: 800; color: var(--dark); font-size: 18px; margin-bottom: 4px; }
+        .vehicle-plate { display: inline-block; background: var(--light-bg); padding: 4px 10px; border-radius: 8px; font-size: 13px; font-weight: 700; color: var(--gray); border: 1px solid var(--gray-light); }
+        .action-btn-circle { width: 48px; height: 48px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary-dark); cursor: pointer; font-size: 20px; transition: 0.2s; }
+
+        .trip-footer { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
+        .guide-btn { padding: 16px; background: var(--warning); color: white; border: none; border-radius: 16px; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+        .cancel-trip-btn { width: 55px; background: var(--danger-light); border: 1px solid #fecaca; color: var(--danger); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
+
+        /* --- BOTTOM SHEET MODALS --- */
+        .bottom-sheet { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); z-index: 100; align-items: flex-end; backdrop-filter: blur(6px); }
+        .bottom-sheet.active { display: flex; }
+        .sheet-content { width: 100%; background: white; border-radius: 35px 35px 0 0; padding: 30px 24px 45px; box-sizing: border-box; animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 92vh; overflow-y: auto; }
+        .drag-handle { width: 45px; height: 6px; background: #e2e8f0; border-radius: 6px; margin: 0 auto 25px auto; }
+        .sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+        .sheet-title { font-size: 24px; font-weight: 800; color: var(--dark); letter-spacing: -0.5px; }
+        .back-btn { background: var(--light-bg); border: 1px solid var(--gray-light); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: var(--dark); transition: 0.2s; }
+
+        /* SOS Grid & Cards */
+        .grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
+        .grid-item { display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; border: 2px solid var(--gray-light); border-radius: 20px; padding: 22px 10px; cursor: pointer; transition: all 0.2s; }
+        .grid-item.selected { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 4px 15px rgba(14, 165, 233, 0.15); }
+        .grid-item.selected i { color: var(--primary); transform: scale(1.1); }
+        .icon-wrapper { font-size: 30px; margin-bottom: 12px; color: var(--gray); transition: 0.3s; }
+        .grid-label { color: var(--dark); font-size: 14px; font-weight: 700; text-align: center; }
+
+        /* Rapid Vitals Form */
+        .vitals-container { background: var(--light-bg); border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--gray-light); }
+        .vital-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-light); }
+        .vital-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .vital-label { font-size: 15px; font-weight: 700; color: var(--dark); }
+        .vital-toggles { display: flex; gap: 8px; }
+        .vital-btn { padding: 8px 16px; border-radius: 12px; border: 1px solid var(--gray-light); background: white; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; color: var(--gray); }
+        .vital-btn.yes.active { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+        .vital-btn.no.active { background: #dcfce7; color: var(--success); border-color: var(--success); }
+
+        .btn-main { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 18px; font-size: 17px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3); transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .btn-main:active { transform: scale(0.97); }
+
+        /* Selection Cards */
+        .selection-card { background: white; border: 2px solid var(--gray-light); border-radius: 22px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; }
+        .selection-card.selected { border-color: var(--primary); background: var(--primary-light); }
+        .selection-icon { width: 55px; height: 55px; background: var(--light-bg); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-right: 18px; color: var(--dark); font-size: 22px; border: 1px solid var(--gray-light); }
+        .selection-title { color: var(--dark); font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+        .selection-desc { color: var(--gray); font-size: 14px; font-weight: 500; }
+
+        /* --- APP PANELS (FULL SCREEN OVERLAYS) --- */
+        .app-panel { position: fixed; inset: 0; background: var(--light-bg); z-index: 80; display: none; overflow-y: auto; padding-bottom: 40px; }
+        .app-panel.active { display: block; animation: fadeIn 0.3s ease; }
+        .panel-header { background: rgba(248, 250, 252, 0.95); backdrop-filter: blur(12px); padding: 55px 24px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5; border-bottom: 1px solid rgba(226, 232, 240, 0.5); }
+        .panel-header h2 { font-size: 28px; font-weight: 800; color: var(--dark); letter-spacing: -0.5px; }
+        .close-panel-btn { width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-light); color: var(--dark); display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
+
+        .alert-item { background: white; border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--gray-light); box-shadow: var(--shadow-sm); display: flex; gap: 15px; align-items: center; }
+        .alert-item .icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .alert-item.safe .icon { background: #dcfce7; color: var(--success); }
+        .alert-item.danger .icon { background: var(--danger-light); color: var(--danger); }
+        .alert-item .details h4 { font-size: 16px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+        .alert-item .details p { font-size: 13px; color: var(--gray); font-weight: 600; }
+
+        /* --- PROFILE & MEDICAL ID --- */
+        .medical-id-card { background: var(--danger-gradient); margin: 0 24px 25px; border-radius: 24px; padding: 25px; color: white; box-shadow: 0 15px 30px rgba(239, 68, 68, 0.25); position: relative; overflow: hidden; }
+        .medical-id-card::after { content: '\f479'; font-family: 'FontAwesome'; position: absolute; right: -20px; bottom: -20px; font-size: 120px; opacity: 0.1; }
+        .mid-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; z-index: 2; }
+        .mid-title { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; opacity: 0.9; }
+        .mid-name { font-size: 26px; font-weight: 800; margin-top: 5px; }
+        .mid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; position: relative; z-index: 2; }
+        .mid-data h5 { font-size: 12px; opacity: 0.8; margin-bottom: 2px; font-weight: 600; }
+        .mid-data p { font-size: 16px; font-weight: 800; }
+
+        .settings-group { margin: 0 24px 25px; background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-light); }
+        .setting-item { padding: 22px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--gray-light); cursor: pointer; transition: background 0.2s; }
+        .setting-item:hover { background: var(--light-bg); }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-left { display: flex; align-items: center; gap: 16px; }
+        .setting-icon { width: 45px; height: 45px; background: var(--light-bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--dark); font-size: 20px; border: 1px solid var(--gray-light); }
+        .setting-text { font-size: 16px; font-weight: 700; color: var(--dark); }
+
+        .input-modal { display:none; padding: 20px; background: var(--light-bg); border-bottom: 1px solid var(--gray-light);}
+        .input-modal input, .input-modal select { width: 100%; padding: 16px; border: 2px solid var(--gray-light); border-radius: 14px; margin-bottom: 15px; font-size: 15px; font-weight: 600; outline: none; transition: 0.2s; background: white; }
+        .input-modal input:focus, .input-modal select:focus { border-color: var(--primary); }
+
+        .profile-footer { margin: 10px 24px 40px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .logout-btn { width: 100%; padding: 18px; background: var(--danger-light); color: var(--danger); border: 1px solid #fecaca; border-radius: 18px; font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s; }
+        .logout-btn:active { transform: scale(0.97); }
+        .app-version { font-size: 13px; color: var(--gray); font-weight: 600; }
+
+        /* Animations */
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes slideDown { from { transform: translate(-50%, -20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div id="preloader">
+    <img src="assets/afrologo.png" class="splash-icon" alt="Afromed Logo" style="background: transparent; border: none; padding: 0;">
+    <div class="splash-title">Afromed</div>
+    <div class="splash-subtitle">Premium Emergency Services<br>Rapid Response</div>
+</div>
+
+<div id="map"></div>
+
+<div class="top-search-bar glass-panel">
+    <div class="loc-row" onclick="openLocationModal()">
+        <div class="loc-icon" style="background:var(--danger-light); color:var(--danger);"><i class="fa-solid fa-location-crosshairs"></i></div>
+        <div class="loc-text">
+            <h4>Incident Location</h4>
+            <p id="user-address">Locating GPS...</p>
+        </div>
+        <i class="fa-solid fa-chevron-down" style="color:var(--gray); font-size:14px;"></i>
+    </div>
+    <div class="loc-row">
+        <div class="loc-icon" style="background:var(--primary-light); color:var(--primary-dark);"><i class="fa-solid fa-hospital"></i></div>
+        <div class="loc-text">
+            <h4>Nearest Help</h4>
+            <p id="nearest-facility-text">Locating nearby Ambulances...</p>
+        </div>
+    </div>
+</div>
+
+<div id="address-search-modal">
+    <div class="search-box">
+        <h3 style="margin:0 0 18px 0; color:var(--dark); font-size: 20px; font-weight: 800;">Edit Location</h3>
+        <input type="text" id="address-input" placeholder="Enter landmark or street..." autocomplete="off">
+        <ul id="suggestions-list" class="suggestions-list"></ul>
+        <button onclick="closeLocationModal()" style="margin-top:20px; width:100%; padding:16px; background:var(--light-bg); color:var(--dark); border:1px solid var(--gray-light); border-radius:16px; font-weight:800; cursor:pointer;">Cancel</button>
+    </div>
+</div>
+
+<div class="add-alert-btn" onclick="openAlertModal()">
+    <i class="fa-solid fa-bullhorn" style="color: var(--primary);"></i>
+</div>
+
+<div class="sos-container">
+    <div class="sos-btn" onclick="openEmergencyMenu()">SOS</div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" id="nav-map" onclick="switchTab('map')">
+        <i class="fa-solid fa-map-location-dot"></i><span>Map</span>
+    </div>
+    <div class="nav-item" id="nav-alerts" onclick="switchTab('alerts')">
+        <i class="fa-solid fa-bell"></i><span>Alerts</span>
+    </div>
+
+    <div class="nav-spacer"></div>
+
+    <div class="nav-item" id="nav-school" onclick="switchTab('school')">
+        <i class="fa-solid fa-book-medical"></i><span>Guide</span>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+        <i class="fa-solid fa-user-shield"></i><span>Profile</span>
+    </div>
+</div>
+
+<div id="active-trip-card">
+    <div class="trip-header">
+        <div class="trip-header-top">
+            <div class="trip-status" id="trip-status-ui"><i class="fa-solid fa-truck-fast"></i> Dispatching...</div>
+            <div class="trip-eta" id="trip-eta-text">Calc ETA...</div>
+        </div>
+        <div class="trip-progress">
+            <div class="progress-dot active" id="dot-1"></div>
+            <div class="progress-dot" id="dot-2"></div>
+            <div class="progress-dot" id="dot-3"></div>
+        </div>
+    </div>
+    <div class="trip-body">
+        <div class="driver-info-row">
+            <div class="driver-avatar"><i class="fa-solid fa-user-nurse"></i></div>
+            <div class="driver-details">
+                <div class="driver-name" id="driver-name">Assigning ALS Unit</div>
+                <div class="vehicle-plate" id="driver-id">Awaiting ID...</div>
+            </div>
+            <div class="action-btn-circle" onclick="alert('Calling Dispatch...')"><i class="fa-solid fa-phone"></i></div>
+        </div>
+        <div class="trip-footer" style="grid-template-columns: 1fr 1fr auto;">
+    <button class="guide-btn" style="background: var(--primary); padding: 12px; font-size: 13px;" onclick="openTripChat()">
+        <i class="fa-solid fa-comment-medical"></i> Chat <span id="chat-badge" style="display:none; background:var(--danger); color:white; padding:2px 6px; border-radius:10px; font-size:10px; margin-left:5px;">New</span>
+    </button>
+    <button class="guide-btn" style="padding: 12px; font-size: 13px;" onclick="openPreArrivalGuide()">
+        <i class="fa-solid fa-briefcase-medical"></i> Guide
+    </button>
+    <button class="cancel-trip-btn" onclick="cancelEmergencyRequest()"><i class="fa-solid fa-xmark"></i></button>
+</div>
+    </div>
+</div>
+
+<!-- BOTTOM SHEETS -->
+<!-- PATIENT CHAT BOTTOM SHEET -->
+<div class="bottom-sheet" id="chat-sheet">
+    <div class="sheet-content" style="height: 80vh; display:flex; flex-direction:column; padding-bottom: 20px;">
+        <div class="drag-handle"></div>
+        <div class="sheet-header">
+            <div class="sheet-title" style="color: var(--primary);"><i class="fa-solid fa-comment-medical"></i> Dispatch Chat</div>
+            <button class="back-btn" onclick="closeTripChat()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="app-chat-messages" style="flex:1; overflow-y:auto; margin-bottom:15px; display:flex; flex-direction:column; gap:10px; padding-right: 5px;">
+            <!-- Messages load here -->
+        </div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="app-chat-input" placeholder="Type a message..." style="flex:1; padding:16px; border-radius:16px; border:2px solid var(--gray-light); font-size:15px; font-weight:600; outline:none;">
+            <button onclick="sendAppChatMessage()" style="background:var(--primary); color:white; border:none; padding:0 22px; border-radius:16px; font-size: 20px; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+<div class="bottom-sheet" id="alert-modal">
+    <div class="sheet-content">
+        <div class="drag-handle"></div>
+        <div class="sheet-header">
+            <div class="sheet-title">Report & Notify</div>
+            <button class="back-btn" onclick="closeAlertModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p style="font-size:15px; color:var(--gray); margin-bottom:20px; font-weight:500;">Broadcast your status or alert others.</p>
+        <div class="selection-card" onclick="selectAlertType('Safe', this)">
+            <div class="selection-icon" style="color: var(--success);"><i class="fa-solid fa-person-circle-check"></i></div>
+            <div>
+                <div class="selection-title">I am here / Safe</div>
+                <div class="selection-desc">Mark your location as safe to your network</div>
+            </div>
+        </div>
+        <div class="selection-card" onclick="selectAlertType('Accident', this)">
+            <div class="selection-icon" style="color: var(--danger);"><i class="fa-solid fa-car-burst"></i></div>
+            <div>
+                <div class="selection-title">Traffic / Accident</div>
+                <div class="selection-desc">Report a vehicle collision or road hazard</div>
+            </div>
+        </div>
+        <div class="selection-card" onclick="selectAlertType('Fire', this)">
+            <div class="selection-icon" style="color: #f97316;"><i class="fa-solid fa-fire"></i></div>
+            <div>
+                <div class="selection-title">Fire Outbreak</div>
+                <div class="selection-desc">Report a building, vehicle, or veld fire</div>
+            </div>
+        </div>
+        <button class="btn-main" style="margin-top: 25px;" onclick="submitAlert()">Broadcast Report</button>
+    </div>
+</div>
+
+<div class="bottom-sheet" id="emergency-overlay">
+    <div class="sheet-content" id="sos-sheet-content">
+        <div class="drag-handle"></div>
+
+        <div id="step-help-for">
+            <div class="sheet-header">
+                <div class="sheet-title">Who needs help?</div>
+                <button class="back-btn" onclick="closeEmergencyMenu()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="selection-card" onclick="selectHelpFor('me')">
+                <div class="selection-icon"><i class="fa-solid fa-user-injured"></i></div>
+                <div>
+                    <div class="selection-title">For Myself</div>
+                    <div class="selection-desc">Use my medical profile</div>
+                </div>
+            </div>
+            <div class="selection-card" onclick="selectHelpFor('someone')">
+                <div class="selection-icon"><i class="fa-solid fa-users"></i></div>
+                <div>
+                    <div class="selection-title">For a Dependent</div>
+                    <div class="selection-desc">Select from family members</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-emergency-type" style="display:none;">
+            <div class="sheet-header">
+                <button class="back-btn" onclick="showStep('step-help-for')"><i class="fa-solid fa-arrow-left"></i></button>
+                <div class="sheet-title">Emergency Details</div>
+                <div style="width:45px;"></div>
+            </div>
+            <h4 style="margin: 0 0 15px; font-size: 15px; color: var(--dark); font-weight: 800;">Nature of Emergency</h4>
+            <div class="grid-menu">
+                <div class="grid-item" onclick="selectEmergencyType(this, 'Cardiac')">
+                    <div class="icon-wrapper"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <div class="grid-label">Cardiac</div>
+                </div>
+                <div class="grid-item" onclick="selectEmergencyType(this, 'Trauma')">
+                    <div class="icon-wrapper"><i class="fa-solid fa-car-burst"></i></div>
+                    <div class="grid-label">Trauma</div>
+                </div>
+                <div class="grid-item" onclick="selectEmergencyType(this, 'Bleeding')">
+                    <div class="icon-wrapper"><i class="fa-solid fa-droplet" style="color: var(--danger);"></i></div>
+                    <div class="grid-label">Bleeding</div>
+                </div>
+                <div class="grid-item" onclick="selectEmergencyType(this, 'Breathing')">
+                    <div class="icon-wrapper"><i class="fa-solid fa-lungs"></i></div>
+                    <div class="grid-label">Breathing</div>
+                </div>
+                <div class="grid-item" onclick="selectEmergencyType(this, 'Burn')">
+                    <div class="icon-wrapper"><i class="fa-solid fa-fire"></i></div>
+                    <div class="grid-label">Burns</div>
+                </div>
+                <div class="grid-item" onclick="selectEmergencyType(this, 'Other')">
+                    <div class="icon-wrapper"><i class="fa-solid fa-circle-question"></i></div>
+                    <div class="grid-label">Other</div>
+                </div>
+            </div>
+
+            <h4 style="margin: 0 0 15px; font-size: 15px; color: var(--dark); font-weight: 800;">Rapid Assessment (Optional)</h4>
+            <div class="vitals-container">
+                <div class="vital-row">
+                    <div class="vital-label">Is the patient conscious?</div>
+                    <div class="vital-toggles">
+                        <button class="vital-btn yes" onclick="toggleVital(this, 'conscious', 'yes')">Yes</button>
+                        <button class="vital-btn no" onclick="toggleVital(this, 'conscious', 'no')">No</button>
+                    </div>
+                </div>
+                <div class="vital-row">
+                    <div class="vital-label">Are they breathing normally?</div>
+                    <div class="vital-toggles">
+                        <button class="vital-btn yes" onclick="toggleVital(this, 'breathing', 'yes')">Yes</button>
+                        <button class="vital-btn no" onclick="toggleVital(this, 'breathing', 'no')">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-main" onclick="submitEmergencyRequest()" style="background: var(--danger-gradient); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);">
+                <i class="fa-solid fa-truck-medical"></i> Dispatch Ambulance Now
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- FULL APP PANELS -->
+<div id="alerts-panel" class="app-panel">
+    <div class="panel-header">
+        <h2>Live Notifications</h2>
+        <button class="close-panel-btn" onclick="closeAllPanels()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="alerts-list" style="padding: 20px;">
+        <p style="text-align: center; color: var(--gray); font-weight: 600;">Fetching live alerts...</p>
+    </div>
+</div>
+
+<div id="profile-panel" class="app-panel">
+    <div class="panel-header" style="border-bottom: none; background: transparent;">
+        <h2>My Profile</h2>
+        <button class="close-panel-btn" onclick="closeAllPanels()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="medical-id-card">
+        <div class="mid-header">
+            <div>
+                <div class="mid-title">Digital Medical ID</div>
+                <div class="mid-name" id="profile-name">Loading...</div>
+            </div>
+            <i class="fa-solid fa-qrcode" style="font-size: 30px;"></i>
+        </div>
+        <div class="mid-grid">
+            <div class="mid-data">
+                <h5>BLOOD TYPE</h5>
+                <p id="profile-blood">O+</p>
+            </div>
+            <div class="mid-data">
+                <h5>ALLERGIES</h5>
+                <p id="profile-allergies">None Known</p>
+            </div>
+            <div class="mid-data">
+                <h5>MEDICAL AID</h5>
+                <p id="profile-medaid">Pending...</p>
+            </div>
+            <div class="mid-data">
+                <h5>POLICY NO.</h5>
+                <p id="profile-mednum">---</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding: 0 24px 15px; font-weight: 800; color: var(--dark); font-size: 18px;">Account Settings</div>
+
+    <div class="settings-group">
+        <div class="setting-item" onclick="toggleEdit('edit-name')">
+            <div class="setting-left">
+                <div class="setting-icon"><i class="fa-regular fa-id-card"></i></div>
+                <div class="setting-text">Patient Details</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--gray);"></i>
+        </div>
+        <div id="edit-name" class="input-modal">
+            <input type="text" id="inp-name" placeholder="First Name">
+            <input type="text" id="inp-surname" placeholder="Last Name">
+            <input type="number" id="inp-age" placeholder="Age (e.g. 34)">
+            <select id="inp-gender">
+                <option value="Unspecified">Gender (Optional)</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="tel" id="inp-phone" placeholder="Your Phone Number">
+            <input type="tel" id="inp-emergency" placeholder="Emergency Contact Number">
+            <button class="btn-main" onclick="saveUserData()">Save Details</button>
+        </div>
+
+        <div class="setting-item" onclick="toggleEdit('edit-med')">
+            <div class="setting-left">
+                <div class="setting-icon" style="color: var(--danger);"><i class="fa-solid fa-file-medical"></i></div>
+                <div class="setting-text">Medical Info & Insurance</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--gray);"></i>
+        </div>
+        <div id="edit-med" class="input-modal">
+            <select id="inp-blood">
+                <option value="Unknown">Select Blood Type</option>
+                <option value="A+">A+</option><option value="O+">O+</option><option value="B+">B+</option><option value="AB+">AB+</option>
+                <option value="A-">A-</option><option value="O-">O-</option><option value="B-">B-</option><option value="AB-">AB-</option>
+            </select>
+            <input type="text" id="inp-allergies" placeholder="Known Allergies (e.g., Penicillin)">
+            <input type="text" id="inp-medaid" placeholder="Medical Aid Provider">
+            <input type="text" id="inp-mednumber" placeholder="Policy Number">
+            <button class="btn-main" onclick="saveUserData()">Update Medical ID</button>
+        </div>
+    </div>
+
+    <!-- LOGOUT AND APP INFO FOOTER -->
+    <div class="profile-footer">
+        <button class="logout-btn" onclick="logoutApp()">
+            <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
+        <div class="app-version">Afromed Premium Version 2.0.0</div>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+
+<script>
+    // PRELOADER
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const preloader = document.getElementById('preloader');
+            preloader.style.opacity = '0';
+            setTimeout(() => { preloader.style.display = 'none'; }, 500);
+        }, 1200);
+    });
+
+    // FIREBASE CONFIG
+ const firebaseConfig = {
+        apiKey: "AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
+        authDomain: "afromed-fda57.firebaseapp.com",
+        projectId: "afromed-fda57",
+        storageBucket: "afromed-fda57.firebasestorage.app",
+        messagingSenderId: "633274573777",
+        appId: "1:633274573777:web:6b244c95612bc92ff976f0",
+        measurementId: "G-3ZSVQDNVFX"
+    };
+    if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    mapboxgl.accessToken = "pk.YOUR_PUBLIC_MAPBOX_TOKEN";
+
+    let map, currentUser = null, userLocation = null, userMarker = null;
+    let selectedEmergencyType = null, selectedHelpFor = null;
+    let activeRequestId = null;
+    let vitalsState = { conscious: 'unknown', breathing: 'unknown' };
+    let selectedAlertType = null;
+let ambulanceMarker = null;
+
+    // --- INIT AUTH & APP ---
+    const storedUid = localStorage.getItem('userUid');
+    if (storedUid) {
+        currentUser = { uid: storedUid };
+        initializeAppData();
+    } else {
+        auth.onAuthStateChanged(user => {
+            if (user) { currentUser = user; initializeAppData(); }
+            else { window.location.replace("login.html"); }
+        });
+    }
+
+    function initializeAppData() {
+        initializeMap();
+        loadProfileData();
+        listenForActiveRequests();
+        loadLiveAlerts();
+    }
+
+    // --- MAP LOGIC ---
+    function initializeMap() {
+        map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/navigation-day-v1',
+            center: [28.04, -26.20],
+            zoom: 15,
+            pitch: 45,
+            bearing: -17.6,
+            attributionControl: false
+        });
+
+        map.on('load', () => {
+            trackUserLocation();
+            map.addLayer({
+                'id': '3d-buildings',
+                'source': 'composite',
+                'source-layer': 'building',
+                'filter':['==', 'extrude', 'true'],
+                'type': 'fill-extrusion',
+                'minzoom': 15,
+                'paint': {
+                    'fill-extrusion-color': '#e2e8f0',
+                    'fill-extrusion-height': ['get', 'height'],
+                    'fill-extrusion-base': ['get', 'min_height'],
+                    'fill-extrusion-opacity': 0.6
+                }
+            });
+        });
+    }
+
+    function trackUserLocation() {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.watchPosition(
+            (pos) => updateMapLocation(pos.coords.latitude, pos.coords.longitude),
+            (err) => console.log(err),
+            { enableHighAccuracy: true }
+        );
+    }
+
+    async function updateMapLocation(lat, lng) {
+        userLocation = { lat, lng };
+        if (!userMarker) {
+            const el = document.createElement('div');
+            el.innerHTML = '<div style="background:var(--primary); width:28px; height:28px; border-radius:50%; border:5px solid white; box-shadow:0 0 20px rgba(14,165,233,0.6);"></div>';
+            userMarker = new mapboxgl.Marker(el).setLngLat([lng, lat]).addTo(map);
+            map.flyTo({ center: [lng, lat], zoom: 15.5 });
+        } else {
+            userMarker.setLngLat([lng, lat]);
+            map.flyTo({ center: [lng, lat] });
+        }
+
+        try {
+            const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`);
+            const data = await res.json();
+            if (data.features?.length > 0) document.getElementById('user-address').innerText = data.features[0].place_name.split(',')[0];
+        } catch (e) {}
+    }
+
+    // --- LOCATION SEARCH UI ---
+    function openLocationModal() { document.getElementById('address-search-modal').classList.add('active'); }
+    function closeLocationModal() { document.getElementById('address-search-modal').classList.remove('active'); }
+
+    document.getElementById('address-input').addEventListener('input', async (e) => {
+        const query = e.target.value;
+        if(query.length < 3) return;
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxgl.accessToken}&country=za`);
+        const data = await res.json();
+        const list = document.getElementById('suggestions-list');
+        list.innerHTML = '';
+
+        data.features.forEach(feat => {
+            const li = document.createElement('li');
+            li.className = 'suggestion-item';
+            li.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${feat.place_name}`;
+            li.onclick = () => {
+                updateMapLocation(feat.center[1], feat.center[0]);
+                closeLocationModal();
+                document.getElementById('address-input').value = '';
+                list.innerHTML = '';
+            };
+            list.appendChild(li);
+        });
+    });
+
+    // --- ALERTS ---
+    function openAlertModal() { document.getElementById('alert-modal').classList.add('active'); }
+    function closeAlertModal() { document.getElementById('alert-modal').classList.remove('active'); }
+
+    function selectAlertType(type, element) {
+        selectedAlertType = type;
+        document.querySelectorAll('#alert-modal .selection-card').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    async function submitAlert() {
+        if(!selectedAlertType) return alert("Please select an alert type.");
+        if(!userLocation) return alert("Waiting for GPS location...");
+        const isSafe = selectedAlertType === 'Safe';
+
+        try {
+            await db.collection('alerts').add({
+                userId: currentUser.uid,
+                type: selectedAlertType,
+                message: isSafe ? "Marked as safe" : "Incident reported",
+                location: new firebase.firestore.GeoPoint(userLocation.lat, userLocation.lng),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert(isSafe ? "Your safe status has been broadcasted!" : "Alert sent successfully.");
+            closeAlertModal();
+        } catch (e) {
+            console.error(e);
+            alert("Network error: Could not broadcast right now.");
+        }
+    }
+
+    function loadLiveAlerts() {
+        db.collection('alerts')
+            .orderBy('timestamp', 'desc')
+            .limit(10)
+            .onSnapshot(snapshot => {
+                const list = document.getElementById('alerts-list');
+                list.innerHTML = '';
+                if (snapshot.empty) {
+                    list.innerHTML = '<p style="text-align: center; color: var(--gray);">No recent activity in your area.</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const time = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now';
+                    const isSafe = data.type === 'Safe';
+                    let iconHTML = isSafe ? '<i class="fa-solid fa-person-circle-check"></i>' : '<i class="fa-solid fa-triangle-exclamation"></i>';
+                    let cssClass = isSafe ? 'safe' : 'danger';
+                    list.innerHTML += `
+                        <div class="alert-item ${cssClass}">
+                            <div class="icon">${iconHTML}</div>
+                            <div class="details">
+                                <h4>${data.type}</h4>
+                                <p>${data.message} • ${time}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+    }
+
+    // --- UI NAVIGATION ---
+    function switchTab(tabName) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.app-panel').forEach(el => el.classList.remove('active'));
+        document.getElementById(`nav-${tabName}`).classList.add('active');
+        if (tabName !== 'map' && tabName !== 'school') document.getElementById(`${tabName}-panel`).classList.add('active');
+        if (tabName === 'school') openPreArrivalGuide();
+    }
+    function closeAllPanels() { switchTab('map'); }
+
+    function toggleEdit(id) {
+        const el = document.getElementById(id);
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    // --- SOS EMERGENCY FLOW ---
+    function openEmergencyMenu() {
+        document.getElementById('emergency-overlay').classList.add('active');
+        showStep('step-help-for');
+        selectedEmergencyType = null;
+        vitalsState = { conscious: 'unknown', breathing: 'unknown' };
+        document.querySelectorAll('.grid-item').forEach(el => el.classList.remove('selected'));
+        document.querySelectorAll('.vital-btn').forEach(el => el.classList.remove('active'));
+    }
+    function closeEmergencyMenu() { document.getElementById('emergency-overlay').classList.remove('active'); }
+
+    function showStep(stepId) {
+        document.getElementById('step-help-for').style.display = 'none';
+        document.getElementById('step-emergency-type').style.display = 'none';
+        document.getElementById(stepId).style.display = 'block';
+    }
+
+    function selectHelpFor(who) {
+        selectedHelpFor = who;
+        showStep('step-emergency-type');
+    }
+
+    function selectEmergencyType(element, type) {
+        selectedEmergencyType = type;
+        document.querySelectorAll('.grid-item').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function toggleVital(btn, vital, state) {
+        vitalsState[vital] = state;
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.vital-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+async function submitEmergencyRequest() {
+    if(!selectedEmergencyType) return alert("Please specify the nature of the emergency.");
+    if (!userLocation) return alert("Waiting for GPS location...");
+
+    // FORCE PHONE NUMBER VALIDATION
+    if (!window.userProfileData || !window.userProfileData.phone || window.userProfileData.phone.trim() === '') {
+        alert("⚠️ Phone Number Required!\n\nPlease provide your phone number so the ambulance dispatch team can reach you.");
+        closeEmergencyMenu(); // Close emergency popup
+        switchTab('profile'); // Switch to profile tab
+        document.getElementById('edit-name').style.display = 'block'; // Open edit window
+        document.getElementById('inp-phone').focus(); // Focus on phone input
+        return;
+    }
+
+    try {
+        const reqData = {
+            userId: currentUser.uid,
+            userName: ((window.userProfileData.name||"") + " " + (window.userProfileData.surname||"")).trim() || "App User",
+            userPhone: window.userProfileData.phone,
+            emergencyType: selectedEmergencyType,
+            vitals: vitalsState,
+            location: new firebase.firestore.GeoPoint(userLocation.lat, userLocation.lng),
+            status: 'pending',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        const docRef = await db.collection('requests').add(reqData);
+        activeRequestId = docRef.id;
+        closeEmergencyMenu();
+    } catch (e) {
+        alert("Error dispatching. Please call emergency services directly.");
+    }
+}
+
+    // --- ACTIVE TRIP TRACKING ---
+   function listenForActiveRequests() {
+    db.collection('requests')
+        .where('userId', '==', currentUser.uid)
+        .where('status', 'in',['pending', 'dispatched', 'arriving'])
+        .onSnapshot(snapshot => {
+            const card = document.getElementById('active-trip-card');
+            if (snapshot.empty) {
+                card.classList.remove('active');
+                activeRequestId = null;
+                if(ambulanceMarker) ambulanceMarker.remove(); // clear ambulance marker if completed
+                return;
+            }
+            
+            const data = snapshot.docs[0].data();
+            activeRequestId = snapshot.docs[0].id;
+            const statusUI = document.getElementById('trip-status-ui');
+            const d1 = document.getElementById('dot-1'), d2 = document.getElementById('dot-2'), d3 = document.getElementById('dot-3');
+
+            d1.classList.add('active'); d2.classList.remove('active'); d3.classList.remove('active');
+
+            if (data.status === 'dispatched' || data.status === 'arriving') {
+                d2.classList.add('active');
+                if(data.status === 'arriving') d3.classList.add('active');
+
+                document.getElementById('trip-eta-text').innerText = data.eta || "En Route";
+                document.getElementById('driver-name').innerText = data.driverName || "Paramedic Team";
+                document.getElementById('driver-id').innerText = data.assignedVehicle ? `Unit ${data.assignedVehicle}` : "ALS Unit";
+                statusUI.innerHTML = `<i class="fa-solid fa-truck-fast"></i> Dispatched`;
+                
+                // ===== NEW: DRAW THE AMBULANCE ON PATIENT MAP =====
+                if (data.driverLocation) {
+                    const lat = data.driverLocation.latitude;
+                    const lng = data.driverLocation.longitude;
+                    
+                    if (!ambulanceMarker) {
+                        const el = document.createElement('div');
+                        el.innerHTML = '<div style="background:white; width:34px; height:34px; border-radius:50%; box-shadow:0 10px 20px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; font-size:18px;"><i class="fa-solid fa-truck-medical" style="color:var(--primary);"></i></div>';
+                        ambulanceMarker = new mapboxgl.Marker(el).setLngLat([lng, lat]).addTo(map);
+                        
+                        // Optional: Zoom map to fit both patient and ambulance
+                        if (userLocation) {
+                            const bounds = new mapboxgl.LngLatBounds([userLocation.lng, userLocation.lat], [lng, lat]);
+                            map.fitBounds(bounds, { padding: 80 });
+                        }
+                    } else {
+                        // Smoothly move the ambulance marker
+                        ambulanceMarker.setLngLat([lng, lat]);
+                    }
+                }
+                
+            } else {
+                document.getElementById('trip-eta-text').innerText = "Locating...";
+                document.getElementById('driver-name').innerText = "Finding nearest unit...";
+                document.getElementById('driver-id').innerText = "Stand by";
+                statusUI.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Request Received';
+            }
+            card.classList.add('active');
+            
+            // New message badge logic
+            if (window.unsubChatBadge) window.unsubChatBadge();
+            window.unsubChatBadge = db.collection('requests').doc(activeRequestId).collection('messages').onSnapshot(snap => {
+                 if (snap.docs.length > 0) {
+                     const lastMsg = snap.docs[snap.docs.length-1].data();
+                     if (lastMsg.sender !== currentUser.uid && !document.getElementById('chat-sheet').classList.contains('active')) {
+                         const badge = document.getElementById('chat-badge');
+                         if(badge) badge.style.display = 'inline-block';
+                     }
+                 }
+            });
+        });
+}
+    function cancelEmergencyRequest() {
+        if(confirm("Cancel the ambulance dispatch?")) {
+            db.collection('requests').doc(activeRequestId).update({ status: 'cancelled' });
+        }
+    }
+
+    // --- PRE-ARRIVAL GUIDE ---
+    function openPreArrivalGuide() { document.getElementById('pre-arrival-modal').classList.add('active'); }
+    function closePreArrivalGuide() { document.getElementById('pre-arrival-modal').classList.remove('active'); }
+
+    // --- PROFILE & MEDICAL ID ---
+
+window.userProfileData = {};
+   function loadProfileData() {
+    db.collection('users').doc(currentUser.uid).get().then(doc => {
+        let d = doc.exists ? doc.data() : {};
+        window.userProfileData = d; // Store globally!
+        
+        const fullName = ((d.name||"") + " " + (d.surname||"")).trim();
+
+            document.getElementById('profile-name').innerText = fullName || "Update Profile";
+            document.getElementById('profile-blood').innerText = d.bloodType || "Unknown";
+            document.getElementById('profile-allergies').innerText = d.allergies || "None Listed";
+            document.getElementById('profile-medaid').innerText = d.medicalAid || "No Provider";
+            document.getElementById('profile-mednum').innerText = d.medicalNumber || "---";
+
+            document.getElementById('inp-name').value = d.name || "";
+            document.getElementById('inp-surname').value = d.surname || "";
+            document.getElementById('inp-phone').value = d.phone || "";
+            document.getElementById('inp-age').value = d.age || "";
+            document.getElementById('inp-gender').value = d.gender || "Unspecified";
+            document.getElementById('inp-emergency').value = d.emergencyContact || "";
+
+            document.getElementById('inp-blood').value = d.bloodType || "Unknown";
+            document.getElementById('inp-allergies').value = d.allergies || "";
+            document.getElementById('inp-medaid').value = d.medicalAid || "";
+            document.getElementById('inp-mednumber').value = d.medicalNumber || "";
+        });
+    }
+
+    function saveUserData() {
+        db.collection('users').doc(currentUser.uid).set({
+            name: document.getElementById('inp-name').value,
+            surname: document.getElementById('inp-surname').value,
+            phone: document.getElementById('inp-phone').value,
+            age: document.getElementById('inp-age').value,
+            gender: document.getElementById('inp-gender').value,
+            emergencyContact: document.getElementById('inp-emergency').value,
+
+            bloodType: document.getElementById('inp-blood').value,
+            allergies: document.getElementById('inp-allergies').value,
+            medicalAid: document.getElementById('inp-medaid').value,
+            medicalNumber: document.getElementById('inp-mednumber').value
+        }, { merge: true }).then(() => {
+            loadProfileData();
+            document.querySelectorAll('.input-modal').forEach(el => el.style.display = 'none');
+        });
+    }
+
+    // --- LOGOUT LOGIC ---
+    function logoutApp() {
+        if (typeof AfromedInterface !== "undefined") {
+            AfromedInterface.onLogout();
+        } else {
+            localStorage.clear();
+            auth.signOut().then(() => {
+                window.location.replace("login.html");
+            });
+        }
+    }
+
+// --- LIVE CHAT (APP SIDE) ---
+let appChatListener = null;
+
+function openTripChat() {
+    document.getElementById('chat-sheet').classList.add('active');
+    document.getElementById('chat-badge').style.display = 'none'; // Clear "New" badge
+
+    if(appChatListener) appChatListener(); // Unsubscribe previous
+
+    appChatListener = db.collection('requests').doc(activeRequestId).collection('messages').orderBy('timestamp').onSnapshot(snap => {
+        const msgContainer = document.getElementById('app-chat-messages');
+        msgContainer.innerHTML = '';
+        
+        if (snap.empty) {
+            msgContainer.innerHTML = '<div style="text-align:center; color:var(--gray); font-weight:600; margin-top:20px;">Control room is standing by...</div>';
+        }
+
+        snap.forEach(doc => {
+            const msg = doc.data();
+            const isMe = msg.sender === currentUser.uid;
+            
+            // Apply different styles depending on if Admin or Patient sent the message
+            const align = isMe 
+                ? 'align-self:flex-end; background:var(--primary); color:white; border-bottom-right-radius: 4px;' 
+                : 'align-self:flex-start; background:var(--light-bg); color:var(--dark); border:1px solid var(--gray-light); border-bottom-left-radius: 4px;';
+            
+            msgContainer.innerHTML += `
+                <div style="max-width:80%; padding:12px 16px; border-radius:20px; ${align}">
+                    <div style="font-size:11px; opacity:0.7; margin-bottom:4px; font-weight: 800;">${msg.senderName}</div>
+                    <div style="font-size:15px; font-weight:600;">${msg.text}</div>
+                </div>`;
+        });
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    });
+}
+
+function closeTripChat() { 
+    document.getElementById('chat-sheet').classList.remove('active'); 
+}
+
+async function sendAppChatMessage() {
+    const input = document.getElementById('app-chat-input');
+    const text = input.value.trim();
+    if(!text || !activeRequestId) return;
+    
+    input.value = ''; // Clear immediately
+    
+    await db.collection('requests').doc(activeRequestId).collection('messages').add({
+        sender: currentUser.uid,
+        senderName: window.userProfileData.name || 'Patient',
+        text: text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+}
+</script>
+</body>
+</html>

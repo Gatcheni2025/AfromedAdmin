@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Afromed College · domain status</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: #f1f5fc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      color: #0b1a33;
+      line-height: 1.5;
+    }
+
+    /* card */
+    .card {
+      max-width: 880px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 2rem;
+      box-shadow: 0 20px 50px -12px rgba(0, 20, 40, 0.12), 0 8px 24px -6px rgba(0, 20, 40, 0.06);
+      overflow: hidden;
+      transition: box-shadow 0.2s ease;
+      animation: cardEntrance 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+
+    @keyframes cardEntrance {
+      0% { opacity: 0; transform: translateY(24px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* header */
+    .header {
+      background: linear-gradient(145deg, #0b2b5c, #1a4b8c);
+      padding: 2rem 2.5rem;
+      color: white;
+    }
+
+    .header-content {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(4px);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .brand-text h1 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 0.9rem;
+      opacity: 0.75;
+      font-weight: 500;
+      margin-top: 0.2rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(4px);
+      padding: 0.6rem 1.4rem 0.6rem 1.2rem;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .status-badge::before {
+      content: "●";
+      color: #f87171;
+      font-size: 1.2rem;
+      display: inline-block;
+      animation: pulseDot 1.8s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* main content */
+    .content {
+      padding: 2.5rem;
+    }
+
+    .content h2 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #0b1a33;
+      margin-bottom: 0.6rem;
+    }
+
+    .intro {
+      color: #4b5a74;
+      font-weight: 400;
+      margin-bottom: 2rem;
+      max-width: 90%;
+      line-height: 1.7;
+    }
+
+    /* alert banner */
+    .alert-banner {
+      display: flex;
+      gap: 1.25rem;
+      background: #fff8eb;
+      border-radius: 1.25rem;
+      padding: 1.25rem 1.5rem;
+      border-left: 6px solid #f5b342;
+      margin-bottom: 2.25rem;
+      align-items: flex-start;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .alert-icon {
+      width: 44px;
+      height: 44px;
+      background: #fae1b0;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .alert-text strong {
+      display: block;
+      font-weight: 700;
+      color: #8a5c1c;
+      margin-bottom: 0.2rem;
+    }
+
+    .alert-text {
+      color: #5f4a24;
+    }
+
+    /* detail rows */
+    .detail-grid {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: #f9fcff;
+      border-radius: 1rem;
+      border: 1px solid #e8edf4;
+      transition: all 0.2s ease;
+    }
+
+    .detail-item:hover {
+      background: #ffffff;
+      border-color: #cdd9e9;
+      box-shadow: 0 6px 18px -8px rgba(0, 20, 40, 0.06);
+      transform: translateY(-1px);
+    }
+
+    .detail-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #4b5a74;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .detail-value {
+      font-weight: 700;
+      text-align: right;
+      word-break: break-word;
+      color: #0b1a33;
+    }
+
+    .value-danger {
+      color: #c72a2a;
+    }
+
+    .value-fee {
+      color: #1a5bbf;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    /* actions */
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.9rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      letter-spacing: 0.01em;
+      background: #ffffff;
+      color: #0b1a33;
+      border-color: #dce3ec;
+    }
+
+    .btn-primary {
+      background: #1a5bbf;
+      color: white;
+      border-color: #1a5bbf;
+      box-shadow: 0 6px 16px -6px rgba(26, 91, 191, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: #0f4a9e;
+      border-color: #0f4a9e;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -8px rgba(26, 91, 191, 0.35);
+    }
+
+    .btn-secondary {
+      background: white;
+      border-color: #dce3ec;
+      color: #1f334c;
+    }
+
+    .btn-secondary:hover {
+      background: #f2f6fd;
+      border-color: #bcc9dc;
+      transform: translateY(-2px);
+    }
+
+    /* footer */
+    .footer {
+      padding: 1.5rem 2.5rem;
+      background: #f7faff;
+      border-top: 1px solid #e3eaf3;
+      text-align: center;
+      color: #5b6f89;
+      font-size: 0.9rem;
+      font-weight: 450;
+    }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      body { padding: 1rem; }
+      .header { padding: 1.5rem; }
+      .content { padding: 1.5rem; }
+      .footer { padding: 1.25rem 1.5rem; }
+
+      .header-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+
+      .brand-text h1 { font-size: 1.3rem; }
+
+      .status-badge {
+        align-self: flex-start;
+        width: auto;
+      }
+
+      .content h2 { font-size: 1.6rem; }
+
+      .intro { max-width: 100%; }
+
+      .alert-banner {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1.25rem;
+      }
+
+      .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+      }
+
+      .detail-value {
+        text-align: left;
+        width: 100%;
+      }
+
+      .action-row {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+      }
+
+      .btn {
+        padding: 0.8rem 1rem;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .brand-icon { width: 48px; height: 48px; font-size: 1.2rem; }
+      .brand-text h1 { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- header -->
+  <div class="header">
+    <div class="header-content">
+      <div class="brand">
+        <div class="brand-icon">A</div>
+        <div class="brand-text">
+          <h1>Afromed College</h1>
+          <p>Domain Management &amp; Renewal</p>
+        </div>
+      </div>
+      <div class="status-badge">Cancellation Pending</div>
+    </div>
+  </div>
+
+  <!-- main -->
+  <div class="content">
+
+    <h2>Domain subscription requires attention</h2>
+    <p class="intro">
+      Automatic renewal for your domain has been disabled. To prevent disruption to your website,
+      emails, and other online services, please renew the domain before the current billing period expires.
+    </p>
+
+    <!-- alert -->
+    <div class="alert-banner">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text">
+        <strong>Scheduled for cancellation</strong>
+        If no action is taken before the expiration date, your domain registration may lapse and the
+        domain could become available for public registration.
+      </div>
+    </div>
+
+    <!-- details -->
+    <div class="detail-grid">
+
+      <div class="detail-item">
+        <span class="detail-label">🌐 Domain name</span>
+        <span class="detail-value">afromed-college.co.za</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">📌 Current status</span>
+        <span class="detail-value value-danger">Pending deletion</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">💳 Annual renewal fee</span>
+        <span class="detail-value value-fee">$89.00 / year</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">📅 Cancellation effective</span>
+        <span class="detail-value">Immediately after expiration</span>
+      </div>
+
+    </div>
+
+    <!-- actions -->
+    <div class="action-row">
+      <a href="#" class="btn btn-primary">
+        Reactivate &amp; renew (R89/year)
+      </a>
+      <a href="#" class="btn btn-secondary">
+        Confirm cancellation
+      </a>
+    </div>
+
+  </div>
+
+  <!-- footer -->
+  <div class="footer">
+    Need assistance? Contact the Afromed Domain Administration Team for help with renewals,
+    billing, or domain transfers.
+  </div>
+
+</div>
+
+</body>
+</html>

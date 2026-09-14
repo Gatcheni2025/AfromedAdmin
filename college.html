@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Afromed Medical College Admin</title>
+  <link rel="icon" href="./logo2.png">
+  
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <style>
+    :root { --bg: #0f1724; --card: #141826; --muted: #9aa3b2; --accent: #28c76f; --primary: #3a86ff; --danger: #ff4757; --glass: rgba(255,255,255,0.03); --sidebar: #0b1020; --radius: 16px; }
+    * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    html, body { height: 100%; margin: 0; background: linear-gradient(180deg,#071026 0%, #081128 70%); color: #e2e8f0; overflow: hidden; }
+
+    #college-preloader { position: fixed; inset: 0; background: #050a15; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1s ease-out; }
+    .college-loader-icon { font-size: 60px; color: var(--accent); margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+    .loader-bar-bg { width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+    .loader-bar-fill { height: 100%; background: var(--accent); width: 0%; animation: load 2.5s ease-in-out forwards; }
+    @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    .app { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
+    .sidebar { background: #0b1020; border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; padding: 20px; z-index: 100; }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .brand-logo { width: 45px; height: 45px; background: white; border-radius: 12px; padding: 5px; display: flex; align-items: center; justify-content: center; }
+    .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+    
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: var(--muted); text-decoration: none; border-radius: 10px; margin-bottom: 5px; transition: 0.3s; cursor: pointer; }
+    .nav-item:hover, .nav-item.active { background: rgba(40, 199, 111, 0.1); color: white; }
+    .nav-item.active { border-left: 3px solid var(--accent); }
+    .nav-item i { font-size: 20px; width: 25px; text-align: center; }
+
+    .main { display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .topbar { height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+    .page-content { flex: 1; overflow-y: auto; padding: 25px; display: none; opacity: 0; transition: opacity 0.4s ease; }
+    .page-content.active { display: block; opacity: 1; }
+
+    .card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+    .stat-val { font-size: 24px; font-weight: 700; color: white; margin: 5px 0; }
+    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; padding: 15px; color: var(--muted); font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .data-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+    
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .course-card { position: relative; overflow: hidden; transition: transform 0.3s; cursor: pointer; }
+    .course-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+    .btn { padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: 0.3s; }
+    .btn-primary { background: var(--accent); color: #0b1020; }
+    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
+    .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; }
+    
+    .admin-only { display: none; } 
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
+    .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 500px; max-width: 90%; border: 1px solid rgba(255,255,255,0.1); animation: slideUp 0.3s ease; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+    .form-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; }
+    select.form-input option { background: #141826; color: white; }
+    
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  </style>
+</head>
+<body>
+
+<div id="college-preloader">
+    <div class="college-loader-icon"><i class="uil uil-graduation-cap"></i></div>
+    <h2 style="font-weight: 300; margin-bottom: 20px;">Afromed <strong style="color:var(--accent)">College</strong></h2>
+    <div class="loader-bar-bg"><div class="loader-bar-fill"></div></div>
+</div>
+
+<div class="app" style="display: none;" id="college-app">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo"><img src="./logo2.png" alt="Logo"></div>
+            <div>
+                <h4 style="margin: 0; font-size: 16px; font-weight: 700;">Afromed</h4>
+                <span style="font-size: 11px; color: var(--accent);">College Portal</span>
+            </div>
+        </div>
+        <nav>
+            <a class="nav-item active" onclick="showPage('dashboard', this)"><i class="uil uil-estate"></i> <span>Overview</span></a>
+            <a class="nav-item" onclick="showPage('students', this)"><i class="uil uil-user-graduate"></i> <span>Students</span></a>
+            <a class="nav-item" onclick="showPage('courses', this)"><i class="uil uil-book-medical"></i> <span>Courses</span></a>
+            <a class="nav-item" onclick="showPage('finance', this)"><i class="uil uil-invoice"></i> <span>Finance</span></a>
+            <div style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+                <a class="nav-item" id="logout-btn" style="color: var(--danger);"><i class="uil uil-signout"></i> <span>Logout</span></a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h3 style="margin: 0; font-size: 18px;" id="page-title">Dashboard</h3>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="user-profile" style="display: flex; align-items: center; gap: 10px;">
+                    <div style="text-align: right;">
+                        <div style="font-size: 14px; font-weight: 600;" id="u-name">Admin</div>
+                        <div style="font-size: 11px; color: var(--muted);" id="u-role">ADMINISTRATOR</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="page-content active">
+            <div class="stat-grid">
+                <div class="stat-card"><div class="stat-label">Total Students</div><div class="stat-val" id="stat-students">0</div></div>
+                <div class="stat-card"><div class="stat-label">Active Courses</div><div class="stat-val" id="stat-courses">0</div></div>
+                <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-val" style="color: var(--accent);" id="stat-revenue">R 0</div></div>
+            </div>
+            <div class="card">
+                <h3>Recent Registrations</h3>
+                <table class="data-table">
+                    <thead><tr><th>Student Name</th><th>Email</th><th>Course</th><th>Date</th></tr></thead>
+                    <tbody id="recent-students-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="students" class="page-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>Student Directory</h3>
+                <button class="btn btn-primary admin-only" onclick="openModal('student-modal')"><i class="uil uil-plus"></i> New Student</button>
+            </div>
+            <div class="card">
+                <table class="data-table">
+                    <thead><tr><th>Name</th><th>Email / Login</th><th>Phone</th><th>Enrolled Course</th><th>Actions</th></tr></thead>
+                    <tbody id="full-students-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="courses" class="page-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>Academic Courses</h3>
+                <button class="btn btn-outline admin-only" onclick="openModal('course-modal')"><i class="uil uil-plus"></i> Add Course</button>
+            </div>
+            <div class="course-grid" id="course-grid"></div>
+        </div>
+
+        <div id="finance" class="page-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>Financial Overview</h3>
+                <button class="btn btn-primary admin-only" onclick="openModal('fee-modal')"><i class="uil uil-plus"></i> Assign Fee</button>
+            </div>
+            <div class="card">
+                <table class="data-table">
+                    <thead><tr><th>Student</th><th>Description</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="finance-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- MODAL: ADD STUDENT -->
+<div class="modal-backdrop" id="student-modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; margin-bottom: 20px;">Register New Student</h3>
+        <form id="add-student-form">
+            <div class="form-group"><label>Full Name</label><input type="text" class="form-input" id="st-name" required></div>
+            <div class="form-group"><label>Email (Login ID)</label><input type="email" class="form-input" id="st-email" required></div>
+            <div class="form-group"><label>Phone Number</label><input type="tel" class="form-input" id="st-phone" required></div>
+            <div class="form-group">
+                <label>Select Course</label>
+                <select class="form-input" id="st-course" required><option value="">Loading courses...</option></select>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="submit" class="btn btn-primary" style="flex:1">Register</button>
+                <button type="button" class="btn btn-outline" style="flex:1" onclick="closeModal('student-modal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: ADD COURSE -->
+<div class="modal-backdrop" id="course-modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; margin-bottom: 20px;">Add New Course</h3>
+        <form id="add-course-form">
+            <div class="form-group"><label>Course Title</label><input type="text" class="form-input" id="c-title" required></div>
+            <div class="form-group"><label>Duration</label><input type="text" class="form-input" id="c-duration" placeholder="e.g. 6 Months" required></div>
+            <div class="form-group"><label>Course Fee (ZAR)</label><input type="number" class="form-input" id="c-fee" required></div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="submit" class="btn btn-primary" style="flex:1">Save Course</button>
+                <button type="button" class="btn btn-outline" style="flex:1" onclick="closeModal('course-modal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: ASSIGN FEE -->
+<div class="modal-backdrop" id="fee-modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; margin-bottom: 20px;">Assign Fee to Student</h3>
+        <form id="add-fee-form">
+            <div class="form-group">
+                <label>Select Student</label>
+                <select class="form-input" id="f-student" required><option value="">Loading students...</option></select>
+            </div>
+            <div class="form-group"><label>Description</label><input type="text" class="form-input" id="f-desc" placeholder="e.g. Tuition Fee" required></div>
+            <div class="form-group"><label>Amount (ZAR)</label><input type="number" class="form-input" id="f-amount" required></div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="submit" class="btn btn-primary" style="flex:1">Assign Fee</button>
+                <button type="button" class="btn btn-outline" style="flex:1" onclick="closeModal('fee-modal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
+      authDomain: "afromed-fda57.firebaseapp.com",
+      projectId: "afromed-fda57",
+      storageBucket: "afromed-fda57.firebasestorage.app",
+      messagingSenderId: "633274573777",
+      appId: "1:633274573777:web:6b244c95612bc92ff976f0"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    auth.onAuthStateChanged(user => {
+        if (!user) window.location.href = "index.html";
+        setTimeout(() => {
+            document.getElementById('college-preloader').style.display = 'none';
+            document.getElementById('college-app').style.display = 'grid';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            loadCollegeData();
+        }, 1500);
+    });
+
+    function showPage(id, el) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('page-title').innerText = id.toUpperCase();
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function loadCollegeData() {
+        // COURSES
+        db.collection('college_courses').onSnapshot(snap => {
+            const grid = document.getElementById('course-grid');
+            const select = document.getElementById('st-course');
+            grid.innerHTML = ''; select.innerHTML = '<option value="">Select Course...</option>';
+            document.getElementById('stat-courses').innerText = snap.size;
+            
+            snap.forEach(doc => {
+                const c = doc.data();
+                select.innerHTML += `<option value="${c.title}">${c.title}</option>`;
+                grid.innerHTML += `
+                    <div class="card course-card">
+                        <div style="font-size:30px; color:var(--accent); margin-bottom:10px;"><i class="uil uil-book-medical"></i></div>
+                        <h4 style="margin:0 0 5px;">${c.title}</h4>
+                        <div style="color:var(--muted); font-size:12px; margin-bottom:10px;"><i class="uil uil-clock"></i> ${c.duration}</div>
+                        <div style="font-weight:bold; color:var(--accent);">R ${c.fee}</div>
+                        <button class="btn btn-outline" style="width:100%; margin-top:10px; padding:5px; border-color:var(--danger); color:var(--danger);" onclick="deleteDoc('college_courses', '${doc.id}')"><i class="uil uil-trash"></i> Delete</button>
+                    </div>`;
+            });
+        });
+
+        // STUDENTS
+        db.collection('college_students').onSnapshot(snap => {
+            const table = document.getElementById('full-students-table');
+            const recTable = document.getElementById('recent-students-table');
+            const feeSelect = document.getElementById('f-student');
+            
+            table.innerHTML = ''; recTable.innerHTML = ''; feeSelect.innerHTML = '<option value="">Select Student...</option>';
+            document.getElementById('stat-students').innerText = snap.size;
+
+            snap.forEach(doc => {
+                const s = doc.data();
+                feeSelect.innerHTML += `<option value="${doc.id}|${s.name}">${s.name} (${s.email})</option>`;
+                
+                table.innerHTML += `<tr>
+                    <td>${s.name}</td><td>${s.email}</td><td>${s.phone}</td>
+                    <td><span class="status-pill" style="background:rgba(40,199,111,0.2); color:var(--accent);">${s.course}</span></td>
+                    <td><button class="btn btn-outline" style="padding:4px 8px; color:var(--danger); border-color:var(--danger);" onclick="deleteDoc('college_students', '${doc.id}')"><i class="uil uil-trash"></i></button></td>
+                </tr>`;
+                
+                recTable.innerHTML += `<tr><td>${s.name}</td><td>${s.email}</td><td>${s.course}</td><td>${new Date().toLocaleDateString()}</td></tr>`;
+            });
+        });
+
+        // FINANCE
+        db.collection('college_fees').onSnapshot(snap => {
+            const table = document.getElementById('finance-table');
+            table.innerHTML = '';
+            let total = 0;
+            snap.forEach(doc => {
+                const f = doc.data();
+                total += parseFloat(f.amount);
+                const statusHtml = f.status === 'Paid' ? `<span class="status-pill" style="background:rgba(40,199,111,0.2); color:var(--accent);">Paid</span>` : `<span class="status-pill" style="background:rgba(255,191,46,0.2); color:#ffbf2e;">Unpaid</span>`;
+                
+                table.innerHTML += `<tr>
+                    <td>${f.studentName}</td><td>${f.description}</td><td style="font-weight:bold;">R ${f.amount}</td><td>${statusHtml}</td>
+                    <td>
+                        ${f.status !== 'Paid' ? `<button class="btn btn-primary" style="padding:4px 10px; font-size:11px;" onclick="markPaid('${doc.id}')">Mark Paid</button>` : ''}
+                        <button class="btn btn-outline" style="padding:4px 8px; color:var(--danger); border-color:var(--danger);" onclick="deleteDoc('college_fees', '${doc.id}')"><i class="uil uil-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('stat-revenue').innerText = `R ${total}`;
+        });
+    }
+
+    // FORM SUBMISSIONS
+    document.getElementById('add-course-form').onsubmit = async (e) => {
+        e.preventDefault();
+        await db.collection('college_courses').add({ title: document.getElementById('c-title').value, duration: document.getElementById('c-duration').value, fee: document.getElementById('c-fee').value });
+        closeModal('course-modal'); e.target.reset();
+    };
+
+    document.getElementById('add-student-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('st-email').value;
+        const pass = "STUDENT123"; // Default
+        try {
+            // First save to our students list
+            await db.collection('college_students').add({ name: document.getElementById('st-name').value, email: email, phone: document.getElementById('st-phone').value, course: document.getElementById('st-course').value });
+            
+            // Note: In a real environment, you'd use a cloud function to create Auth users. 
+            // Here, we just add the permission to the 'users' table so the student can login if they sign up.
+            const tempUid = db.collection('users').doc().id; 
+            await db.collection('users').doc(tempUid).set({ email: email, name: document.getElementById('st-name').value, role: 'student' }, {merge: true});
+
+            closeModal('student-modal'); e.target.reset(); alert("Student registered! Tell them to login with password: " + pass);
+        } catch(err) { alert(err.message); }
+    };
+
+    document.getElementById('add-fee-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const studentVal = document.getElementById('f-student').value.split('|');
+        await db.collection('college_fees').add({ studentId: studentVal[0], studentName: studentVal[1], description: document.getElementById('f-desc').value, amount: document.getElementById('f-amount').value, status: 'Unpaid' });
+        closeModal('fee-modal'); e.target.reset();
+    };
+
+    window.markPaid = async (id) => { await db.collection('college_fees').doc(id).update({ status: 'Paid' }); };
+    window.deleteDoc = async (col, id) => { if(confirm("Are you sure?")) await db.collection(col).doc(id).delete(); };
+    document.getElementById('logout-btn').onclick = () => auth.signOut().then(() => window.location.href="index.html");
+</script>
+</body>
+</html>

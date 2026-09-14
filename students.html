@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Portal | Afromed College</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary-blue: #0A2540;
+            --accent-red: #D90429;
+            --admin-dark: #111827;
+            --bg-body: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --success-green: #10B981;
+            --warning-orange: #F59E0B;
+            --sidebar-width: 260px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--admin-dark);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+        }
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #374151;
+        }
+        .admin-badge {
+            background: var(--accent-red);
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+            flex-grow: 1;
+        }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #9CA3AF;
+            text-decoration: none;
+            font-weight: 500;
+            gap: 15px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--accent-red);
+        }
+
+        /* Main */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .content-area {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .panel-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--primary-blue);
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #071a2d;
+        }
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        .data-table th {
+            background: #F9FAFB;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .data-table tr:hover {
+            background: #F9FAFB;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-paid {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .badge-owing {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        .badge-sent {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .badge-failed {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        .badge-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        /* SMS */
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-right: 10px;
+            transition: 0.2s;
+        }
+        .action-btn:hover {
+            color: var(--primary-blue);
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-blue);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .recipient-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .recipient-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .recipient-item:hover {
+            background: #f3f4f6;
+        }
+        .message-preview {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .char-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+        .sms-status-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .sms-status-badge.success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .sms-status-badge.error {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        .sms-status-badge.pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
+        }
+        .toast-success {
+            background: var(--success-green);
+        }
+        .toast-error {
+            background: var(--accent-red);
+        }
+        .toast-warning {
+            background: var(--warning-orange);
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                width: 60px;
+            }
+            .sidebar-header span,
+            .sidebar-header .admin-badge,
+            .nav-menu a span {
+                display: none;
+            }
+            .nav-menu a {
+                justify-content: center;
+                padding: 1rem 0.5rem;
+            }
+            .content-area {
+                padding: 1rem;
+            }
+        }
+
+        .webhook-test-result {
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .webhook-test-result.ok {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+        .webhook-test-result.fail {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+        .webhook-test-result.waiting {
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FCD34D;
+        }
+        .inline-code {
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://www.afromed.life/logo/logo.png" alt="Afromed" style="height:35px; filter:brightness(0) invert(1);" />
+            <span class="admin-badge">ADMIN</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a class="nav-link active" data-target="view-users"><i class="fa-solid fa-users"></i> <span>Students</span></a></li>
+            <li><a class="nav-link" data-target="view-courses"><i class="fa-solid fa-book"></i> <span>Courses</span></a></li>
+            <li><a class="nav-link" data-target="view-assignments"><i class="fa-solid fa-file-pen"></i> <span>Assignments</span></a></li>
+            <li><a class="nav-link" data-target="view-grading"><i class="fa-solid fa-check-double"></i> <span>Grading</span></a></li>
+            <li><a class="nav-link" data-target="view-sms"><i class="fa-solid fa-sms"></i> <span>SMS</span></a></li>
+        </ul>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-wrapper">
+        <header class="topbar">
+            <h2 style="font-size:1.2rem; font-weight:600;">College Management System</h2>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <span id="admin-name" style="font-weight:500;">Admin User</span>
+                <button id="btn-logout" class="btn btn-danger" style="padding:6px 12px; font-size:0.85rem;">Logout</button>
+            </div>
+        </header>
+
+        <main class="content-area">
+
+            <!-- ============ STUDENTS ============ -->
+            <div id="view-users" class="view-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                    <div>
+                        <h1>Student Management</h1>
+                        <p style="color:var(--text-muted);">Register students, track payments, and allocate courses.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="toggleForm('student-form-panel')"><i class="fa-solid fa-user-plus"></i> Register New Student</button>
+                </div>
+
+                <div id="student-form-panel" class="panel hidden">
+                    <h3 class="panel-header">Registration Form</h3>
+                    <form id="form-add-student">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="std-fname" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="std-lname" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="std-email" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Phone (e.g. 082 123 4567)</label>
+                                <input type="tel" id="std-phone" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Select Course</label>
+                                <select id="std-course" class="form-control" required>
+                                    <option value="" disabled selected>-- Select Course --</option>
+                                    <option value="Advanced Emergency First Aid Responder">Advanced Emergency First Aid Responder</option>
+                                    <option value="Basic Emergency First Aid Responder">Basic Emergency First Aid Responder</option>
+                                    <option value="Forestry SHE Representative">Forestry SHE Representative</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Status</label>
+                                <select id="std-payment" class="form-control" required>
+                                    <option value="Paid">Fully Paid</option>
+                                    <option value="Owing">Owing / Partial</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success" id="btn-save-student">
+                            <i class="fa-solid fa-save"></i> Save &amp; Generate Student No.
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="toggleForm('student-form-panel')">Cancel</button>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h3 class="panel-header" style="border:none; margin:0; padding:0;">Student Directory</h3>
+                        <button class="btn btn-outline" style="padding:5px 10px; font-size:0.8rem;" id="btn-refresh-students"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student No.</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Course</th>
+                                <th>Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-table-body">
+                            <tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);"><div class="spinner"></div> Loading students…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ COURSES ============ -->
+            <div id="view-courses" class="view-section hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                    <h1>Manage Courses</h1>
+                    <button class="btn btn-primary" onclick="toggleForm('course-form-panel')"><i class="fa-solid fa-plus"></i> Add New Course</button>
+                </div>
+                <div id="course-form-panel" class="panel hidden">
+                    <h3 class="panel-header">Create a New Course</h3>
+                    <form id="form-add-course">
+                        <div class="grid-2">
+                            <div class="form-group"><label>Course Title</label><input type="text" id="course-title" class="form-control" required /></div>
+                            <div class="form-group"><label>Course Code</label><input type="text" id="course-code" class="form-control" required /></div>
+                        </div>
+                        <div class="form-group"><label>Description</label><textarea id="course-desc" class="form-control" required></textarea></div>
+                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-save"></i> Save Course</button>
+                        <button type="button" class="btn btn-outline" onclick="toggleForm('course-form-panel')">Cancel</button>
+                    </form>
+                </div>
+                <div class="panel">
+                    <h3 class="panel-header">Active Courses</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Code</th><th>Title</th><th>Description</th><th>Actions</th></tr></thead>
+                        <tbody id="courses-table-body"><tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">Loading…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ ASSIGNMENTS ============ -->
+            <div id="view-assignments" class="view-section hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                    <h1>Assignments</h1>
+                    <button class="btn btn-primary" onclick="toggleForm('assignment-form-panel')"><i class="fa-solid fa-plus"></i> Create Assignment</button>
+                </div>
+                <div id="assignment-form-panel" class="panel hidden">
+                    <h3 class="panel-header">Post New Assignment</h3>
+                    <form id="form-add-assignment">
+                        <div class="form-group"><label>Assignment Title</label><input type="text" id="assign-title" class="form-control" required /></div>
+                        <div class="form-group"><label>Description</label><textarea id="assign-desc" class="form-control" required></textarea></div>
+                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-paper-plane"></i> Publish</button>
+                        <button type="button" class="btn btn-outline" onclick="toggleForm('assignment-form-panel')">Cancel</button>
+                    </form>
+                </div>
+                <div class="panel">
+                    <h3 class="panel-header">Active Assignments</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Title</th><th>Description</th><th>Date Posted</th><th>Actions</th></tr></thead>
+                        <tbody id="assignments-table-body"><tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">Loading…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ GRADING ============ -->
+            <div id="view-grading" class="view-section hidden">
+                <h1>Grading &amp; Marking</h1>
+                <div class="panel"><h3 class="panel-header">Pending Marking</h3><p style="color:var(--text-muted);">No new submissions to mark.</p></div>
+            </div>
+
+            <!-- ============ SMS MESSAGING ============ -->
+            <div id="view-sms" class="view-section hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                    <div>
+                        <h1>SMS Messaging</h1>
+                        <p style="color:var(--text-muted);">Send SMS messages to students via Twilio + Make.com</p>
+                    </div>
+                    <button class="btn btn-outline" id="btn-test-webhook" style="font-size:0.85rem;">
+                        <i class="fa-solid fa-plug"></i> Test Webhook
+                    </button>
+                </div>
+
+                <!-- SMS Composer -->
+                <div class="panel">
+                    <h3 class="panel-header"><i class="fa-solid fa-pen-to-square"></i> Create New Message</h3>
+                    <form id="form-send-sms">
+                        <div class="grid-2">
+                            <!-- Recipients -->
+                            <div class="form-group">
+                                <label>Select Recipients</label>
+                                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                                    <button type="button" class="btn btn-outline" style="padding:5px 10px; font-size:0.85rem;" onclick="selectAllStudents()">
+                                        <i class="fa-solid fa-check-double"></i> Select All
+                                    </button>
+                                    <button type="button" class="btn btn-outline" style="padding:5px 10px; font-size:0.85rem;" onclick="deselectAllStudents()">
+                                        <i class="fa-solid fa-times"></i> Clear All
+                                    </button>
+                                </div>
+                                <div class="recipient-list" id="sms-recipients">
+                                    <div style="padding:15px; text-align:center; color:var(--text-muted);"><div class="spinner"></div> Loading students…</div>
+                                </div>
+                                <div style="margin-top:10px; font-size:0.85rem; color:var(--text-muted);">
+                                    Selected: <span id="selected-count">0</span> student(s)
+                                </div>
+                            </div>
+
+                            <!-- Message -->
+                            <div>
+                                <div class="form-group">
+                                    <label>Template</label>
+                                    <select id="sms-template" class="form-control" onchange="applyTemplate()">
+                                        <option value="">-- Select Template --</option>
+                                        <option value="welcome">Welcome</option>
+                                        <option value="payment">Payment Reminder</option>
+                                        <option value="assignment">Assignment Notice</option>
+                                        <option value="exam">Exam Notification</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Message Content</label>
+                                    <textarea id="sms-message" class="form-control" rows="6" maxlength="480" placeholder="Type your SMS message here…" required></textarea>
+                                    <div class="char-count" id="char-count">0 / 480 characters</div>
+                                    <div style="margin-top:6px; font-size:0.8rem; color:var(--text-muted);">
+                                        <i class="fa-solid fa-info-circle"></i> Variables: <code>{name}</code> <code>{studentNo}</code> <code>{course}</code>
+                                    </div>
+                                </div>
+                                <div class="message-preview" id="message-preview-box">
+                                    <strong>Preview:</strong>
+                                    <div id="message-preview-text" style="margin-top:6px; color:var(--text-muted);">No message entered</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Webhook test result area -->
+                        <div id="webhook-test-result" class="webhook-test-result hidden"></div>
+
+                        <div style="margin-top:1.5rem; display:flex; gap:10px; flex-wrap:wrap;">
+                            <button type="submit" class="btn btn-primary" id="btn-send-sms">
+                                <i class="fa-solid fa-paper-plane"></i> Send SMS
+                            </button>
+                            <button type="button" class="btn btn-outline" onclick="clearSMSForm()">
+                                <i class="fa-solid fa-eraser"></i> Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- SMS History -->
+                <div class="panel">
+                    <h3 class="panel-header"><i class="fa-solid fa-clock-rotate-left"></i> Message History</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Date Sent</th><th>Message</th><th>Recipients</th><th>Status</th></tr></thead>
+                        <tbody id="sms-history-body"><tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">Loading history…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <!-- ===== UI SCRIPTS (non-module) ===== -->
+    <script>
+        // ========== MAKE WEBHOOK URL ==========
+        // UPDATE THIS WITH YOUR ACTUAL MAKE.COM WEBHOOK URL
+        const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/czbsf792mjy8sv1mnfq2acu6n3bjv2ij";
+
+        // ========== TOAST ==========
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // ========== TAB NAV ==========
+        const navLinks = document.querySelectorAll('.nav-link');
+        const viewSections = document.querySelectorAll('.view-section');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                navLinks.forEach(l => l.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                const target = e.currentTarget.getAttribute('data-target');
+                viewSections.forEach(s => s.classList.add('hidden'));
+                document.getElementById(target).classList.remove('hidden');
+                if (target === 'view-courses') loadCourses();
+                if (target === 'view-assignments') loadAssignments();
+                if (target === 'view-sms') {
+                    loadSMSRecipients();
+                    loadSMSHistory();
+                }
+            });
+        });
+
+        function toggleForm(formId) {
+            document.getElementById(formId).classList.toggle('hidden');
+        }
+
+        // ========== SMS HELPERS ==========
+        let selectedStudents = new Set();
+
+        function selectAllStudents() {
+            document.querySelectorAll('.student-checkbox').forEach(cb => {
+                cb.checked = true;
+                selectedStudents.add(cb.value);
+            });
+            updateSelectedCount();
+        }
+
+        function deselectAllStudents() {
+            document.querySelectorAll('.student-checkbox').forEach(cb => {
+                cb.checked = false;
+                selectedStudents.delete(cb.value);
+            });
+            updateSelectedCount();
+        }
+
+        function toggleStudentSelection(id, checked) {
+            if (checked) selectedStudents.add(id);
+            else selectedStudents.delete(id);
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            document.getElementById('selected-count').textContent = selectedStudents.size;
+        }
+
+        function applyTemplate() {
+            const tpl = document.getElementById('sms-template').value;
+            const box = document.getElementById('sms-message');
+            const map = {
+                welcome: 'Welcome to Afromed College {name}! Your student number is {studentNo}. Enrolled in {course}.',
+                payment: 'Dear {name}, your payment for {course} is due. Please contact the admin office.',
+                assignment: 'Dear {name}, a new assignment has been posted for {course}. Check your portal.',
+                exam: 'Dear {name}, your exam for {course} is scheduled. Check the timetable.',
+                custom: ''
+            };
+            box.value = map[tpl] || '';
+            updateCharCount();
+            updateMessagePreview();
+        }
+
+        function updateCharCount() {
+            const msg = document.getElementById('sms-message').value;
+            document.getElementById('char-count').textContent = `${msg.length} / 480 characters`;
+        }
+
+        function updateMessagePreview() {
+            const msg = document.getElementById('sms-message').value;
+            const el = document.getElementById('message-preview-text');
+            if (!msg) {
+                el.textContent = 'No message entered';
+                return;
+            }
+            let preview = msg
+                .replace(/{name}/g, 'John Doe')
+                .replace(/{studentNo}/g, 'AFR2412345')
+                .replace(/{course}/g, 'Advanced Emergency First Aid Responder');
+            el.textContent = preview;
+        }
+
+        function clearSMSForm() {
+            document.getElementById('sms-message').value = '';
+            document.getElementById('sms-template').value = '';
+            deselectAllStudents();
+            updateCharCount();
+            updateMessagePreview();
+            document.getElementById('webhook-test-result').classList.add('hidden');
+        }
+
+        document.getElementById('sms-message').addEventListener('input', () => {
+            updateCharCount();
+            updateMessagePreview();
+        });
+
+        // ========== TEST WEBHOOK ==========
+        document.getElementById('btn-test-webhook').addEventListener('click', async function() {
+            const btn = this;
+            const resultBox = document.getElementById('webhook-test-result');
+            resultBox.className = 'webhook-test-result waiting';
+            resultBox.classList.remove('hidden');
+            resultBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testing webhook…';
+            btn.disabled = true;
+
+            try {
+                const testPayload = {
+                    to: '+27821234567',
+                    studentName: 'Test Student',
+                    studentNumber: 'TEST001',
+                    courseName: 'Test Course',
+                    message: 'This is a test message from Afromed Admin Portal.',
+                    type: 'test'
+                };
+
+                const response = await fetch(MAKE_WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testPayload)
+                });
+
+                let responseText = '';
+                try {
+                    responseText = await response.text();
+                } catch (_) { /* ignore */ }
+
+                if (response.ok) {
+                    resultBox.className = 'webhook-test-result ok';
+                    resultBox.innerHTML = `
+                        <i class="fa-solid fa-check-circle"></i> 
+                        <strong>Webhook responded successfully!</strong> 
+                        <br><span style="font-size:0.85rem;">Status: ${response.status} ${response.statusText}</span>
+                        ${responseText ? `<br><span style="font-size:0.8rem; opacity:0.8;">Response: ${responseText.slice(0, 120)}</span>` : ''}
+                    `;
+                    showToast('✅ Webhook test passed!', 'success');
+                } else {
+                    resultBox.className = 'webhook-test-result fail';
+                    resultBox.innerHTML = `
+                        <i class="fa-solid fa-exclamation-triangle"></i> 
+                        <strong>Webhook returned error:</strong> 
+                        ${response.status} ${response.statusText}
+                        <br><span style="font-size:0.85rem;">${responseText || 'No response body'}</span>
+                    `;
+                    showToast('❌ Webhook test failed — see details below', 'error');
+                }
+            } catch (err) {
+                resultBox.className = 'webhook-test-result fail';
+                resultBox.innerHTML = `
+                    <i class="fa-solid fa-bug"></i> 
+                    <strong>Network / CORS error:</strong> 
+                    ${err.message}
+                    <br><span style="font-size:0.85rem;">Make sure the webhook URL is correct and CORS is enabled on Make.com.</span>
+                `;
+                showToast('❌ Webhook unreachable — check console for details', 'error');
+                console.error('Webhook test error:', err);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // ========== FORMAT PHONE (FIXED FOR SOUTH AFRICA) ==========
+        function formatPhoneForTwilio(phone) {
+            if (!phone) return null;
+            // Remove all non-digit characters
+            let cleaned = phone.replace(/\D/g, '');
+            if (!cleaned) return null;
+
+            // If already in E.164 with +27, return as is
+            if (phone.trim().startsWith('+27') && cleaned.length === 11) {
+                return '+' + cleaned;
+            }
+
+            // South African local numbers
+            if (cleaned.startsWith('0') && cleaned.length === 10) {
+                cleaned = '27' + cleaned.substring(1);
+            } else if (cleaned.startsWith('27') && cleaned.length === 11) {
+                // Already has 27, just add '+'
+            } else if (cleaned.length === 9) {
+                // Assume missing leading 0
+                cleaned = '27' + cleaned;
+            } else if (cleaned.length >= 10 && !cleaned.startsWith('27')) {
+                // Could be 0 + 9 digits without the 0? Add 27 anyway
+                cleaned = '27' + cleaned;
+            } else {
+                // fallback: add 27
+                cleaned = '27' + cleaned;
+            }
+
+            if (!cleaned.startsWith('+')) cleaned = '+' + cleaned;
+
+            // Validate length: +27 + 9 digits = 12 characters minimum
+            if (cleaned.length < 12) return null;
+
+            return cleaned;
+        }
+
+        // ========== SEND SMS VIA MAKE ==========
+        async function sendSMSViaMake(to, message, studentName = '', studentNumber = '', courseName = '', type = 'manual') {
+            const payload = {
+                to: to,
+                studentName: studentName,
+                studentNumber: studentNumber,
+                courseName: courseName,
+                message: message,
+                type: type
+            };
+
+            console.log('[SMS] Sending to Make.com:', payload);
+
+            const response = await fetch(MAKE_WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            let responseBody = '';
+            try {
+                responseBody = await response.text();
+            } catch (_) { /* ignore */ }
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status} ${response.statusText} — ${responseBody}`);
+            }
+
+            return { ok: true, status: response.status, body: responseBody };
+        }
+    </script>
+
+    <!-- ===== FIREBASE MODULE ===== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
+            authDomain: "afromed-fda57.firebaseapp.com",
+            projectId: "afromed-fda57",
+            storageBucket: "afromed-fda57.firebasestorage.app",
+            messagingSenderId: "633274573777",
+            appId: "1:633274573777:web:6b244c95612bc92ff976f0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Expose for inline event handlers
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.serverTimestamp = serverTimestamp;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.deleteDoc = deleteDoc;
+        window.doc = doc;
+        window.showToast = showToast;
+
+        // Auth
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('admin-name').innerText = user.displayName || user.email || "Admin";
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            signOut(auth).then(() => { window.location.href = 'index.html'; });
+        });
+
+        // ========== GENERATE STUDENT NO ==========
+        function generateStudentNumber() {
+            const year = new Date().getFullYear().toString().slice(-2);
+            const random = Math.floor(10000 + Math.random() * 90000);
+            return `AFR${year}${random}`;
+        }
+
+        // ========== SAVE STUDENT ==========
+        document.getElementById('form-add-student').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-student');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
+            btn.disabled = true;
+
+            const studentNo = generateStudentNumber();
+            const firstName = document.getElementById('std-fname').value.trim();
+            const lastName = document.getElementById('std-lname').value.trim();
+            const email = document.getElementById('std-email').value.trim();
+            const course = document.getElementById('std-course').value;
+            const payment = document.getElementById('std-payment').value;
+            const rawPhone = document.getElementById('std-phone').value.trim();
+            const phone = formatPhoneForTwilio(rawPhone);
+
+            if (!phone) {
+                showToast('❌ Invalid phone number. Please use a valid South African number (e.g., 082 123 4567)', 'error');
+                btn.innerHTML = orig;
+                btn.disabled = false;
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "students"), {
+                    studentNo,
+                    firstName,
+                    lastName,
+                    email,
+                    phone,
+                    course,
+                    paymentStatus: payment,
+                    registeredAt: serverTimestamp()
+                });
+
+                // Try sending welcome SMS
+                try {
+                    const welcomeMsg =
+                        `Welcome to Afromed College! Your student number is ${studentNo}. Enrolled in ${course}.`;
+                    await sendSMSViaMake(phone, welcomeMsg, `${firstName} ${lastName}`, studentNo, course, 'registration');
+                    showToast('✅ Student saved & welcome SMS sent!', 'success');
+                } catch (smsErr) {
+                    console.warn('SMS not sent:', smsErr);
+                    showToast('✅ Student saved! (SMS failed — check webhook)', 'warning');
+                }
+
+                document.getElementById('form-add-student').reset();
+                toggleForm('student-form-panel');
+                loadStudents();
+            } catch (err) {
+                console.error(err);
+                showToast('❌ Failed to save student: ' + err.message, 'error');
+            } finally {
+                btn.innerHTML = orig;
+                btn.disabled = false;
+            }
+        });
+
+        // ========== LOAD STUDENTS ==========
+        async function loadStudents() {
+            const tbody = document.getElementById('student-table-body');
+            tbody.innerHTML =
+                '<tr><td colspan="6" style="text-align:center; padding:20px;"><div class="spinner"></div> Loading…</td></tr>';
+            try {
+                const q = query(collection(db, "students"), orderBy("registeredAt", "desc"));
+                const snap = await getDocs(q);
+                tbody.innerHTML = '';
+                if (snap.empty) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">No students registered yet.</td></tr>`;
+                    return;
+                }
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const badge = d.paymentStatus === 'Paid' ?
+                        `<span class="badge badge-paid"><i class="fa-solid fa-check"></i> Paid</span>` :
+                        `<span class="badge badge-owing"><i class="fa-solid fa-triangle-exclamation"></i> Owing</span>`;
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr>
+                            <td><strong>${d.studentNo || 'N/A'}</strong></td>
+                            <td>${d.firstName || ''} ${d.lastName || ''}</td>
+                            <td><div><i class="fa-regular fa-envelope" style="color:var(--text-muted);font-size:0.8rem;margin-right:5px;"></i>${d.email || 'N/A'}</div>
+                                <div><i class="fa-solid fa-phone" style="color:var(--text-muted);font-size:0.8rem;margin-right:5px;"></i>${d.phone || 'N/A'}</div></td>
+                            <td>${d.course || 'N/A'}</td>
+                            <td>${badge}</td>
+                            <td>
+                                <button class="action-btn" title="Edit" onclick="alert('Edit coming soon')"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="action-btn" title="Delete" onclick="deleteStudent('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML =
+                    `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Failed to load: ${err.message}</td></tr>`;
+            }
+        }
+
+        window.deleteStudent = async function(id) {
+            if (!confirm('Delete this student?')) return;
+            try {
+                await deleteDoc(doc(db, "students", id));
+                showToast('✅ Student deleted', 'success');
+                loadStudents();
+            } catch (err) {
+                showToast('❌ Delete failed: ' + err.message, 'error');
+            }
+        };
+
+        // ========== LOAD COURSES ==========
+        async function loadCourses() {
+            const tbody = document.getElementById('courses-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><div class="spinner"></div> Loading…</td></tr>';
+            try {
+                const q = query(collection(db, "courses"), orderBy("createdAt", "desc"));
+                const snap = await getDocs(q);
+                tbody.innerHTML = '';
+                if (snap.empty) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">No courses yet.</td></tr>`;
+                    return;
+                }
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr>
+                            <td><strong>${d.code || 'N/A'}</strong></td>
+                            <td>${d.title || 'N/A'}</td>
+                            <td>${d.description || 'No description'}</td>
+                            <td>
+                                <button class="action-btn" title="Delete" onclick="deleteCourse('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            } catch (err) {
+                tbody.innerHTML =
+                    `<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Failed to load: ${err.message}</td></tr>`;
+            }
+        }
+
+        window.deleteCourse = async function(id) {
+            if (!confirm('Delete this course?')) return;
+            try {
+                await deleteDoc(doc(db, "courses", id));
+                showToast('✅ Course deleted', 'success');
+                loadCourses();
+            } catch (err) {
+                showToast('❌ Delete failed: ' + err.message, 'error');
+            }
+        };
+
+        document.getElementById('form-add-course').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('course-title').value.trim();
+            const code = document.getElementById('course-code').value.trim();
+            const desc = document.getElementById('course-desc').value.trim();
+            try {
+                await addDoc(collection(db, "courses"), { title, code, description: desc, createdAt: serverTimestamp() });
+                showToast('✅ Course created!', 'success');
+                document.getElementById('form-add-course').reset();
+                toggleForm('course-form-panel');
+                loadCourses();
+            } catch (err) {
+                showToast('❌ Failed: ' + err.message, 'error');
+            }
+        });
+
+        // ========== LOAD ASSIGNMENTS ==========
+        async function loadAssignments() {
+            const tbody = document.getElementById('assignments-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><div class="spinner"></div> Loading…</td></tr>';
+            try {
+                const q = query(collection(db, "assignments"), orderBy("createdAt", "desc"));
+                const snap = await getDocs(q);
+                tbody.innerHTML = '';
+                if (snap.empty) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">No assignments yet.</td></tr>`;
+                    return;
+                }
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr>
+                            <td><strong>${d.title || 'N/A'}</strong></td>
+                            <td>${d.description || 'No description'}</td>
+                            <td>${date}</td>
+                            <td>
+                                <button class="action-btn" title="Delete" onclick="deleteAssignment('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            } catch (err) {
+                tbody.innerHTML =
+                    `<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Failed to load: ${err.message}</td></tr>`;
+            }
+        }
+
+        window.deleteAssignment = async function(id) {
+            if (!confirm('Delete this assignment?')) return;
+            try {
+                await deleteDoc(doc(db, "assignments", id));
+                showToast('✅ Assignment deleted', 'success');
+                loadAssignments();
+            } catch (err) {
+                showToast('❌ Delete failed: ' + err.message, 'error');
+            }
+        };
+
+        document.getElementById('form-add-assignment').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('assign-title').value.trim();
+            const desc = document.getElementById('assign-desc').value.trim();
+            try {
+                await addDoc(collection(db, "assignments"), { title, description: desc, createdAt: serverTimestamp() });
+                showToast('✅ Assignment published!', 'success');
+                document.getElementById('form-add-assignment').reset();
+                toggleForm('assignment-form-panel');
+                loadAssignments();
+            } catch (err) {
+                showToast('❌ Failed: ' + err.message, 'error');
+            }
+        });
+
+        // ========== SMS RECIPIENTS ==========
+        async function loadSMSRecipients() {
+            const container = document.getElementById('sms-recipients');
+            container.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-muted);"><div class="spinner"></div> Loading…</div>';
+            try {
+                const q = query(collection(db, "students"), orderBy("firstName"));
+                const snap = await getDocs(q);
+                container.innerHTML = '';
+                if (snap.empty) {
+                    container.innerHTML =
+                        '<div style="padding:15px; text-align:center; color:var(--text-muted);">No students registered.</div>';
+                    return;
+                }
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const name = `${d.firstName || ''} ${d.lastName || ''}`.trim();
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="recipient-item">
+                            <label style="display:flex; align-items:center; cursor:pointer;">
+                                <input type="checkbox" class="student-checkbox" value="${doc.id}" 
+                                       onchange="toggleStudentSelection('${doc.id}', this.checked)" style="margin-right:10px;">
+                                <div>
+                                    <div style="font-weight:500;">${name}</div>
+                                    <div style="font-size:0.85rem; color:var(--text-muted);">
+                                        ${d.studentNo || ''} • ${d.phone || 'No phone'} • ${d.course || ''}
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    `);
+                });
+                // Reset selection when recipients reload
+                selectedStudents.clear();
+                updateSelectedCount();
+            } catch (err) {
+                container.innerHTML =
+                    `<div style="padding:15px; text-align:center; color:red;">Failed to load: ${err.message}</div>`;
+            }
+        }
+
+        // ========== SMS HISTORY ==========
+        async function loadSMSHistory() {
+            const tbody = document.getElementById('sms-history-body');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><div class="spinner"></div> Loading…</td></tr>';
+            try {
+                const q = query(collection(db, "smsHistory"), orderBy("sentAt", "desc"));
+                const snap = await getDocs(q);
+                tbody.innerHTML = '';
+                if (snap.empty) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">No messages sent yet.</td></tr>`;
+                    return;
+                }
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const date = d.sentAt ? new Date(d.sentAt.seconds * 1000).toLocaleString() : 'N/A';
+                    let status = '';
+                    if (d.failedCount === 0 && d.successCount > 0) status =
+                        `<span class="badge badge-sent"><i class="fa-solid fa-check"></i> Sent</span>`;
+                    else if (d.successCount === 0 && d.failedCount > 0) status =
+                        `<span class="badge badge-failed"><i class="fa-solid fa-times"></i> Failed</span>`;
+                    else status =
+                        `<span class="badge badge-pending"><i class="fa-solid fa-triangle-exclamation"></i> Partial</span>`;
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${d.message || 'N/A'}</td>
+                            <td>${d.recipientCount || 0} recipient(s)</td>
+                            <td>${status}</td>
+                        </tr>
+                    `);
+                });
+            } catch (err) {
+                tbody.innerHTML =
+                    `<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Failed to load: ${err.message}</td></tr>`;
+            }
+        }
+
+        // ========== SEND SMS (with validation) ==========
+        document.getElementById('form-send-sms').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const message = document.getElementById('sms-message').value.trim();
+            const btn = document.getElementById('btn-send-sms');
+            const resultBox = document.getElementById('webhook-test-result');
+
+            if (!message) {
+                showToast('⚠️ Please enter a message', 'warning');
+                return;
+            }
+            if (selectedStudents.size === 0) {
+                showToast('⚠️ Please select at least one recipient', 'warning');
+                return;
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending…';
+            btn.disabled = true;
+            resultBox.className = 'webhook-test-result waiting';
+            resultBox.classList.remove('hidden');
+            resultBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending messages…';
+
+            try {
+                // Fetch selected students' data
+                const allStudents = await getDocs(collection(db, "students"));
+                const selectedData = [];
+                allStudents.forEach(doc => {
+                    if (selectedStudents.has(doc.id)) {
+                        const d = doc.data();
+                        let personalized = message
+                            .replace(/{name}/g, `${d.firstName || ''} ${d.lastName || ''}`.trim())
+                            .replace(/{studentNo}/g, d.studentNo || '')
+                            .replace(/{course}/g, d.course || '');
+                        selectedData.push({
+                            phone: d.phone,
+                            name: `${d.firstName || ''} ${d.lastName || ''}`.trim(),
+                            studentNo: d.studentNo || '',
+                            course: d.course || '',
+                            message: personalized
+                        });
+                    }
+                });
+
+                if (selectedData.length === 0) {
+                    showToast('⚠️ No valid recipients found', 'warning');
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send SMS';
+                    btn.disabled = false;
+                    resultBox.classList.add('hidden');
+                    return;
+                }
+
+                // Filter out students without phone numbers OR invalid numbers
+                const valid = selectedData.filter(s => {
+                    if (!s.phone || s.phone.length < 5) return false;
+                    // Re-format using the global function
+                    const formatted = formatPhoneForTwilio(s.phone);
+                    if (!formatted) return false;
+                    s.phone = formatted; // store the formatted version
+                    return true;
+                });
+
+                if (valid.length === 0) {
+                    showToast('⚠️ None of the selected students have a valid South African phone number', 'warning');
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send SMS';
+                    btn.disabled = false;
+                    resultBox.classList.add('hidden');
+                    return;
+                }
+
+                let successCount = 0;
+                let failedCount = 0;
+                const errors = [];
+
+                for (const student of valid) {
+                    try {
+                        const resp = await sendSMSViaMake(
+                            student.phone,
+                            student.message,
+                            student.name,
+                            student.studentNo,
+                            student.course,
+                            'manual'
+                        );
+                        if (resp.ok) successCount++;
+                        else {
+                            failedCount++;
+                            errors.push(`${student.name}: ${resp.body || 'Unknown error'}`);
+                        }
+                    } catch (err) {
+                        failedCount++;
+                        errors.push(`${student.name}: ${err.message}`);
+                        console.error(`[SMS] Failed for ${student.name}:`, err);
+                    }
+                }
+
+                // Log to history
+                await addDoc(collection(db, "smsHistory"), {
+                    message: message,
+                    recipientCount: valid.length,
+                    successCount: successCount,
+                    failedCount: failedCount,
+                    sentAt: serverTimestamp(),
+                    sentBy: auth.currentUser?.email || 'Admin'
+                });
+
+                // Show result
+                if (failedCount === 0) {
+                    resultBox.className = 'webhook-test-result ok';
+                    resultBox.innerHTML =
+                        `<i class="fa-solid fa-check-circle"></i> ✅ All ${successCount} message(s) sent successfully!`;
+                    showToast(`✅ SMS sent to ${successCount} student(s)!`, 'success');
+                } else if (successCount > 0) {
+                    resultBox.className = 'webhook-test-result fail';
+                    resultBox.innerHTML = `
+                        <i class="fa-solid fa-triangle-exclamation"></i> 
+                        ⚠️ Sent to ${successCount}, failed for ${failedCount}
+                        ${errors.length ? `<br><span style="font-size:0.8rem;">${errors.slice(0, 3).join('; ')}${errors.length > 3 ? ` … and ${errors.length - 3} more` : ''}</span>` : ''}
+                    `;
+                    showToast(`⚠️ Sent to ${successCount}, failed for ${failedCount}`, 'warning');
+                } else {
+                    resultBox.className = 'webhook-test-result fail';
+                    resultBox.innerHTML = `
+                        <i class="fa-solid fa-times-circle"></i> 
+                        ❌ All ${failedCount} message(s) failed.
+                        ${errors.length ? `<br><span style="font-size:0.8rem;">${errors.slice(0, 3).join('; ')}${errors.length > 3 ? ` … and ${errors.length - 3} more` : ''}</span>` : ''}
+                        <br><span style="font-size:0.8rem;">Check that your Make.com webhook is active and properly configured.</span>
+                    `;
+                    showToast('❌ SMS sending failed — see details below', 'error');
+                }
+
+                clearSMSForm();
+                loadSMSHistory();
+
+            } catch (err) {
+                console.error('[SMS] Fatal error:', err);
+                resultBox.className = 'webhook-test-result fail';
+                resultBox.innerHTML = `
+                    <i class="fa-solid fa-bug"></i> 
+                    <strong>Error:</strong> ${err.message}
+                    <br><span style="font-size:0.85rem;">Check the browser console for more details.</span>
+                `;
+                showToast('❌ Failed to send SMS: ' + err.message, 'error');
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send SMS';
+                btn.disabled = false;
+            }
+        });
+
+        // ========== EXPOSE TO GLOBAL ==========
+        window.loadStudents = loadStudents;
+        window.loadCourses = loadCourses;
+        window.loadAssignments = loadAssignments;
+        window.loadSMSRecipients = loadSMSRecipients;
+        window.loadSMSHistory = loadSMSHistory;
+        window.toggleStudentSelection = toggleStudentSelection;
+        window.selectAllStudents = selectAllStudents;
+        window.deselectAllStudents = deselectAllStudents;
+        window.applyTemplate = applyTemplate;
+        window.updateCharCount = updateCharCount;
+        window.updateMessagePreview = updateMessagePreview;
+        window.clearSMSForm = clearSMSForm;
+        window.formatPhoneForTwilio = formatPhoneForTwilio;
+        window.sendSMSViaMake = sendSMSViaMake;
+        window.showToast = showToast;
+        window.toggleForm = toggleForm;
+
+        // ========== INIT ==========
+        document.getElementById('btn-refresh-students').addEventListener('click', loadStudents);
+        loadStudents();
+
+        console.log('✅ Afromed Admin Portal initialized');
+        console.log(`🔗 Webhook URL: ${MAKE_WEBHOOK_URL}`);
+        console.log('ℹ️  Use the "Test Webhook" button in the SMS tab to verify connectivity.');
+    </script>
+</body>
+</html>

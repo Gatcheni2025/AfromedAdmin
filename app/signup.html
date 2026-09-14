@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Join Safetify</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        :root { --primary: #2563eb; --primary-light: #3b82f6; --secondary: #06b6d4; --bg: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --student-color: #8b5cf6; }
+        body { margin: 0; min-height: 100vh; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .card { width: 100%; max-width: 440px; background: var(--card-bg); padding: 40px; border-radius: 32px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); text-align: center; border: 1px solid var(--border); z-index: 10; }
+        .logo { width: 80px; height: 80px; margin: 0 auto 24px; background: #ffffff; border-radius: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); padding: 12px; border: 1px solid var(--border); }
+        .logo img { width: 100%; height: 100%; object-fit: contain; }
+        h2 { margin: 0 0 8px; font-weight: 800; font-size: 28px; }
+        p { color: var(--text-muted); font-size: 15px; margin-bottom: 30px; font-weight: 500; }
+        .role-selector { display: flex; background: #f1f5f9; padding: 6px; border-radius: 16px; margin-bottom: 24px; gap: 4px; }
+        .role-btn { flex: 1; padding: 12px 8px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 12px; border: none; background: transparent; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .role-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); margin-left: 4px; }
+        input { width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--border); font-size: 15px; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .btn-submit { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn-submit:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .divider { display: flex; align-items: center; margin: 25px 0; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 16px; }
+        .google-btn { width: 100%; padding: 14px; border-radius: 16px; border: 1px solid var(--border); background: white; color: var(--text-main); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.2s; }
+        .footer-text { margin-top: 32px; font-size: 14px; color: var(--text-muted); font-weight: 500; }
+        .footer-text a { color: var(--primary); text-decoration: none; font-weight: 700; }
+        .msg { font-size: 13px; margin-top: 16px; padding: 12px; border-radius: 12px; display: none; }
+        .error { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; display: block; }
+        #global-loader { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; opacity: 0; pointer-events: none; transition: 0.4s; }
+        #global-loader.active { opacity: 1; pointer-events: all; }
+        .loader-ring { position: absolute; width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--primary) 0deg, var(--secondary) 90deg, var(--student-color) 180deg, var(--primary) 360deg); animation: spin 1.5s linear infinite; }
+        .loader-ring::before { content: ''; position: absolute; inset: 5px; background: #ffffff; border-radius: 50%; }
+        .loader-logo { position: relative; width: 75px; height: 75px; z-index: 10; border-radius: 50%; animation: pulse-logo 1.5s infinite; }
+        .loader-text { margin-top: 30px; font-size: 16px; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse-logo { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.08); } }
+    </style>
+</head>
+<body>
+
+<div id="global-loader">
+    <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <div class="loader-ring"></div>
+        <img src="assets/afrologo.png" alt="Logo" class="loader-logo">
+    </div>
+    <div class="loader-text">Creating Account...</div>
+</div>
+
+<div class="card">
+    <div class="logo"><img src="assets/afrologo.png" alt="Logo"></div>
+    <h2>Create Account</h2>
+    <p>Join Safetify for rapid emergency response</p>
+
+    <div class="role-selector">
+        <button class="role-btn active" onclick="setRole('emergency', this)"><i class="fa-solid fa-heart-pulse"></i> Emergency</button>
+        <button class="role-btn" onclick="setRole('student', this)"><i class="fa-solid fa-user-graduate"></i> Student</button>
+    </div>
+
+    <div class="input-group"><label>Full Name</label><input type="text" id="name" placeholder="John Doe"></div>
+    <div class="input-group"><label id="identity-label">Email Address</label><input type="email" id="identity" placeholder="e.g. name@email.com"></div>
+    <div class="input-group"><label>Password</label><input type="password" id="password" placeholder="••••••••"></div>
+
+    <button class="btn-submit" id="btn-submit" onclick="handleSubmit()"><span>Create Account</span> <i class="fa-solid fa-arrow-right"></i></button>
+
+    <div class="divider">OR</div>
+    <button class="google-btn" onclick="handleGoogleSignup()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="G"> Sign up with Google</button>
+    
+    <div id="msg" class="msg"></div>
+    <p class="footer-text">Already have an account? <a href="login.html">Sign In</a></p>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
+        authDomain: "afromed-fda57.firebaseapp.com",
+        databaseURL: "https://afromed-fda57-default-rtdb.firebaseio.com",
+        projectId: "afromed-fda57",
+        storageBucket: "afromed-fda57.firebasestorage.app",
+        messagingSenderId: "633274573777",
+        appId: "1:633274573777:web:6b244c95612bc92ff976f0",
+        measurementId: "G-3ZSVQDNVFX"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentRole = 'emergency';
+
+    function setRole(role, btn) {
+        currentRole = role;
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('identity-label').innerText = role === 'student' ? "Student Email" : "Email Address";
+        document.getElementById('identity').placeholder = role === 'student' ? "student@school.com" : "e.g. name@email.com";
+    }
+
+    async function handleSubmit() {
+        const name = document.getElementById('name').value.trim();
+        const identity = document.getElementById('identity').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!name || !identity || !password) return showMsg("Please fill all fields", "error");
+
+        setLoading(true);
+        try {
+            const cred = await auth.createUserWithEmailAndPassword(identity, password);
+            // ALIGNMENT: Save normal users explicitly as 'client' to match Admin Map rendering logic
+            const dbRole = currentRole === 'emergency' ? 'client' : currentRole; 
+            await saveUser(cred.user.uid, name, identity, dbRole);
+            redirectAfterSignup(cred.user.uid, dbRole);
+        } catch (e) {
+            showMsg(e.message, "error");
+            setLoading(false);
+        }
+    }
+
+    function handleGoogleSignup() {
+        setLoading(true);
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(async (res) => {
+                const dbRole = currentRole === 'emergency' ? 'client' : currentRole;
+                await saveUser(res.user.uid, res.user.displayName, res.user.email, dbRole);
+                redirectAfterSignup(res.user.uid, dbRole);
+            }).catch((e) => { showMsg(e.message, "error"); setLoading(false); });
+    }
+
+    function redirectAfterSignup(uid, role) {
+        localStorage.setItem("userUid", uid);
+        localStorage.setItem("userRole", role);
+        if (role === 'student') window.location.replace("school.html");
+        else window.location.replace("index.html");
+    }
+
+    async function saveUser(uid, name, contact, role) {
+        return db.collection('users').doc(uid).set({
+            name: name || "User", contact: contact, email: contact, role: role,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    }
+
+    function showMsg(msg, type) {
+        const el = document.getElementById('msg');
+        el.innerText = msg; el.className = `msg ${type}`;
+        setTimeout(() => el.style.display = 'none', 5000);
+    }
+
+    function setLoading(state) {
+        document.getElementById('btn-submit').disabled = state;
+        document.getElementById('global-loader').classList.toggle('active', state);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+RewriteEngine On
+
+# Redirect all HTTP traffic to HTTPS
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://afromed-admin.co.za%{REQUEST_URI} [L,R=301]
