@@ -487,6 +487,11 @@
         <button class="nav-link admin-only" data-view="events"><i class="fa-solid fa-calendar-check"></i> Events &amp; Cover</button>
       </div>
 
+      <div class="nav-group-title">Office Collaboration</div>
+      <div class="nav-list">
+        <button class="nav-link admin-only" data-view="office"><i class="fa-solid fa-envelope-open-text"></i> Internal Office</button>
+      </div>
+
       <div class="nav-group-title">Corporate Operations</div>
       <div class="nav-list">
         <button class="nav-link admin-only" data-view="finance"><i class="fa-solid fa-coins"></i> Finance &amp; Billing</button>
@@ -519,6 +524,7 @@
       <div class="top-actions">
         <button class="icon-btn" title="Refresh live data" onclick="refreshAll()"><i class="fa-solid fa-rotate"></i></button>
         <button class="icon-btn" title="Operational alerts" onclick="showView('ems')"><i class="fa-regular fa-bell"></i><span id="alert-dot" class="notif-dot hidden"></span></button>
+        <button class="icon-btn admin-only" title="Afromed Office" onclick="showView('office')"><i class="fa-regular fa-envelope"></i><span id="office-mail-dot" class="notif-dot hidden"></span></button>
 
         <div class="profile-chip">
           <div class="profile-avatar" id="user-avatar">A</div>
@@ -542,6 +548,7 @@
           </div>
           <div class="head-actions">
             <button class="btn btn-light" onclick="exportOperationsCsv()"><i class="fa-solid fa-file-export"></i> Export Snapshot</button>
+            <button class="btn btn-light admin-only" onclick="showView('office')"><i class="fa-solid fa-envelope-open-text"></i> Office Control</button>
             <button class="btn btn-red" onclick="showView('ems')"><i class="fa-solid fa-truck-medical"></i> EMS Control</button>
           </div>
         </div>
@@ -556,6 +563,7 @@
               <button class="btn btn-red" onclick="showView('ems')"><i class="fa-solid fa-bolt"></i> Active Emergencies</button>
               <a class="btn btn-light" href="students.html"><i class="fa-solid fa-graduation-cap"></i> College Admin</a>
               <a class="btn btn-light" href="invoicing.html"><i class="fa-solid fa-file-invoice-dollar"></i> Finance Workspace</a>
+              <a class="btn btn-light" href="office.html"><i class="fa-solid fa-envelope-open-text"></i> Afromed Office</a>
             </div>
           </div>
         </div>
@@ -603,16 +611,16 @@
           </article>
 
           <article class="unit-card development">
-            <div class="unit-head"><h3>Afromed Development</h3><span class="status-chip">Module</span></div>
-            <p>Community programmes, impact initiatives and organisational development.</p>
-            <div class="unit-stats"><div><strong>—</strong><span>Programme data</span></div><div><strong>Open</strong><span>Workspace</span></div></div>
+            <div class="unit-head"><h3>Afromed Development</h3><span class="status-chip">Live</span></div>
+            <p>Community programmes, donations, volunteers and impact initiatives.</p>
+            <div class="unit-stats"><div><strong id="unit-development-projects">0</strong><span>Projects</span></div><div><strong id="unit-development-volunteers">0</strong><span>Volunteers</span></div></div>
             <button class="unit-open" onclick="showView('development')">Open Development →</button>
           </article>
 
           <article class="unit-card events">
-            <div class="unit-head"><h3>Events &amp; Medical Cover</h3><span class="status-chip">Module</span></div>
-            <p>Operational planning for event medical cover, quotations and deployment.</p>
-            <div class="unit-stats"><div><strong>—</strong><span>Live bookings</span></div><div><strong>Open</strong><span>Workspace</span></div></div>
+            <div class="unit-head"><h3>Events &amp; Medical Cover</h3><span class="status-chip">Live</span></div>
+            <p>Operational plans, venue layouts, medical cover and commercial handover.</p>
+            <div class="unit-stats"><div><strong id="unit-events-plans">0</strong><span>Plans</span></div><div><strong id="unit-events-venues">0</strong><span>Venues</span></div></div>
             <button class="unit-open" onclick="showView('events')">Open Events →</button>
           </article>
         </div>
@@ -656,7 +664,7 @@
                 <a class="quick" href="students.html"><i class="fa-solid fa-user-graduate"></i><strong>College Admin</strong><span>Students &amp; courses</span></a>
                 <a class="quick" href="invoicing.html"><i class="fa-solid fa-file-invoice-dollar"></i><strong>Create Invoice</strong><span>Finance workspace</span></a>
                 <button class="quick" onclick="showView('fleet')"><i class="fa-solid fa-car-side"></i><strong>Fleet Control</strong><span>Vehicles &amp; readiness</span></button>
-                <button class="quick" onclick="openStaffModal()"><i class="fa-solid fa-user-plus"></i><strong>Add Staff</strong><span>Register employee</span></button>
+                <a class="quick admin-only" href="office.html"><i class="fa-solid fa-envelope-open-text"></i><strong>Afromed Office</strong><span>Messages, tasks &amp; approvals</span></a>
                 <a class="quick" href="events.html"><i class="fa-solid fa-calendar-check"></i><strong>Events</strong><span>Medical cover module</span></a>
               </div>
             </section>
@@ -667,6 +675,14 @@
                 <div><strong id="dash-invoice-total">0</strong><span>Invoices</span></div>
                 <div><strong id="dash-paid-invoices">0</strong><span>Paid</span></div>
                 <div><strong id="dash-payroll-records">0</strong><span>Payroll runs</span></div>
+              </div>
+            </section>
+            <section class="panel admin-only">
+              <div class="panel-head"><div><h3>Office Workflow</h3><p>Cross-department tasks, approvals and internal messages</p></div><button class="panel-link" onclick="showView('office')">Open office control</button></div>
+              <div class="unit-stats">
+                <div><strong id="dash-office-open">0</strong><span>Open tasks</span></div>
+                <div><strong id="dash-office-approvals">0</strong><span>Awaiting approval</span></div>
+                <div><strong id="dash-office-unread">0</strong><span>Unread messages</span></div>
               </div>
             </section>
           </div>
@@ -741,6 +757,7 @@
           <div class="summary-card"><span>COURSES</span><strong id="college-course-count">0</strong></div>
           <div class="summary-card"><span>ASSIGNMENTS</span><strong id="college-assignment-count">0</strong></div>
           <div class="summary-card"><span>PAYMENT FLAGS</span><strong id="college-payment-flags">0</strong></div>
+          <div class="summary-card"><span>RESULTS CAPTURED</span><strong id="college-result-count">0</strong></div>
         </div>
 
         <div class="two-col">
@@ -771,58 +788,82 @@
       <!-- DEVELOPMENT -->
       <section id="view-development" class="view hidden admin-only">
         <div class="page-head">
-          <div><h1>Afromed Development</h1><p>Community development, impact programmes and organisational initiatives.</p></div>
-          <div class="head-actions"><a class="btn btn-primary" href="development.html"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Development Module</a></div>
+          <div><h1>Afromed Development</h1><p>Live oversight of projects, donations, volunteers and community impact activity.</p></div>
+          <div class="head-actions">
+            <a class="btn btn-primary" href="development.html"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Development Module</a>
+            <button class="btn btn-light" onclick="openOfficeTaskModal('', 'Afromed Development')"><i class="fa-solid fa-list-check"></i> Assign Task</button>
+          </div>
         </div>
 
-        <div class="three-col">
-          <article class="module-card">
-            <div class="module-icon"><i class="fa-solid fa-people-group"></i></div>
-            <h3>Community Programmes</h3>
-            <p>Coordinate initiatives, programme delivery and community-facing operational activity.</p>
-            <div class="module-actions"><a class="btn btn-light" href="development.html">Open module</a></div>
-          </article>
-          <article class="module-card">
-            <div class="module-icon"><i class="fa-solid fa-handshake-angle"></i></div>
-            <h3>Partners &amp; Stakeholders</h3>
-            <p>Use the Development workspace for programme relationships and stakeholder coordination.</p>
-            <div class="module-actions"><a class="btn btn-light" href="development.html">Open workspace</a></div>
-          </article>
-          <article class="module-card">
-            <div class="module-icon"><i class="fa-solid fa-chart-line"></i></div>
-            <h3>Impact Reporting</h3>
-            <p>This control centre is ready to surface programme KPIs once Development data is connected to Firestore.</p>
-            <div class="module-actions"><button class="btn btn-light" onclick="showToast('Connect Development collections to display live impact KPIs here.')">Integration note</button></div>
-          </article>
+        <div class="summary-grid">
+          <div class="summary-card"><span>PROJECTS</span><strong id="development-project-count">0</strong></div>
+          <div class="summary-card"><span>ACTIVE PROJECTS</span><strong id="development-active-count">0</strong></div>
+          <div class="summary-card"><span>DONATIONS</span><strong id="development-donation-count">0</strong></div>
+          <div class="summary-card"><span>VOLUNTEERS</span><strong id="development-volunteer-count">0</strong></div>
+        </div>
+
+        <div class="two-col">
+          <section class="panel">
+            <div class="panel-head"><div><h3>Recent Development Projects</h3><p>Latest project records from the Development module</p></div><a class="panel-link" href="development.html">Open module</a></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Project</th><th>Status</th><th>Progress</th><th>Updated</th></tr></thead>
+                <tbody id="development-projects-body"><tr><td colspan="4">Loading projects…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><h3>Development Signals</h3><p>Donations, volunteers and office work</p></div></div>
+            <div class="unit-stats">
+              <div><strong id="development-donation-total">R0</strong><span>Donation value</span></div>
+              <div><strong id="development-open-tasks">0</strong><span>Office tasks</span></div>
+              <div><strong id="development-pending-approvals">0</strong><span>Awaiting approval</span></div>
+            </div>
+            <div class="quick-grid" style="margin-top:16px">
+              <a class="quick" href="development.html"><i class="fa-solid fa-people-group"></i><strong>Development</strong><span>Projects &amp; impact</span></a>
+              <a class="quick" href="office.html"><i class="fa-solid fa-envelope"></i><strong>Office Messages</strong><span>Internal coordination</span></a>
+            </div>
+          </section>
         </div>
       </section>
 
       <!-- EVENTS -->
       <section id="view-events" class="view hidden admin-only">
         <div class="page-head">
-          <div><h1>Events &amp; Medical Cover</h1><p>Central access to event medical-cover operations, quotations and commercial coordination.</p></div>
-          <div class="head-actions"><a class="btn btn-primary" href="events.html"><i class="fa-solid fa-calendar-check"></i> Open Events</a></div>
+          <div><h1>Events &amp; Medical Cover</h1><p>Live visibility of operational plans, venues and departmental workflow.</p></div>
+          <div class="head-actions">
+            <a class="btn btn-primary" href="events.html"><i class="fa-solid fa-calendar-check"></i> Open Events</a>
+            <button class="btn btn-light" onclick="openOfficeTaskModal('', 'Events & Medical Cover')"><i class="fa-solid fa-list-check"></i> Assign Task</button>
+          </div>
         </div>
 
-        <div class="three-col">
-          <article class="module-card">
-            <div class="module-icon"><i class="fa-solid fa-calendar-days"></i></div>
-            <h3>Event Operations</h3>
-            <p>Manage operational planning for medical cover and scheduled deployments.</p>
-            <div class="module-actions"><a class="btn btn-light" href="events.html">Open events</a></div>
-          </article>
-          <article class="module-card">
-            <div class="module-icon"><i class="fa-solid fa-file-signature"></i></div>
-            <h3>Quotations</h3>
-            <p>Prepare and review customer quotations for event and medical service requirements.</p>
-            <div class="module-actions"><a class="btn btn-light" href="quotation.html">Open quotations</a></div>
-          </article>
-          <article class="module-card">
-            <div class="module-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-            <h3>Billing Handover</h3>
-            <p>Move confirmed work into Afromed's invoice and finance process.</p>
-            <div class="module-actions"><a class="btn btn-light" href="invoicing.html">Open invoicing</a></div>
-          </article>
+        <div class="summary-grid">
+          <div class="summary-card"><span>OPERATIONAL PLANS</span><strong id="events-plan-count">0</strong></div>
+          <div class="summary-card"><span>VENUES</span><strong id="events-venue-count">0</strong></div>
+          <div class="summary-card"><span>OPEN OFFICE TASKS</span><strong id="events-open-tasks">0</strong></div>
+          <div class="summary-card"><span>AWAITING APPROVAL</span><strong id="events-pending-approvals">0</strong></div>
+        </div>
+
+        <div class="two-col">
+          <section class="panel">
+            <div class="panel-head"><div><h3>Recent Operational Plans</h3><p>Latest medical-cover plans from events.html</p></div><a class="panel-link" href="events.html">Open Events</a></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Event / Match</th><th>Venue</th><th>Date</th><th>Updated</th></tr></thead>
+                <tbody id="events-plans-body"><tr><td colspan="4">Loading operational plans…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><h3>Event Operations Tools</h3><p>Open specialist workflows or coordinate with another department</p></div></div>
+            <div class="quick-grid">
+              <a class="quick" href="events.html"><i class="fa-solid fa-clipboard-list"></i><strong>Operational Plans</strong><span>Create &amp; preview</span></a>
+              <a class="quick" href="events.html"><i class="fa-solid fa-map-location-dot"></i><strong>Venues</strong><span>Medical layouts</span></a>
+              <a class="quick" href="invoicing.html"><i class="fa-solid fa-file-invoice-dollar"></i><strong>Finance Handover</strong><span>Create invoice</span></a>
+              <a class="quick" href="office.html"><i class="fa-solid fa-envelope"></i><strong>Office</strong><span>Messages &amp; tasks</span></a>
+            </div>
+          </section>
         </div>
       </section>
 
@@ -864,6 +905,70 @@
             </div>
           </section>
         </div>
+      </section>
+
+      <!-- INTERNAL OFFICE -->
+      <section id="view-office" class="view hidden admin-only">
+        <div class="page-head">
+          <div><h1>Internal Office Control</h1><p>Management oversight of internal messages, assigned work, department completion and authorisation.</p></div>
+          <div class="head-actions">
+            <a class="btn btn-light" href="office.html"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Afromed Office</a>
+            <button class="btn btn-light" onclick="openOfficeMessageModal()"><i class="fa-solid fa-envelope"></i> Send Message</button>
+            <button class="btn btn-primary" onclick="openOfficeTaskModal()"><i class="fa-solid fa-list-check"></i> Assign Task</button>
+            <button class="btn btn-red" onclick="openOfficeUserModal()"><i class="fa-solid fa-user-plus"></i> Add User</button>
+          </div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card"><span>OFFICE USERS</span><strong id="office-member-count">0</strong></div>
+          <div class="summary-card"><span>OPEN TASKS</span><strong id="office-open-count">0</strong></div>
+          <div class="summary-card"><span>AWAITING AUTHORISATION</span><strong id="office-approval-count">0</strong></div>
+          <div class="summary-card"><span>UNREAD ADMIN MAIL</span><strong id="office-unread-count">0</strong></div>
+        </div>
+
+        <div class="two-col">
+          <section class="panel">
+            <div class="panel-head"><div><h3>Work Awaiting Authorisation</h3><p>Completed department work submitted to management</p></div></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Task</th><th>Department</th><th>Completed By</th><th>Completed</th><th>Actions</th></tr></thead>
+                <tbody id="office-approvals-body"><tr><td colspan="5">Loading approval queue…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><h3>Department Workload</h3><p>Open tasks by department</p></div></div>
+            <div id="office-department-workload" class="feed"></div>
+          </section>
+        </div>
+
+        <div class="two-col" style="margin-top:17px">
+          <section class="panel">
+            <div class="panel-head"><div><h3>Recent Internal Tasks</h3><p>Assignment and completion status</p></div><a class="panel-link" href="office.html">Full office</a></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Task</th><th>Assigned To</th><th>Department</th><th>Status</th><th>Approval</th></tr></thead>
+                <tbody id="office-tasks-body"><tr><td colspan="5">Loading tasks…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><h3>Office Activity</h3><p>Messages, tasks and management actions</p></div></div>
+            <div id="office-activity-feed" class="feed"></div>
+          </section>
+        </div>
+
+        <section class="panel" style="margin-top:17px">
+          <div class="panel-head"><div><h3>Authorised Office Users</h3><p>Internal users and department access</p></div><button class="panel-link" onclick="openOfficeUserModal()">Add user</button></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Status</th></tr></thead>
+              <tbody id="office-members-body"><tr><td colspan="5">Loading office users…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
       </section>
 
       <!-- PEOPLE -->
@@ -1060,6 +1165,18 @@
   let allAssignments = [];
   let allInvoices = [];
   let allPayroll = [];
+  let allResults = [];
+  let allOperationalPlans = [];
+  let allStadiums = [];
+  let allNpoProjects = [];
+  let allNpoDonations = [];
+  let allNpoVolunteers = [];
+  let allOfficeTasks = [];
+  let allOfficeMessages = [];
+  let allOfficeActivity = [];
+  let allOfficeMembers = [];
+  let allOfficeInvites = [];
+  let allOfficeAccessRequests = [];
 
   let dashboardMap = null;
   let emsMap = null;
@@ -1073,6 +1190,7 @@
     college:['Emergency College','Academic and student administration oversight'],
     development:['Afromed Development','Community and impact programme control'],
     events:['Events & Medical Cover','Event operations and commercial handover'],
+    office:['Internal Office Control','Messages, cross-department tasks and work authorisation'],
     finance:['Finance & Billing','Invoices, quotations and payroll visibility'],
     people:['People & HR','Staff and workforce management'],
     fleet:['Fleet & Assets','Ambulance and vehicle readiness'],
@@ -1107,8 +1225,8 @@
   function statusBadge(status){
     const s = String(status || 'unknown').toLowerCase();
     let cls='badge-gray';
-    if(['completed','paid','active','available','authorized'].includes(s)) cls='badge-green';
-    else if(['pending','owing','partial','draft'].includes(s)) cls='badge-amber';
+    if(['completed','paid','active','available','authorized','approved'].includes(s)) cls='badge-green';
+    else if(['pending','owing','partial','draft','assigned','in_progress','invited','not_submitted'].includes(s)) cls='badge-amber';
     else if(['accepted','assigned','dispatched','ontrip','busy'].includes(s)) cls='badge-blue';
     else if(['cancelled','rejected','offline','inactive'].includes(s)) cls='badge-red';
     return `<span class="badge ${cls}">${esc(s)}</span>`;
@@ -1462,6 +1580,326 @@
       </tr>`).join(''):`<tr><td colspan="5">No invoice records.</td></tr>`;
   }
 
+
+  function officeDepartmentOpen(department){
+    return allOfficeTasks.filter(t=>
+      t.assignedDepartment===department &&
+      !['completed','approved'].includes(String(t.status||'').toLowerCase())
+    ).length;
+  }
+
+  function officeDepartmentApprovals(department){
+    return allOfficeTasks.filter(t=>t.assignedDepartment===department && String(t.approvalStatus||'').toLowerCase()==='pending').length;
+  }
+
+  function renderDepartmentOversight(){
+    // College
+    setText('college-result-count',allResults.length);
+
+    // Events
+    setText('unit-events-plans',allOperationalPlans.length);
+    setText('unit-events-venues',allStadiums.length);
+    setText('events-plan-count',allOperationalPlans.length);
+    setText('events-venue-count',allStadiums.length);
+    setText('events-open-tasks',officeDepartmentOpen('Events & Medical Cover'));
+    setText('events-pending-approvals',officeDepartmentApprovals('Events & Medical Cover'));
+
+    const eventPlans=[...allOperationalPlans].sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0));
+    const venueName=id=>allStadiums.find(v=>v.id===id)?.name || '—';
+    const eventBody=document.getElementById('events-plans-body');
+    if(eventBody){
+      eventBody.innerHTML=eventPlans.length?eventPlans.slice(0,12).map(p=>`
+        <tr>
+          <td><strong>${esc((p.teamA||'Event')+' VS '+(p.teamB||''))}</strong></td>
+          <td>${esc(venueName(p.stadiumId))}</td>
+          <td>${esc(p.eventDate||'—')}</td>
+          <td>${formatDate(p.updatedAt)}</td>
+        </tr>`).join(''):`<tr><td colspan="4">No operational plans recorded.</td></tr>`;
+    }
+
+    // Development
+    setText('unit-development-projects',allNpoProjects.length);
+    setText('unit-development-volunteers',allNpoVolunteers.length);
+    setText('development-project-count',allNpoProjects.length);
+    setText('development-active-count',allNpoProjects.filter(p=>String(p.status||'active').toLowerCase()==='active').length);
+    setText('development-donation-count',allNpoDonations.length);
+    setText('development-volunteer-count',allNpoVolunteers.length);
+    setText('development-open-tasks',officeDepartmentOpen('Afromed Development'));
+    setText('development-pending-approvals',officeDepartmentApprovals('Afromed Development'));
+    const donationTotal=allNpoDonations.reduce((sum,d)=>sum+Number(String(d.amount||d.value||0).replace(/[^\d.-]/g,'' )||0),0);
+    setText('development-donation-total',formatMoney(donationTotal));
+
+    const projects=[...allNpoProjects].sort((a,b)=>{
+      const bt=b.updatedAt?.seconds||b.createdAt?.seconds||0, at=a.updatedAt?.seconds||a.createdAt?.seconds||0;
+      return bt-at;
+    });
+    const devBody=document.getElementById('development-projects-body');
+    if(devBody){
+      devBody.innerHTML=projects.length?projects.slice(0,12).map(p=>`
+        <tr>
+          <td><strong>${esc(p.name||p.title||p.projectName||'Project')}</strong></td>
+          <td>${statusBadge(p.status||'active')}</td>
+          <td>${esc(p.progress ?? p.percentage ?? '—')}${p.progress!==undefined||p.percentage!==undefined?'%':''}</td>
+          <td>${formatDate(p.updatedAt||p.createdAt)}</td>
+        </tr>`).join(''):`<tr><td colspan="4">No Development projects recorded.</td></tr>`;
+    }
+  }
+
+  function renderOfficeControl(){
+    const openTasks=allOfficeTasks.filter(t=>!['completed','approved'].includes(String(t.status||'').toLowerCase())).length;
+    const approvals=allOfficeTasks.filter(t=>String(t.approvalStatus||'').toLowerCase()==='pending').length;
+    const unread=allOfficeMessages.filter(m=>m.toUid===currentUser?.uid && !(m.readBy||[]).includes(currentUser.uid)).length;
+
+    setText('office-member-count',allOfficeMembers.filter(m=>String(m.status||'active').toLowerCase()==='active').length);
+    setText('office-open-count',openTasks);
+    setText('office-approval-count',approvals);
+    setText('office-unread-count',unread);
+    setText('dash-office-open',openTasks);
+    setText('dash-office-approvals',approvals);
+    setText('dash-office-unread',unread);
+    document.getElementById('office-mail-dot')?.classList.toggle('hidden',unread===0);
+
+    const tasks=[...allOfficeTasks].sort((a,b)=>{
+      const bt=b.updatedAt?.seconds||b.createdAt?.seconds||0, at=a.updatedAt?.seconds||a.createdAt?.seconds||0;
+      return bt-at;
+    });
+    const taskBody=document.getElementById('office-tasks-body');
+    if(taskBody){
+      taskBody.innerHTML=tasks.length?tasks.slice(0,20).map(t=>`
+        <tr>
+          <td><strong>${esc(t.title||'Task')}</strong></td>
+          <td>${esc(t.assignedToName||'Department task')}</td>
+          <td>${esc(t.assignedDepartment||'—')}</td>
+          <td>${statusBadge(t.status||'assigned')}</td>
+          <td>${statusBadge(t.approvalStatus||'not_required')}</td>
+        </tr>`).join(''):`<tr><td colspan="5">No office tasks recorded.</td></tr>`;
+    }
+
+    const approvalBody=document.getElementById('office-approvals-body');
+    const pending=tasks.filter(t=>String(t.approvalStatus||'').toLowerCase()==='pending');
+    if(approvalBody){
+      approvalBody.innerHTML=pending.length?pending.map(t=>`
+        <tr>
+          <td><strong>${esc(t.title||'Task')}</strong></td>
+          <td>${esc(t.assignedDepartment||'—')}</td>
+          <td>${esc(t.completedByName||t.assignedToName||'—')}</td>
+          <td>${formatDate(t.completedAt)}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-green" onclick="approveOfficeTask('${t.id}')"><i class="fa-solid fa-stamp"></i> Authorise</button>
+              <button class="btn btn-danger" onclick="returnOfficeTask('${t.id}')"><i class="fa-solid fa-rotate-left"></i> Return</button>
+            </div>
+          </td>
+        </tr>`).join(''):`<tr><td colspan="5">No work awaiting authorisation.</td></tr>`;
+    }
+
+    const memberBody=document.getElementById('office-members-body');
+    if(memberBody){
+      memberBody.innerHTML=allOfficeMembers.length?allOfficeMembers.map(m=>`
+        <tr>
+          <td><strong>${esc(m.name||m.email||'Office User')}</strong></td>
+          <td>${esc(m.email||'—')}</td>
+          <td>${esc(m.department||'—')}</td>
+          <td>${esc(m.role||'staff')}</td>
+          <td>${statusBadge(m.status||'active')}</td>
+        </tr>`).join(''):`<tr><td colspan="5">No office members authorised yet.</td></tr>`;
+    }
+
+    const departments=['Emergency College','Events & Medical Cover','Finance & Billing','Afromed Development','EMS Operations','HR & Corporate'];
+    const workload=document.getElementById('office-department-workload');
+    if(workload){
+      workload.innerHTML=departments.map(d=>{
+        const open=officeDepartmentOpen(d), pending=officeDepartmentApprovals(d);
+        return `<div class="feed-item"><div class="feed-icon"><i class="fa-solid fa-building"></i></div><div><strong>${esc(d)}</strong><span>${open} open task${open===1?'':'s'} · ${pending} awaiting authorisation</span></div></div>`;
+      }).join('');
+    }
+
+    const act=[...allOfficeActivity].sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,12);
+    const activityFeed=document.getElementById('office-activity-feed');
+    if(activityFeed){
+      activityFeed.innerHTML=act.length?act.map(a=>`
+        <div class="feed-item"><div class="feed-icon"><i class="fa-solid ${a.type==='approval'?'fa-stamp':a.type==='message'?'fa-envelope':'fa-list-check'}"></i></div>
+          <div><strong>${esc(a.title||'Office activity')}</strong><span>${esc(a.detail||'')} · ${esc(a.actorName||'')}</span></div></div>`).join(''):
+        `<div class="feed-item"><div class="feed-icon"><i class="fa-solid fa-circle-info"></i></div><div><strong>No office activity yet</strong><span>Tasks, approvals and messages will appear here.</span></div></div>`;
+    }
+  }
+
+  function officeMemberOptions(selected=''){
+    return allOfficeMembers.filter(m=>String(m.status||'active').toLowerCase()==='active').map(m=>
+      `<option value="${esc(m.id)}" ${m.id===selected?'selected':''}>${esc(m.name||m.email||'User')} · ${esc(m.department||'')}</option>`
+    ).join('');
+  }
+
+  function officeDepartmentOptions(selected=''){
+    const departments=['Executive / Administration','EMS Operations','Emergency College','Events & Medical Cover','Finance & Billing','Afromed Development','HR & Corporate'];
+    return departments.map(d=>`<option value="${esc(d)}" ${d===selected?'selected':''}>${esc(d)}</option>`).join('');
+  }
+
+  function officeRoleOptions(selected=''){
+    return ['admin','manager','staff','finance','lecturer','coordinator'].map(r=>`<option value="${r}" ${r===selected?'selected':''}>${r}</option>`).join('');
+  }
+
+  function openOfficeUserModal(){
+    openModal('Add / Authorise Office User',`
+      <form id="office-user-form" class="modal-form">
+        <div class="form-field"><label>FULL NAME</label><input id="office-user-name" required></div>
+        <div class="form-field"><label>EMAIL</label><input id="office-user-email" type="email" required></div>
+        <div class="form-field"><label>DEPARTMENT</label><select id="office-user-dept">${officeDepartmentOptions()}</select></div>
+        <div class="form-field"><label>OFFICE ROLE</label><select id="office-user-role">${officeRoleOptions()}</select></div>
+        <div class="full"><div class="tiny">If the email already has an Afromed account, Office access is activated immediately. Otherwise an invitation is created for that email.</div></div>
+        <div class="full"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-user-plus"></i> Add / Authorise User</button></div>
+      </form>
+    `);
+    document.getElementById('office-user-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const name=document.getElementById('office-user-name').value.trim();
+      const email=document.getElementById('office-user-email').value.trim();
+      const department=document.getElementById('office-user-dept').value;
+      const role=document.getElementById('office-user-role').value;
+      try{
+        const existing=await db.collection('users').where('email','==',email).limit(1).get();
+        if(!existing.empty){
+          const uid=existing.docs[0].id;
+          await db.collection('office_members').doc(uid).set({
+            name,email,department,role,status:'active',
+            activatedByUid:currentUser.uid,
+            activatedAt:firebase.firestore.FieldValue.serverTimestamp()
+          },{merge:true});
+          showToast('Existing Afromed user authorised for Office');
+        }else{
+          await db.collection('office_invites').doc(email).set({
+            name,email,department,role,status:'invited',
+            createdByUid:currentUser.uid,
+            createdAt:firebase.firestore.FieldValue.serverTimestamp()
+          },{merge:true});
+          showToast('Office invitation created');
+        }
+        closeModal();
+      }catch(err){showToast('Unable to add Office user: '+err.message)}
+    });
+  }
+
+  function openOfficeMessageModal(selectedUid=''){
+    openModal('Send Internal Message',`
+      <form id="office-message-form" class="modal-form">
+        <div class="form-field full"><label>TO</label><select id="office-msg-to" required><option value="">Select colleague</option>${officeMemberOptions(selectedUid)}</select></div>
+        <div class="form-field full"><label>SUBJECT</label><input id="office-msg-subject" required></div>
+        <div class="form-field full"><label>MESSAGE</label><textarea id="office-msg-body" rows="7" required></textarea></div>
+        <div class="full"><button class="btn btn-red" type="submit"><i class="fa-solid fa-paper-plane"></i> Send Message</button></div>
+      </form>
+    `);
+    document.getElementById('office-message-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const uid=document.getElementById('office-msg-to').value;
+      const to=allOfficeMembers.find(m=>m.id===uid);
+      if(!to)return;
+      try{
+        const subject=document.getElementById('office-msg-subject').value.trim();
+        await db.collection('office_messages').add({
+          fromUid:currentUser.uid,fromName:document.getElementById('user-name').textContent,
+          fromEmail:currentUser.email||'',fromDepartment:'Executive / Administration',
+          toUid:uid,toName:to.name||to.email,toEmail:to.email||'',toDepartment:to.department||'',
+          subject,body:document.getElementById('office-msg-body').value.trim(),
+          priority:'normal',readBy:[],createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await db.collection('office_activity').add({
+          type:'message',title:'Management message sent',detail:`${subject} → ${to.name||to.email}`,
+          department:'Executive / Administration',actorUid:currentUser.uid,actorName:document.getElementById('user-name').textContent,
+          createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal();showToast('Internal message sent');
+      }catch(err){showToast('Unable to send message: '+err.message)}
+    });
+  }
+
+  function openOfficeTaskModal(selectedUid='',selectedDepartment=''){
+    openModal('Assign Internal Task',`
+      <form id="office-task-form" class="modal-form">
+        <div class="form-field full"><label>TASK TITLE</label><input id="office-task-title" required></div>
+        <div class="form-field full"><label>DESCRIPTION / EXPECTED OUTPUT</label><textarea id="office-task-description" rows="6" required></textarea></div>
+        <div class="form-field"><label>ASSIGN TO USER</label><select id="office-task-user"><option value="">Department / no specific user</option>${officeMemberOptions(selectedUid)}</select></div>
+        <div class="form-field"><label>DEPARTMENT</label><select id="office-task-dept">${officeDepartmentOptions(selectedDepartment)}</select></div>
+        <div class="form-field"><label>PRIORITY</label><select id="office-task-priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div>
+        <div class="form-field"><label>DUE DATE</label><input id="office-task-due" type="date"></div>
+        <div class="form-field full"><label style="display:flex;gap:7px;align-items:center"><input id="office-task-approval" type="checkbox" style="width:auto"> Require management authorisation when completed</label></div>
+        <div class="full"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Assign Task</button></div>
+      </form>
+    `);
+    const sel=document.getElementById('office-task-user');
+    sel.addEventListener('change',()=>{
+      const m=allOfficeMembers.find(x=>x.id===sel.value);
+      if(m)document.getElementById('office-task-dept').value=m.department||document.getElementById('office-task-dept').value;
+    });
+    if(selectedUid)sel.dispatchEvent(new Event('change'));
+    document.getElementById('office-task-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const uid=sel.value,member=allOfficeMembers.find(m=>m.id===uid);
+      const department=document.getElementById('office-task-dept').value;
+      const requires=document.getElementById('office-task-approval').checked;
+      const title=document.getElementById('office-task-title').value.trim();
+      try{
+        await db.collection('office_tasks').add({
+          title,description:document.getElementById('office-task-description').value.trim(),
+          assignedToUid:uid||'',assignedToName:member?.name||'',assignedDepartment:department,
+          createdByUid:currentUser.uid,createdByName:document.getElementById('user-name').textContent,createdByDepartment:'Executive / Administration',
+          priority:document.getElementById('office-task-priority').value,dueDate:document.getElementById('office-task-due').value||'',
+          requiresApproval:requires,approvalStatus:requires?'not_submitted':'not_required',status:'assigned',
+          createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await db.collection('office_activity').add({
+          type:'task',title:'Management task assigned',detail:`${title} → ${member?.name||department}`,
+          department,actorUid:currentUser.uid,actorName:document.getElementById('user-name').textContent,
+          createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal();showToast('Office task assigned');
+      }catch(err){showToast('Unable to assign task: '+err.message)}
+    });
+  }
+
+  async function approveOfficeTask(id){
+    const task=allOfficeTasks.find(t=>t.id===id);if(!task)return;
+    try{
+      await db.collection('office_tasks').doc(id).update({
+        status:'approved',approvalStatus:'approved',
+        authorizedByUid:currentUser.uid,authorizedByName:document.getElementById('user-name').textContent,
+        authorizedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      await db.collection('office_activity').add({
+        type:'approval',title:'Work authorised',detail:task.title||'Task',department:task.assignedDepartment||'',
+        actorUid:currentUser.uid,actorName:document.getElementById('user-name').textContent,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('Work authorised');
+    }catch(err){showToast('Unable to authorise work: '+err.message)}
+  }
+
+  function returnOfficeTask(id){
+    const task=allOfficeTasks.find(t=>t.id===id);if(!task)return;
+    openModal('Return Work for Changes',`
+      <form id="office-return-form">
+        <div class="form-field"><label>MANAGEMENT NOTE</label><textarea id="office-return-note" rows="6" required placeholder="Explain what needs to be corrected or completed"></textarea></div>
+        <button class="btn btn-danger" type="submit"><i class="fa-solid fa-rotate-left"></i> Return to Department</button>
+      </form>
+    `);
+    document.getElementById('office-return-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const note=document.getElementById('office-return-note').value.trim();
+      try{
+        await db.collection('office_tasks').doc(id).update({
+          status:'in_progress',approvalStatus:'changes_required',approvalNote:note,
+          reviewedByUid:currentUser.uid,reviewedByName:document.getElementById('user-name').textContent,
+          updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await db.collection('office_activity').add({
+          type:'approval',title:'Work returned for changes',detail:`${task.title} · ${note}`,department:task.assignedDepartment||'',
+          actorUid:currentUser.uid,actorName:document.getElementById('user-name').textContent,
+          createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal();showToast('Work returned to department');
+      }catch(err){showToast('Unable to return work: '+err.message)}
+    });
+  }
+
   function updateMetrics(){
     const active=allRequests.filter(activeRequest).length;
     const pending=allRequests.filter(r=>String(r.status||'').toLowerCase()==='pending').length;
@@ -1485,6 +1923,8 @@
     if(owing>0) feed.push({icon:'fa-graduation-cap',cls:'',title:`${owing} College payment flag${owing===1?'':'s'}`,text:'Review student payment status in College Admin.'});
     const outstanding=allInvoices.filter(i=>String(i.status||'').toLowerCase()!=='paid').length;
     if(outstanding>0) feed.push({icon:'fa-file-invoice-dollar',cls:'',title:`${outstanding} invoice${outstanding===1?'':'s'} not marked paid`,text:'Review Finance & Billing for follow-up.'});
+    const officeApprovals=allOfficeTasks.filter(t=>String(t.approvalStatus||'').toLowerCase()==='pending').length;
+    if(officeApprovals>0) feed.push({icon:'fa-stamp',cls:'',title:`${officeApprovals} completed task${officeApprovals===1?'':'s'} awaiting management authorisation`,text:'Open Internal Office Control to approve or return the work.'});
     if(!feed.length) feed.push({icon:'fa-circle-check',cls:'',title:'No major operational flags',text:'Live monitoring is active across connected collections.'});
 
     document.getElementById('operational-feed').innerHTML=feed.slice(0,5).map(f=>`
@@ -1516,8 +1956,22 @@
     listenCollection('students',data=>{allStudents=data;renderCollege();updateMetrics()});
     listenCollection('courses',data=>{allCourses=data;renderCollege()});
     listenCollection('assignments',data=>{allAssignments=data;renderCollege()});
-    listenCollection('invoices',data=>{allInvoices=data;renderFinance();updateMetrics()});
+    listenCollection('results',data=>{allResults=data;renderDepartmentOversight()});
+    listenCollection('invoices',data=>{allInvoices=data;renderFinance();updateMetrics();renderDepartmentOversight()});
     listenCollection('payroll',data=>{allPayroll=data;renderFinance();updateMetrics()});
+    listenCollection('operational_plans',data=>{allOperationalPlans=data;renderDepartmentOversight()});
+    listenCollection('stadiums',data=>{allStadiums=data;renderDepartmentOversight()});
+    listenCollection('npo_projects',data=>{allNpoProjects=data;renderDepartmentOversight()});
+    listenCollection('npo_donations',data=>{allNpoDonations=data;renderDepartmentOversight()});
+    listenCollection('npo_volunteers',data=>{allNpoVolunteers=data;renderDepartmentOversight()});
+    if(['admin','superadmin','administrator'].includes(currentRole)){
+      listenCollection('office_tasks',data=>{allOfficeTasks=data;renderOfficeControl();renderDepartmentOversight();updateMetrics()});
+      listenCollection('office_messages',data=>{allOfficeMessages=data;renderOfficeControl()});
+      listenCollection('office_activity',data=>{allOfficeActivity=data;renderOfficeControl()});
+      listenCollection('office_members',data=>{allOfficeMembers=data;renderOfficeControl()});
+      listenCollection('office_invites',data=>{allOfficeInvites=data;});
+      listenCollection('office_access_requests',data=>{allOfficeAccessRequests=data;});
+    }
   }
 
   function refreshAll(){
@@ -1527,6 +1981,8 @@
     renderUsersTable();
     renderCollege();
     renderFinance();
+    renderDepartmentOversight();
+    renderOfficeControl();
     updateMetrics();
     updateMapMarkers();
     showToast('Live view refreshed');
@@ -1707,8 +2163,15 @@
       {metric:'Users',value:allUsers.length},
       {metric:'Students',value:allStudents.length},
       {metric:'Courses',value:allCourses.length},
+      {metric:'College results',value:allResults.length},
+      {metric:'Event operational plans',value:allOperationalPlans.length},
+      {metric:'Event venues',value:allStadiums.length},
+      {metric:'Development projects',value:allNpoProjects.length},
+      {metric:'Development volunteers',value:allNpoVolunteers.length},
       {metric:'Invoices',value:allInvoices.length},
-      {metric:'Payroll records',value:allPayroll.length}
+      {metric:'Payroll records',value:allPayroll.length},
+      {metric:'Open office tasks',value:allOfficeTasks.filter(t=>!['completed','approved'].includes(String(t.status||'').toLowerCase())).length},
+      {metric:'Office approvals pending',value:allOfficeTasks.filter(t=>String(t.approvalStatus||'').toLowerCase()==='pending').length}
     ];
     csvDownload('afromed-group-operations-snapshot.csv',rows);
   }

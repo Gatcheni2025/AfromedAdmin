@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Afromed internal office communications and workflow">
+<title>Afromed Office | Internal Work Hub</title>
+
+<link rel="icon" type="image/png" href="./logo2.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<style>
+:root{
+  --navy:#071b2f;--navy2:#0d3152;--red:#d7192d;--green:#16835a;--amber:#b9790a;--blue:#176fc1;
+  --purple:#7257b8;--ink:#172033;--muted:#6c788a;--surface:#f4f7fb;--white:#fff;--line:#e2e8f0;
+  --shadow:0 18px 45px rgba(7,27,47,.08);--sidebar:252px
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--surface);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}.hidden{display:none!important}
+
+#boot{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:linear-gradient(145deg,#061523,#0b2947);color:#fff;transition:.3s}
+.boot{text-align:center}.boot-logo{width:76px;height:76px;border-radius:22px;background:#fff;padding:8px;margin:0 auto 17px}.boot-logo img{width:100%;height:100%;object-fit:contain}
+.boot strong{font-family:'Manrope',sans-serif;font-size:18px}.boot span{display:block;color:#a8bbcb;font-size:10px;margin-top:5px}
+.boot-line{width:220px;height:3px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;margin:18px auto}.boot-line:after{content:'';display:block;height:100%;width:45%;background:var(--red);animation:load 1.1s linear infinite}
+@keyframes load{from{transform:translateX(-120%)}to{transform:translateX(290%)}}
+
+.app{display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);min-height:100vh}
+.sidebar{height:100vh;position:sticky;top:0;background:linear-gradient(180deg,var(--navy),#041321);color:#fff;display:flex;flex-direction:column;overflow:hidden;z-index:100}
+.brand{min-height:82px;padding:17px;display:flex;gap:10px;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand-logo{width:44px;height:44px;border-radius:13px;background:#fff;padding:5px;display:grid;place-items:center;flex:none}.brand-logo img{width:100%;height:100%;object-fit:contain}
+.brand strong{display:block;font-family:'Manrope',sans-serif;font-size:12px}.brand span{display:block;color:#91a5b8;font-size:8px;margin-top:3px}
+.brand-badge{margin-left:auto!important;color:#fff!important;background:rgba(215,25,45,.18);border:1px solid rgba(215,25,45,.35);border-radius:99px;padding:5px 7px;font-size:7px!important;font-weight:800}
+.sidebar-scroll{padding:10px;overflow:auto;flex:1}.nav-title{color:#668097;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;margin:15px 10px 7px}
+.nav-list{display:grid;gap:4px}.nav-link{border:0;background:transparent;color:#aebdcc;border-radius:11px;padding:10px 11px;display:flex;align-items:center;gap:11px;font-size:10.5px;font-weight:700;text-align:left;width:100%;position:relative}
+.nav-link i{width:18px;text-align:center;color:#8097aa}.nav-link:hover,.nav-link.active{background:rgba(255,255,255,.07);color:#fff}.nav-link.active{box-shadow:inset 3px 0 0 var(--red)}.nav-link.active i{color:#fff}
+.count{margin-left:auto;background:var(--red);color:#fff;border-radius:99px;min-width:18px;height:18px;padding:0 5px;display:grid;place-items:center;font-size:7px;font-weight:900}
+.sidebar-footer{padding:12px;border-top:1px solid rgba(255,255,255,.08)}.back-admin{display:flex;gap:8px;align-items:center;padding:10px;border-radius:11px;background:rgba(255,255,255,.045);font-size:9px;font-weight:700;color:#b8c6d2}
+
+.main{min-width:0}.topbar{position:sticky;top:0;z-index:80;min-height:72px;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 25px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.top-left{display:flex;align-items:center;gap:11px}.mobile-menu{display:none;width:40px;height:40px;border:1px solid var(--line);background:#fff;border-radius:11px;color:var(--navy)}
+.top-title strong{display:block;color:var(--navy);font-family:'Manrope',sans-serif;font-size:13px}.top-title span{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.top-actions{display:flex;gap:8px;align-items:center}.icon-btn{width:39px;height:39px;border:1px solid var(--line);background:#fff;border-radius:11px;color:#596678;position:relative}
+.profile{display:flex;gap:9px;align-items:center;padding:4px 8px 4px 4px;border:1px solid var(--line);background:#fff;border-radius:12px}.avatar{width:32px;height:32px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900}
+.profile-copy strong{display:block;color:var(--navy);font-size:9px}.profile-copy span{display:block;color:var(--muted);font-size:8px;margin-top:3px}.logout{border:0;background:#fff;color:var(--red);font-size:9px;font-weight:800;padding:8px;border-radius:9px}
+.content{padding:26px;max-width:1500px;margin:auto}.view{animation:fade .2s ease}@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:20px}.page-head h1{margin:0;color:var(--navy);font-family:'Manrope',sans-serif;font-size:clamp(1.75rem,3vw,2.4rem);letter-spacing:-.045em}.page-head p{margin:6px 0 0;color:var(--muted);font-size:10.5px}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 13px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:9.5px;font-weight:800;transition:.15s}.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--navy);color:#fff}.btn-red{background:var(--red);color:#fff}.btn-green{background:var(--green);color:#fff}.btn-blue{background:var(--blue);color:#fff}.btn-light{background:#fff;border:1px solid var(--line);color:#435166}.btn-amber{background:#fff7e8;color:#95620a;border:1px solid #f1dfb4}.btn-danger{background:#fff0f2;color:#a71426;border:1px solid #f1d5db}.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+.hero{position:relative;overflow:hidden;min-height:185px;border-radius:22px;background:linear-gradient(125deg,var(--navy),#10436d);color:#fff;margin-bottom:17px;box-shadow:var(--shadow)}.hero:after{content:'';position:absolute;right:-70px;top:-120px;width:300px;height:300px;border-radius:50%;background:rgba(215,25,45,.18)}
+.hero-copy{position:relative;z-index:2;padding:27px;max-width:760px}.eyebrow{font-size:8px;color:#a7bfd2;text-transform:uppercase;letter-spacing:.12em;font-weight:800}.hero h2{font-family:'Manrope',sans-serif;font-size:clamp(1.7rem,3vw,2.5rem);margin:8px 0;line-height:1.05;letter-spacing:-.045em}.hero p{margin:0;color:#c8d7e4;font-size:10.5px}.hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.hero .btn-light{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#fff}
+
+.metric-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:17px}.metric{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 6px 18px rgba(7,27,47,.03)}.metric-top{display:flex;align-items:center;justify-content:space-between}.metric-icon{width:34px;height:34px;border-radius:11px;background:#edf4fa;color:var(--navy);display:grid;place-items:center;font-size:12px}.metric-icon.red{background:#fff0f2;color:var(--red)}.metric-icon.green{background:#e9f7f1;color:var(--green)}.metric-icon.blue{background:#edf5fd;color:var(--blue)}.metric-icon.purple{background:#f1eefb;color:var(--purple)}
+.metric small{font-size:8px;color:var(--muted);font-weight:800}.metric strong{display:block;color:var(--navy);font-size:1.42rem;letter-spacing:-.04em;margin-top:11px}.metric span{display:block;color:var(--muted);font-size:8px;margin-top:2px}
+
+.dashboard-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:17px}.stack{display:grid;gap:17px}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:0 7px 20px rgba(7,27,47,.035)}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.panel-head h3{margin:0;color:var(--navy);font-family:'Manrope',sans-serif;font-size:.95rem}.panel-head p{margin:3px 0 0;color:var(--muted);font-size:8.5px}.panel-link{border:0;background:none;color:var(--red);font-size:8px;font-weight:800;padding:0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:17px}.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quick{border:1px solid var(--line);background:#fbfcfe;border-radius:12px;padding:11px;text-align:left;color:#3f4d61}.quick i{display:block;color:var(--navy);font-size:12px;margin-bottom:7px}.quick strong{display:block;font-size:8.5px}.quick span{display:block;color:var(--muted);font-size:7px;margin-top:3px}
+
+.table-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.search-box{position:relative;min-width:250px}.search-box i{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:9px;color:#9aa7b6}.search-box input{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 10px 9px 30px;font-size:9px;outline:none;background:#fff}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th{text-align:left;padding:10px 11px;background:#f8fafc;border-bottom:1px solid var(--line);color:#7a8797;font-size:7.5px;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}td{padding:11px;border-bottom:1px solid var(--line);font-size:9px;color:#435166;vertical-align:middle}tr:last-child td{border-bottom:0}td strong{color:#273549}.tiny{font-size:7.5px;color:var(--muted)}
+.badge{display:inline-flex;padding:5px 7px;border-radius:99px;font-size:7.5px;font-weight:800;text-transform:capitalize}.badge-green{background:#e9f8f1;color:#14724a}.badge-red{background:#fff0f2;color:#aa1729}.badge-blue{background:#eaf4fd;color:#21659b}.badge-amber{background:#fff6e5;color:#976308}.badge-gray{background:#eef2f5;color:#657285}
+.actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.action-btn{width:31px;height:31px;border-radius:9px;border:1px solid var(--line);background:#fff;color:#596678;display:grid;place-items:center;font-size:9px}.action-btn:hover{color:var(--navy);border-color:#c7d2df}.action-btn.danger:hover{background:#fff0f2;color:var(--red);border-color:#efcbd2}
+
+.mail-list{display:grid;gap:7px}.mail-item{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:start;background:#fff;cursor:pointer}.mail-item.unread{border-left:3px solid var(--red);background:#fffdfd}.mail-avatar{width:38px;height:38px;border-radius:11px;background:#edf4fa;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:10px}.mail-copy{min-width:0}.mail-copy strong{display:block;color:#273549;font-size:9px}.mail-copy .subject{font-size:8.5px;color:#4a586b;font-weight:700;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mail-copy span{display:block;color:var(--muted);font-size:7.5px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mail-time{font-size:7px;color:var(--muted);white-space:nowrap}
+
+.task-card{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff}.task-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.task-card h4{margin:0;color:#2e3d50;font-size:9.5px}.task-card p{margin:6px 0;color:var(--muted);font-size:8px;line-height:1.5}.task-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.task-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.priority-high{color:#b91c1c}.priority-medium{color:#a16207}.priority-low{color:#166534}
+
+.activity-list{display:grid;gap:8px}.activity{display:grid;grid-template-columns:32px 1fr auto;gap:9px;align-items:start}.activity-icon{width:30px;height:30px;border-radius:9px;background:#edf4fa;color:var(--navy);display:grid;place-items:center;font-size:9px}.activity strong{display:block;color:#364458;font-size:8.5px}.activity span{display:block;color:var(--muted);font-size:7.5px;margin-top:3px}.activity time{font-size:7px;color:var(--muted);white-space:nowrap}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:8px;font-weight:800;color:#596678}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#fbfcfe;border-radius:10px;padding:10px 11px;font-size:9px;color:#334155;outline:none}.field textarea{min-height:110px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#9fb1c3;background:#fff;box-shadow:0 0 0 4px rgba(7,27,47,.035)}
+.form-note{font-size:7.5px;color:var(--muted);line-height:1.5}
+
+.directory-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.person-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px}.person-head{display:flex;gap:10px;align-items:center}.person-avatar{width:40px;height:40px;border-radius:12px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:900}.person-card strong{font-size:9px;color:#2c3a4e}.person-card span{display:block;color:var(--muted);font-size:7.5px;margin-top:3px}.person-actions{display:flex;gap:6px;margin-top:12px}
+
+.access-card{max-width:640px;margin:70px auto;background:#fff;border:1px solid var(--line);border-radius:20px;padding:25px;text-align:center;box-shadow:var(--shadow)}.access-icon{width:56px;height:56px;border-radius:16px;background:#edf4fa;color:var(--navy);display:grid;place-items:center;margin:0 auto 12px;font-size:20px}.access-card h2{font-family:'Manrope',sans-serif;color:var(--navy);margin:0}.access-card p{color:var(--muted);font-size:9px;line-height:1.6}
+
+.modal-backdrop{position:fixed;inset:0;z-index:2000;background:rgba(4,19,33,.64);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:.18s}.modal-backdrop.show{opacity:1;pointer-events:auto}.modal{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 30px 90px rgba(0,0,0,.28);transform:translateY(8px);transition:.18s}.modal-backdrop.show .modal{transform:none}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:13px;border-bottom:1px solid var(--line);margin-bottom:16px}.modal-head h3{margin:0;color:var(--navy);font-size:1rem}.modal-close{width:34px;height:34px;border:1px solid var(--line);background:#fff;border-radius:50%;color:#526074}
+.toast{position:fixed;right:18px;bottom:18px;z-index:3000;background:var(--navy);color:#fff;border-radius:12px;padding:11px 14px;font-size:9px;font-weight:700;box-shadow:var(--shadow);transform:translateY(70px);opacity:0;transition:.2s}.toast.show{transform:none;opacity:1}
+
+.sidebar-overlay{display:none}
+@media(max-width:1150px){.metric-grid{grid-template-columns:repeat(3,1fr)}.directory-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:calc(var(--sidebar)*-1);width:var(--sidebar);transition:.2s}.sidebar.open{left:0}.sidebar-overlay{display:block;position:fixed;inset:0;z-index:90;background:rgba(4,19,33,.48);opacity:0;pointer-events:none;transition:.2s}.sidebar-overlay.open{opacity:1;pointer-events:auto}.mobile-menu{display:block}.two-col,.three-col{grid-template-columns:1fr}}
+@media(max-width:700px){.topbar{padding:0 13px}.content{padding:18px 13px}.page-head{align-items:flex-start;flex-direction:column}.profile-copy{display:none}.metric-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.directory-grid{grid-template-columns:1fr}}
+@media(max-width:460px){.metric-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="boot">
+    <div class="boot-logo"><img src="./logo2.png" alt="Afromed"></div>
+    <strong>Afromed Office</strong>
+    <span>Opening internal communications and workflow…</span>
+    <div class="boot-line"></div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+
+<div id="app" class="app hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo"><img src="./logo2.png" alt="Afromed"></div>
+      <div><strong>Afromed Office</strong><span>Internal Work Hub</span></div>
+      <span class="brand-badge">INTERNAL</span>
+    </div>
+
+    <div class="sidebar-scroll">
+      <div class="nav-title">Workspace</div>
+      <div class="nav-list">
+        <button class="nav-link active" data-view="dashboard"><i class="fa-solid fa-grid-2"></i> My Office</button>
+        <button class="nav-link" data-view="inbox"><i class="fa-solid fa-inbox"></i> Inbox <span class="count hidden" id="nav-unread">0</span></button>
+        <button class="nav-link" data-view="sent"><i class="fa-solid fa-paper-plane"></i> Sent</button>
+        <button class="nav-link" data-view="tasks"><i class="fa-solid fa-list-check"></i> Tasks <span class="count hidden" id="nav-tasks">0</span></button>
+        <button class="nav-link" data-view="department"><i class="fa-solid fa-building"></i> Department Board</button>
+      </div>
+
+      <div class="nav-title">People</div>
+      <div class="nav-list">
+        <button class="nav-link" data-view="directory"><i class="fa-solid fa-address-book"></i> Office Directory</button>
+      </div>
+
+      <div class="nav-title admin-only hidden">Administration</div>
+      <div class="nav-list admin-only hidden">
+        <button class="nav-link" data-view="approvals"><i class="fa-solid fa-stamp"></i> Work Approvals <span class="count hidden" id="nav-approvals">0</span></button>
+        <button class="nav-link" data-view="users"><i class="fa-solid fa-user-shield"></i> Users & Access</button>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="admin.html" class="back-admin admin-only hidden"><i class="fa-solid fa-arrow-left"></i> Group Control Centre</a>
+      <a href="index.html" class="back-admin non-admin-back"><i class="fa-solid fa-house"></i> Afromed Home</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="mobile-menu" onclick="toggleSidebar()" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+        <div class="top-title"><strong id="top-title">My Office</strong><span id="top-subtitle">Internal messages, tasks and approvals</span></div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" title="New message" onclick="openComposeModal()"><i class="fa-solid fa-pen-to-square"></i></button>
+        <button class="icon-btn" title="Refresh" onclick="refreshUi()"><i class="fa-solid fa-rotate"></i></button>
+        <div class="profile">
+          <div class="avatar" id="user-avatar">A</div>
+          <div class="profile-copy"><strong id="user-name">Office User</strong><span id="user-department">Department</span></div>
+          <button class="logout" id="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div id="access-gate" class="access-card hidden">
+        <div class="access-icon"><i class="fa-solid fa-lock"></i></div>
+        <h2>Office access is not active yet</h2>
+        <p id="access-message">Your account is signed in, but it has not been authorised for Afromed Office.</p>
+        <div class="head-actions" style="justify-content:center;margin-top:15px">
+          <button class="btn btn-primary" id="request-access-btn" onclick="requestOfficeAccess()"><i class="fa-solid fa-user-plus"></i> Request Office Access</button>
+          <button class="btn btn-light" onclick="auth.signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
+        </div>
+      </div>
+
+      <div id="workspace" class="hidden">
+        <!-- Dashboard -->
+        <section class="view" id="view-dashboard">
+          <div class="page-head">
+            <div><h1>My Office</h1><p>Internal communication, assigned work and department collaboration.</p></div>
+            <div class="head-actions">
+              <button class="btn btn-light" onclick="openTaskModal()"><i class="fa-solid fa-plus"></i> New Task</button>
+              <button class="btn btn-red" onclick="openComposeModal()"><i class="fa-solid fa-envelope"></i> New Message</button>
+            </div>
+          </div>
+
+          <div class="hero">
+            <div class="hero-copy">
+              <span class="eyebrow">Afromed internal operations</span>
+              <h2>One office for communication, accountability and approvals.</h2>
+              <p>Departments can send internal messages, assign work, mark tasks complete and submit work for authorisation. Management sees completion and approval status in real time.</p>
+              <div class="hero-actions">
+                <button class="btn btn-red" onclick="openComposeModal()"><i class="fa-solid fa-paper-plane"></i> Send Message</button>
+                <button class="btn btn-light" onclick="openTaskModal()"><i class="fa-solid fa-list-check"></i> Assign Task</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric"><div class="metric-top"><div class="metric-icon red"><i class="fa-solid fa-envelope"></i></div><small>INBOX</small></div><strong id="metric-unread">0</strong><span>Unread messages</span></div>
+            <div class="metric"><div class="metric-top"><div class="metric-icon blue"><i class="fa-solid fa-list-check"></i></div><small>MY TASKS</small></div><strong id="metric-open">0</strong><span>Open assigned tasks</span></div>
+            <div class="metric"><div class="metric-top"><div class="metric-icon green"><i class="fa-solid fa-circle-check"></i></div><small>COMPLETED</small></div><strong id="metric-completed">0</strong><span>Tasks completed by me</span></div>
+            <div class="metric"><div class="metric-top"><div class="metric-icon purple"><i class="fa-solid fa-building"></i></div><small>DEPARTMENT</small></div><strong id="metric-dept-open">0</strong><span>Open department work</span></div>
+            <div class="metric"><div class="metric-top"><div class="metric-icon"><i class="fa-solid fa-stamp"></i></div><small>APPROVALS</small></div><strong id="metric-approvals">0</strong><span>Awaiting authorisation</span></div>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel">
+              <div class="panel-head"><div><h3>My Current Tasks</h3><p>Work assigned directly to you</p></div><button class="panel-link" onclick="showView('tasks')">View all</button></div>
+              <div id="dashboard-task-list" class="stack"></div>
+            </section>
+            <div class="stack">
+              <section class="panel">
+                <div class="panel-head"><div><h3>Latest Messages</h3><p>Recent internal mail</p></div><button class="panel-link" onclick="showView('inbox')">Inbox</button></div>
+                <div id="dashboard-mail-list" class="mail-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-head"><div><h3>Department Activity</h3><p>Latest workflow changes</p></div></div>
+                <div id="dashboard-activity" class="activity-list"></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <!-- Inbox -->
+        <section class="view hidden" id="view-inbox">
+          <div class="page-head"><div><h1>Inbox</h1><p>Internal Afromed messages addressed to you.</p></div><div class="head-actions"><button class="btn btn-red" onclick="openComposeModal()"><i class="fa-solid fa-pen"></i> Compose</button></div></div>
+          <section class="panel">
+            <div class="table-tools"><div class="search-box"><i class="fa-solid fa-search"></i><input id="inbox-search" placeholder="Search sender, subject or message" oninput="renderInbox()"></div></div>
+            <div id="inbox-list" class="mail-list"></div>
+          </section>
+        </section>
+
+        <!-- Sent -->
+        <section class="view hidden" id="view-sent">
+          <div class="page-head"><div><h1>Sent Mail</h1><p>Internal messages you have sent.</p></div><div class="head-actions"><button class="btn btn-red" onclick="openComposeModal()"><i class="fa-solid fa-pen"></i> New Message</button></div></div>
+          <section class="panel"><div id="sent-list" class="mail-list"></div></section>
+        </section>
+
+        <!-- Tasks -->
+        <section class="view hidden" id="view-tasks">
+          <div class="page-head"><div><h1>Tasks</h1><p>Assigned work, deadlines and completion status.</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openTaskModal()"><i class="fa-solid fa-plus"></i> New Task</button></div></div>
+          <section class="panel">
+            <div class="table-tools">
+              <div class="search-box"><i class="fa-solid fa-search"></i><input id="task-search" placeholder="Search task, assignee or department" oninput="renderTasks()"></div>
+              <select id="task-filter" class="btn btn-light" onchange="renderTasks()"><option value="open">Open work</option><option value="all">All tasks</option><option value="completed">Completed</option><option value="approved">Approved</option></select>
+            </div>
+            <div id="task-list" class="stack"></div>
+          </section>
+        </section>
+
+        <!-- Department -->
+        <section class="view hidden" id="view-department">
+          <div class="page-head"><div><h1 id="department-heading">Department Board</h1><p>Shared work for your department and cross-department requests.</p></div></div>
+          <div class="two-col">
+            <section class="panel"><div class="panel-head"><div><h3>Department Tasks</h3><p>Open and recently completed work</p></div></div><div id="department-task-list" class="stack"></div></section>
+            <section class="panel"><div class="panel-head"><div><h3>Department Activity</h3><p>Latest task, approval and communication updates</p></div></div><div id="department-activity" class="activity-list"></div></section>
+          </div>
+        </section>
+
+        <!-- Directory -->
+        <section class="view hidden" id="view-directory">
+          <div class="page-head"><div><h1>Office Directory</h1><p>Authorised Afromed office users by department.</p></div></div>
+          <div class="table-tools"><div class="search-box"><i class="fa-solid fa-search"></i><input id="directory-search" placeholder="Search name, department, role or email" oninput="renderDirectory()"></div></div>
+          <div id="directory-grid" class="directory-grid"></div>
+        </section>
+
+        <!-- Approvals -->
+        <section class="view hidden admin-only" id="view-approvals">
+          <div class="page-head"><div><h1>Work Approvals</h1><p>Completed work waiting for management authorisation.</p></div></div>
+          <section class="panel"><div id="approval-list" class="stack"></div></section>
+        </section>
+
+        <!-- Users -->
+        <section class="view hidden admin-only" id="view-users">
+          <div class="page-head"><div><h1>Users & Access</h1><p>Invite office users, assign departments and control access.</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openInviteModal()"><i class="fa-solid fa-user-plus"></i> Add Office User</button></div></div>
+          <div class="two-col">
+            <section class="panel">
+              <div class="panel-head"><div><h3>Office Members</h3><p>Active and suspended internal users</p></div></div>
+              <div class="table-wrap"><table><thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="members-body"></tbody></table></div>
+            </section>
+            <div class="stack">
+              <section class="panel"><div class="panel-head"><div><h3>Pending Invitations</h3><p>Email addresses authorised to join Afromed Office</p></div></div><div id="invite-list" class="stack"></div></section>
+              <section class="panel"><div class="panel-head"><div><h3>Access Requests</h3><p>Signed-in users asking for office access</p></div></div><div id="request-list" class="stack"></div></section>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-backdrop" class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modal-title">Action</h3><button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const firebaseConfig={
+  apiKey:"AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
+  authDomain:"afromed-fda57.firebaseapp.com",
+  databaseURL:"https://afromed-fda57-default-rtdb.firebaseio.com",
+  projectId:"afromed-fda57",
+  storageBucket:"afromed-fda57.firebasestorage.app",
+  messagingSenderId:"633274573777",
+  appId:"1:633274573777:web:6b244c95612bc92ff976f0",
+  measurementId:"G-3ZSVQDNVFX"
+};
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(),db=firebase.firestore();
+
+let currentUser=null,currentMember=null,currentAppRole='staff';
+let members=[],messages=[],tasks=[],activities=[],invites=[],accessRequests=[];
+let unsubscribers=[];
+
+const DEPARTMENTS=[
+  "Executive / Administration","EMS Operations","Emergency College","Events & Medical Cover",
+  "Finance & Billing","Afromed Development","HR & Corporate"
+];
+const OFFICE_ROLES=["admin","manager","staff","finance","lecturer","coordinator"];
+const pageMeta={
+  dashboard:["My Office","Internal messages, tasks and approvals"],inbox:["Inbox","Internal messages addressed to you"],
+  sent:["Sent Mail","Messages you have sent"],tasks:["Tasks","Assignments, deadlines and completion"],
+  department:["Department Board","Shared department workflow"],directory:["Office Directory","Authorised Afromed colleagues"],
+  approvals:["Work Approvals","Management authorisation queue"],users:["Users & Access","Office invitations and permissions"]
+};
+
+function esc(v=''){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+function formatDate(v){
+  try{const d=v?.toDate?v.toDate():v instanceof Date?v:v?new Date(v):null;if(!d||Number.isNaN(d.getTime()))return'—';return new Intl.DateTimeFormat('en-ZA',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(d)}catch{return'—'}
+}
+function tsValue(v){try{return v?.seconds?v.seconds*1000:v?.toDate?v.toDate().getTime():new Date(v||0).getTime()||0}catch{return 0}}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2600)}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
+function toggleSidebar(force){const s=document.getElementById('sidebar'),o=document.getElementById('sidebar-overlay');const open=typeof force==='boolean'?force:!s.classList.contains('open');s.classList.toggle('open',open);o.classList.toggle('open',open)}
+function isAdmin(){return ['admin','administrator','superadmin'].includes(String(currentMember?.role||currentAppRole).toLowerCase())}
+function openModal(title,html){setText('modal-title',title);document.getElementById('modal-content').innerHTML=html;document.getElementById('modal-backdrop').classList.add('show')}
+function closeModal(){document.getElementById('modal-backdrop').classList.remove('show')}
+document.getElementById('modal-backdrop').addEventListener('click',e=>{if(e.target.id==='modal-backdrop')closeModal()});
+function showView(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+view)?.classList.remove('hidden');document.querySelector(`.nav-link[data-view="${view}"]`)?.classList.add('active');
+  const m=pageMeta[view]||["Afromed Office","Internal workspace"];setText('top-title',m[0]);setText('top-subtitle',m[1]);toggleSidebar(false);window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.nav-link[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+
+function statusBadge(s){
+  const v=String(s||'unknown').toLowerCase();let c='badge-gray';
+  if(['approved','active','completed','sent'].includes(v))c='badge-green';
+  else if(['pending','assigned','in_progress','not_submitted','invited'].includes(v))c='badge-amber';
+  else if(['changes_required','rejected','suspended','failed'].includes(v))c='badge-red';
+  else if(['not_required'].includes(v))c='badge-blue';
+  return `<span class="badge ${c}">${esc(v.replaceAll('_',' '))}</span>`;
+}
+function priorityClass(p){return String(p||'medium').toLowerCase()==='high'?'priority-high':String(p||'').toLowerCase()==='low'?'priority-low':'priority-medium'}
+
+function logActivity(type,title,detail='',department=''){
+  if(!currentUser)return Promise.resolve();
+  return db.collection('office_activity').add({
+    type,title,detail,department:department||currentMember?.department||'',
+    actorUid:currentUser.uid,actorName:currentMember?.name||currentUser.displayName||currentUser.email||'User',
+    actorEmail:currentUser.email||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(e=>console.warn('activity',e));
+}
+
+async function resolveOfficeAccess(user){
+  currentUser=user;
+  let appProfile=null;
+  try{const d=await db.collection('users').doc(user.uid).get();if(d.exists)appProfile=d.data()}catch{}
+  currentAppRole=String(appProfile?.role||'staff').toLowerCase();
+
+  let memberDoc=await db.collection('office_members').doc(user.uid).get();
+  if(memberDoc.exists){
+    currentMember={id:user.uid,...memberDoc.data()};
+    if(String(currentMember.status||'active').toLowerCase()!=='active')return showAccessGate('Your Afromed Office access is currently '+(currentMember.status||'inactive')+'.');
+    return activateWorkspace();
+  }
+
+  // Existing Afromed admins can bootstrap their own Office profile.
+  if(['admin','administrator','superadmin'].includes(currentAppRole)){
+    const profile={name:appProfile?.name||user.displayName||user.email||'Administrator',email:user.email||'',department:'Executive / Administration',role:'admin',status:'active',createdAt:firebase.firestore.FieldValue.serverTimestamp(),activatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+    await db.collection('office_members').doc(user.uid).set(profile,{merge:true});
+    currentMember={id:user.uid,...profile};return activateWorkspace();
+  }
+
+  // Claim a pre-authorised invitation if the email matches.
+  if(user.email){
+    try{
+      const inviteSnap=await db.collection('office_invites').where('email','==',user.email).limit(1).get();
+      if(!inviteSnap.empty){
+        const inv={id:inviteSnap.docs[0].id,...inviteSnap.docs[0].data()};
+        if(['invited','active'].includes(String(inv.status||'invited').toLowerCase())){
+          const profile={name:inv.name||user.displayName||user.email,email:user.email,department:inv.department||'HR & Corporate',role:inv.role||'staff',status:'active',inviteId:inv.id,createdAt:firebase.firestore.FieldValue.serverTimestamp(),activatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+          await db.collection('office_members').doc(user.uid).set(profile,{merge:true});
+          await db.collection('office_invites').doc(inv.id).set({status:'claimed',claimedByUid:user.uid,claimedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+          currentMember={id:user.uid,...profile};return activateWorkspace();
+        }
+      }
+    }catch(e){console.warn('invite claim',e)}
+  }
+  showAccessGate('You are signed in, but this account has not yet been authorised for Afromed Office.');
+}
+
+function showAccessGate(message){
+  document.getElementById('workspace').classList.add('hidden');document.getElementById('access-gate').classList.remove('hidden');setText('access-message',message);
+  document.getElementById('app').classList.remove('hidden');finishBoot();
+}
+async function requestOfficeAccess(){
+  if(!currentUser)return;
+  try{
+    await db.collection('office_access_requests').doc(currentUser.uid).set({
+      uid:currentUser.uid,name:currentUser.displayName||currentUser.email||'User',email:currentUser.email||'',status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+    showToast('Access request sent to administration');document.getElementById('request-access-btn').disabled=true;
+  }catch(e){showToast('Unable to request access: '+e.message)}
+}
+function activateWorkspace(){
+  document.getElementById('access-gate').classList.add('hidden');document.getElementById('workspace').classList.remove('hidden');
+  setText('user-name',currentMember.name||currentUser.displayName||currentUser.email||'Office User');setText('user-department',currentMember.department||'Afromed Office');setText('user-avatar',String(currentMember.name||currentUser.email||'A').charAt(0).toUpperCase());
+  setText('department-heading',(currentMember.department||'Department')+' Board');
+  document.querySelectorAll('.admin-only').forEach(e=>e.classList.toggle('hidden',!isAdmin()));
+  document.querySelector('.non-admin-back')?.classList.toggle('hidden',isAdmin());
+  attachListeners();document.getElementById('app').classList.remove('hidden');finishBoot();
+}
+function finishBoot(){const b=document.getElementById('boot');if(!b)return;b.style.opacity='0';b.style.pointerEvents='none';setTimeout(()=>b.remove(),330)}
+
+function listen(name,cb){const u=db.collection(name).onSnapshot(s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))),e=>console.warn(name,e));unsubscribers.push(u)}
+function attachListeners(){
+  listen('office_members',d=>{members=d;renderAll()});
+  listen('office_messages',d=>{messages=d;renderAll()});
+  listen('office_tasks',d=>{tasks=d;renderAll()});
+  listen('office_activity',d=>{activities=d;renderAll()});
+  if(isAdmin()){listen('office_invites',d=>{invites=d;renderUsers()});listen('office_access_requests',d=>{accessRequests=d;renderUsers()})}
+}
+
+function myInbox(){return messages.filter(m=>m.toUid===currentUser?.uid)}
+function mySent(){return messages.filter(m=>m.fromUid===currentUser?.uid)}
+function myTasks(){return tasks.filter(t=>t.assignedToUid===currentUser?.uid || (!t.assignedToUid && t.assignedDepartment===currentMember?.department))}
+function deptTasks(){return tasks.filter(t=>t.assignedDepartment===currentMember?.department || t.createdByDepartment===currentMember?.department)}
+function sorted(arr,field='createdAt'){return [...arr].sort((a,b)=>tsValue(b[field])-tsValue(a[field]))}
+function renderAll(){renderDashboard();renderInbox();renderSent();renderTasks();renderDepartment();renderDirectory();if(isAdmin()){renderApprovals();renderUsers()}}
+
+function renderDashboard(){
+  const inbox=myInbox(),unread=inbox.filter(m=>!(m.readBy||[]).includes(currentUser.uid)).length;
+  const mine=myTasks(),open=mine.filter(t=>!['completed','approved'].includes(String(t.status||'').toLowerCase())).length;
+  const completed=mine.filter(t=>['completed','approved'].includes(String(t.status||'').toLowerCase())).length;
+  const deptOpen=deptTasks().filter(t=>!['completed','approved'].includes(String(t.status||'').toLowerCase())).length;
+  const approvals=tasks.filter(t=>String(t.approvalStatus||'').toLowerCase()==='pending').length;
+  setText('metric-unread',unread);setText('metric-open',open);setText('metric-completed',completed);setText('metric-dept-open',deptOpen);setText('metric-approvals',isAdmin()?approvals:mine.filter(t=>t.approvalStatus==='pending').length);
+  setText('nav-unread',unread);document.getElementById('nav-unread').classList.toggle('hidden',unread===0);
+  setText('nav-tasks',open);document.getElementById('nav-tasks').classList.toggle('hidden',open===0);
+  if(isAdmin()){setText('nav-approvals',approvals);document.getElementById('nav-approvals').classList.toggle('hidden',approvals===0)}
+
+  const taskBox=document.getElementById('dashboard-task-list');const topTasks=sorted(mine,'updatedAt').slice(0,5);
+  taskBox.innerHTML=topTasks.length?topTasks.map(taskCard).join(''):`<div class="tiny">No tasks assigned to you.</div>`;
+
+  const mailBox=document.getElementById('dashboard-mail-list');const topMail=sorted(inbox).slice(0,4);
+  mailBox.innerHTML=topMail.length?topMail.map(mailItem).join(''):`<div class="tiny">No messages yet.</div>`;
+
+  const act=sorted(activities).filter(a=>!a.department||a.department===currentMember.department||isAdmin()).slice(0,6);
+  document.getElementById('dashboard-activity').innerHTML=renderActivityList(act);
+}
+
+function mailItem(m){
+  const unread=!(m.readBy||[]).includes(currentUser.uid),sender=m.fromName||m.fromEmail||'Afromed Office';
+  return `<div class="mail-item ${unread?'unread':''}" onclick="openMessage('${m.id}')">
+    <div class="mail-avatar">${esc(sender.charAt(0).toUpperCase())}</div>
+    <div class="mail-copy"><strong>${esc(sender)}</strong><div class="subject">${esc(m.subject||'(No subject)')}</div><span>${esc(String(m.body||'').slice(0,100))}</span></div>
+    <div class="mail-time">${formatDate(m.createdAt)}</div>
+  </div>`;
+}
+function renderInbox(){
+  const term=(document.getElementById('inbox-search')?.value||'').toLowerCase();
+  const list=sorted(myInbox()).filter(m=>[m.fromName,m.fromEmail,m.subject,m.body].join(' ').toLowerCase().includes(term));
+  document.getElementById('inbox-list').innerHTML=list.length?list.map(mailItem).join(''):`<div class="tiny">Inbox is empty.</div>`;
+}
+function renderSent(){
+  const list=sorted(mySent());
+  document.getElementById('sent-list').innerHTML=list.length?list.map(m=>`<div class="mail-item" onclick="openMessage('${m.id}')">
+    <div class="mail-avatar">${esc(String(m.toName||'A').charAt(0).toUpperCase())}</div>
+    <div class="mail-copy"><strong>To: ${esc(m.toName||m.toEmail||'Recipient')}</strong><div class="subject">${esc(m.subject||'(No subject)')}</div><span>${esc(String(m.body||'').slice(0,100))}</span></div>
+    <div class="mail-time">${formatDate(m.createdAt)}</div></div>`).join(''):`<div class="tiny">No sent messages.</div>`;
+}
+async function openMessage(id){
+  const m=messages.find(x=>x.id===id);if(!m)return;
+  if(m.toUid===currentUser.uid && !(m.readBy||[]).includes(currentUser.uid)){
+    await db.collection('office_messages').doc(id).update({readBy:firebase.firestore.FieldValue.arrayUnion(currentUser.uid),readAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+  }
+  openModal(m.subject||'Message',`<div class="tiny">From: <strong>${esc(m.fromName||m.fromEmail||'')}</strong><br>To: <strong>${esc(m.toName||m.toEmail||'')}</strong><br>${formatDate(m.createdAt)}</div>
+    <div style="white-space:pre-wrap;font-size:10px;line-height:1.7;color:#344256;margin-top:16px">${esc(m.body||'')}</div>
+    ${m.toUid===currentUser.uid?`<div class="head-actions" style="margin-top:16px"><button class="btn btn-primary" onclick="closeModal();openComposeModal('${m.fromUid}','Re: ${esc(m.subject||'')}')"><i class="fa-solid fa-reply"></i> Reply</button></div>`:''}`);
+}
+function openComposeModal(toUid='',subject=''){
+  const active=members.filter(m=>m.status==='active'&&m.id!==currentUser.uid);
+  const opts=active.map(m=>`<option value="${m.id}" ${m.id===toUid?'selected':''}>${esc(m.name||m.email)} · ${esc(m.department||'')}</option>`).join('');
+  openModal('New Internal Message',`<form id="message-form" class="form-grid">
+    <div class="field full"><label>TO</label><select id="msg-to" required><option value="">Select colleague</option>${opts}</select></div>
+    <div class="field full"><label>SUBJECT</label><input id="msg-subject" required value="${esc(subject)}"></div>
+    <div class="field full"><label>MESSAGE</label><textarea id="msg-body" required placeholder="Write your internal message…"></textarea></div>
+    <div class="field"><label>PRIORITY</label><select id="msg-priority"><option value="normal">Normal</option><option value="high">High</option></select></div>
+    <div class="field full"><button class="btn btn-red" type="submit"><i class="fa-solid fa-paper-plane"></i> Send Message</button></div></form>`);
+  document.getElementById('message-form').addEventListener('submit',async e=>{
+    e.preventDefault();const uid=document.getElementById('msg-to').value,to=members.find(m=>m.id===uid);if(!to)return;
+    try{
+      const subject=document.getElementById('msg-subject').value.trim(),body=document.getElementById('msg-body').value.trim();
+      await db.collection('office_messages').add({
+        fromUid:currentUser.uid,fromName:currentMember.name||currentUser.email,fromEmail:currentMember.email||currentUser.email,fromDepartment:currentMember.department||'',
+        toUid:uid,toName:to.name||to.email,toEmail:to.email||'',toDepartment:to.department||'',subject,body,priority:document.getElementById('msg-priority').value,readBy:[],
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      await logActivity('message','Internal message sent',`${subject} → ${to.name||to.email}`,currentMember.department);
+      closeModal();showToast('Message sent');
+    }catch(err){showToast('Unable to send message: '+err.message)}
+  });
+}
+
+function taskCard(t){
+  const mine=t.assignedToUid===currentUser.uid || (!t.assignedToUid&&t.assignedDepartment===currentMember.department);
+  const status=String(t.status||'assigned').toLowerCase(),approval=String(t.approvalStatus||'not_required').toLowerCase();
+  let actions='';
+  if(mine && ['assigned','pending'].includes(status))actions+=`<button class="btn btn-light" onclick="startTask('${t.id}')"><i class="fa-solid fa-play"></i> Start</button>`;
+  if(mine && ['assigned','pending','in_progress','changes_required'].includes(status))actions+=`<button class="btn btn-green" onclick="completeTask('${t.id}')"><i class="fa-solid fa-check"></i> Complete</button>`;
+  if(isAdmin()&&approval==='pending')actions+=`<button class="btn btn-primary" onclick="approveTask('${t.id}')"><i class="fa-solid fa-stamp"></i> Authorise</button><button class="btn btn-danger" onclick="rejectTask('${t.id}')"><i class="fa-solid fa-rotate-left"></i> Return</button>`;
+  return `<div class="task-card"><div class="task-top"><div><h4>${esc(t.title||'Task')}</h4><p>${esc(t.description||'')}</p></div>${statusBadge(t.status||'assigned')}</div>
+    <div class="task-meta"><span class="badge badge-gray">${esc(t.assignedDepartment||'Unassigned')}</span><span class="badge badge-gray">${esc(t.assignedToName||'Department task')}</span><span class="${priorityClass(t.priority)} tiny"><i class="fa-solid fa-flag"></i> ${esc(t.priority||'medium')}</span>${t.dueDate?`<span class="tiny"><i class="fa-regular fa-calendar"></i> ${esc(t.dueDate)}</span>`:''}${t.requiresApproval?statusBadge(t.approvalStatus||'not_submitted'):''}</div>
+    ${t.approvalNote?`<p><strong>Management note:</strong> ${esc(t.approvalNote)}</p>`:''}
+    ${actions?`<div class="task-actions">${actions}</div>`:''}</div>`;
+}
+function renderTasks(){
+  const term=(document.getElementById('task-search')?.value||'').toLowerCase(),filter=document.getElementById('task-filter')?.value||'open';
+  let list=isAdmin()?tasks:tasks.filter(t=>t.assignedToUid===currentUser.uid||t.createdByUid===currentUser.uid||t.assignedDepartment===currentMember.department);
+  list=list.filter(t=>[t.title,t.description,t.assignedToName,t.assignedDepartment,t.createdByName].join(' ').toLowerCase().includes(term));
+  if(filter==='open')list=list.filter(t=>!['completed','approved'].includes(String(t.status||'').toLowerCase()));
+  if(filter==='completed')list=list.filter(t=>String(t.status||'').toLowerCase()==='completed');
+  if(filter==='approved')list=list.filter(t=>String(t.status||'').toLowerCase()==='approved');
+  list=sorted(list,'updatedAt');document.getElementById('task-list').innerHTML=list.length?list.map(taskCard).join(''):`<div class="tiny">No tasks in this view.</div>`;
+}
+function renderDepartment(){
+  const list=sorted(deptTasks(),'updatedAt').slice(0,25);document.getElementById('department-task-list').innerHTML=list.length?list.map(taskCard).join(''):`<div class="tiny">No department tasks yet.</div>`;
+  const act=sorted(activities).filter(a=>a.department===currentMember.department).slice(0,20);document.getElementById('department-activity').innerHTML=renderActivityList(act);
+}
+function renderActivityList(list){
+  return list.length?list.map(a=>`<div class="activity"><div class="activity-icon"><i class="fa-solid ${a.type==='message'?'fa-envelope':a.type==='approval'?'fa-stamp':'fa-list-check'}"></i></div><div><strong>${esc(a.title||'Activity')}</strong><span>${esc(a.detail||'')} · ${esc(a.actorName||'')}</span></div><time>${formatDate(a.createdAt)}</time></div>`).join(''):`<div class="tiny">No activity recorded yet.</div>`;
+}
+function renderDirectory(){
+  const term=(document.getElementById('directory-search')?.value||'').toLowerCase();
+  const list=members.filter(m=>m.status==='active'&&[m.name,m.email,m.department,m.role].join(' ').toLowerCase().includes(term));
+  document.getElementById('directory-grid').innerHTML=list.length?list.map(m=>`<div class="person-card"><div class="person-head"><div class="person-avatar">${esc(String(m.name||m.email||'A').charAt(0).toUpperCase())}</div><div><strong>${esc(m.name||m.email||'Office User')}</strong><span>${esc(m.department||'')} · ${esc(m.role||'staff')}</span><span>${esc(m.email||'')}</span></div></div><div class="person-actions">${m.id!==currentUser.uid?`<button class="btn btn-light" onclick="openComposeModal('${m.id}')"><i class="fa-solid fa-envelope"></i> Message</button><button class="btn btn-light" onclick="openTaskModal('${m.id}')"><i class="fa-solid fa-list-check"></i> Task</button>`:''}</div></div>`).join(''):`<div class="tiny">No matching office users.</div>`;
+}
+function openTaskModal(preselectedUid=''){
+  const opts=members.filter(m=>m.status==='active').map(m=>`<option value="${m.id}" ${m.id===preselectedUid?'selected':''}>${esc(m.name||m.email)} · ${esc(m.department||'')}</option>`).join('');
+  const deptOpts=DEPARTMENTS.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  openModal('Assign Office Task',`<form id="task-form" class="form-grid">
+    <div class="field full"><label>TASK TITLE</label><input id="task-title" required></div>
+    <div class="field full"><label>DESCRIPTION / EXPECTED OUTPUT</label><textarea id="task-description" required></textarea></div>
+    <div class="field"><label>ASSIGN TO USER</label><select id="task-user"><option value="">Department / no specific user</option>${opts}</select></div>
+    <div class="field"><label>DEPARTMENT</label><select id="task-dept" required>${deptOpts}</select></div>
+    <div class="field"><label>PRIORITY</label><select id="task-priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div>
+    <div class="field"><label>DUE DATE</label><input id="task-due" type="date"></div>
+    <div class="field full"><label style="display:flex;align-items:center;gap:7px"><input id="task-approval" type="checkbox" style="width:auto"> Require management authorisation after completion</label></div>
+    <div class="field full"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Assign Task</button></div></form>`);
+  const userSel=document.getElementById('task-user');
+  userSel.addEventListener('change',()=>{const m=members.find(x=>x.id===userSel.value);if(m)document.getElementById('task-dept').value=m.department||document.getElementById('task-dept').value});
+  if(preselectedUid)userSel.dispatchEvent(new Event('change'));
+  document.getElementById('task-form').addEventListener('submit',async e=>{
+    e.preventDefault();const uid=userSel.value,m=members.find(x=>x.id===uid),dept=document.getElementById('task-dept').value,requires=document.getElementById('task-approval').checked;
+    try{
+      const title=document.getElementById('task-title').value.trim();
+      await db.collection('office_tasks').add({
+        title,description:document.getElementById('task-description').value.trim(),assignedToUid:uid||'',assignedToName:m?.name||'',assignedDepartment:dept,
+        createdByUid:currentUser.uid,createdByName:currentMember.name||currentUser.email,createdByDepartment:currentMember.department||'',
+        priority:document.getElementById('task-priority').value,dueDate:document.getElementById('task-due').value||'',requiresApproval:requires,
+        approvalStatus:requires?'not_submitted':'not_required',status:'assigned',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      await logActivity('task','Task assigned',`${title} → ${m?.name||dept}`,dept);closeModal();showToast('Task assigned');
+    }catch(err){showToast('Unable to assign task: '+err.message)}
+  });
+}
+async function startTask(id){
+  try{await db.collection('office_tasks').doc(id).update({status:'in_progress',startedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});const t=tasks.find(x=>x.id===id);await logActivity('task','Task started',t?.title||'',t?.assignedDepartment||'');showToast('Task started')}catch(e){showToast('Unable to update task')}
+}
+async function completeTask(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  const approval=t.requiresApproval?'pending':'not_required',status=t.requiresApproval?'completed':'completed';
+  try{await db.collection('office_tasks').doc(id).update({status,approvalStatus:approval,completedAt:firebase.firestore.FieldValue.serverTimestamp(),completedByUid:currentUser.uid,completedByName:currentMember.name||currentUser.email,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});await logActivity('task','Task completed',`${t.title}${t.requiresApproval?' · submitted for authorisation':''}`,t.assignedDepartment);showToast(t.requiresApproval?'Task submitted for authorisation':'Task completed')}catch(e){showToast('Unable to complete task')}
+}
+function renderApprovals(){
+  const list=sorted(tasks.filter(t=>t.approvalStatus==='pending'),'completedAt');
+  document.getElementById('approval-list').innerHTML=list.length?list.map(taskCard).join(''):`<div class="tiny">No work waiting for authorisation.</div>`;
+}
+async function approveTask(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  try{await db.collection('office_tasks').doc(id).update({status:'approved',approvalStatus:'approved',authorizedByUid:currentUser.uid,authorizedByName:currentMember.name||currentUser.email,authorizedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});await logActivity('approval','Work authorised',t.title,t.assignedDepartment);showToast('Work authorised')}catch(e){showToast('Unable to authorise work')}
+}
+function rejectTask(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  openModal('Return Work for Changes',`<form id="reject-form" class="form-grid"><div class="field full"><label>MANAGEMENT NOTE</label><textarea id="reject-note" required placeholder="Explain what must be corrected or completed"></textarea></div><div class="field full"><button class="btn btn-danger" type="submit"><i class="fa-solid fa-rotate-left"></i> Return to Department</button></div></form>`);
+  document.getElementById('reject-form').addEventListener('submit',async e=>{e.preventDefault();const note=document.getElementById('reject-note').value.trim();try{await db.collection('office_tasks').doc(id).update({status:'in_progress',approvalStatus:'changes_required',approvalNote:note,reviewedByUid:currentUser.uid,reviewedByName:currentMember.name||currentUser.email,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});await logActivity('approval','Work returned for changes',`${t.title} · ${note}`,t.assignedDepartment);closeModal();showToast('Work returned to department')}catch(err){showToast('Unable to return work')}});
+}
+
+function openInviteModal(){
+  const deptOpts=DEPARTMENTS.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join(''),roleOpts=OFFICE_ROLES.map(r=>`<option value="${r}">${r}</option>`).join('');
+  openModal('Add Office User',`<form id="invite-form" class="form-grid">
+    <div class="field"><label>FULL NAME</label><input id="invite-name" required></div>
+    <div class="field"><label>EMAIL</label><input id="invite-email" type="email" required></div>
+    <div class="field"><label>DEPARTMENT</label><select id="invite-dept">${deptOpts}</select></div>
+    <div class="field"><label>OFFICE ROLE</label><select id="invite-role">${roleOpts}</select></div>
+    <div class="field full"><div class="form-note">If this email already has an Afromed account, access is activated immediately. Otherwise an invitation record is created and will activate when that email signs in.</div></div>
+    <div class="field full"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-user-plus"></i> Add / Authorise User</button></div></form>`);
+  document.getElementById('invite-form').addEventListener('submit',async e=>{
+    e.preventDefault();const email=document.getElementById('invite-email').value.trim(),name=document.getElementById('invite-name').value.trim(),department=document.getElementById('invite-dept').value,role=document.getElementById('invite-role').value;
+    try{
+      const existing=await db.collection('users').where('email','==',email).limit(1).get();
+      if(!existing.empty){
+        const uid=existing.docs[0].id;
+        await db.collection('office_members').doc(uid).set({name,email,department,role,status:'active',createdAt:firebase.firestore.FieldValue.serverTimestamp(),activatedByUid:currentUser.uid},{merge:true});
+        await logActivity('user','Office user authorised',`${name} · ${department}`,'Executive / Administration');showToast('Existing Afromed user authorised');
+      }else{
+        await db.collection('office_invites').doc(email).set({name,email,department,role,status:'invited',createdByUid:currentUser.uid,createdByName:currentMember.name||currentUser.email,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+        showToast('Office invitation created');
+      }
+      closeModal();
+    }catch(err){showToast('Unable to add user: '+err.message)}
+  });
+}
+function renderUsers(){
+  if(!isAdmin())return;
+  document.getElementById('members-body').innerHTML=members.length?sorted(members).map(m=>`<tr><td><strong>${esc(m.name||m.email||'User')}</strong><div class="tiny">${esc(m.email||'')}</div></td><td>${esc(m.department||'')}</td><td>${esc(m.role||'staff')}</td><td>${statusBadge(m.status||'active')}</td><td><div class="actions"><button class="action-btn" onclick="editMember('${m.id}')"><i class="fa-solid fa-pen"></i></button>${m.id!==currentUser.uid?`<button class="action-btn danger" onclick="toggleMember('${m.id}')"><i class="fa-solid ${m.status==='suspended'?'fa-user-check':'fa-user-lock'}"></i></button>`:''}</div></td></tr>`).join(''):`<tr><td colspan="5">No office members yet.</td></tr>`;
+  document.getElementById('invite-list').innerHTML=invites.filter(i=>i.status==='invited').length?invites.filter(i=>i.status==='invited').map(i=>`<div class="task-card"><h4>${esc(i.name||i.email)}</h4><p>${esc(i.email)} · ${esc(i.department||'')} · ${esc(i.role||'staff')}</p>${statusBadge(i.status)}</div>`).join(''):`<div class="tiny">No pending invitations.</div>`;
+  document.getElementById('request-list').innerHTML=accessRequests.filter(r=>r.status==='pending').length?accessRequests.filter(r=>r.status==='pending').map(r=>`<div class="task-card"><h4>${esc(r.name||r.email)}</h4><p>${esc(r.email||'')}</p><div class="task-actions"><button class="btn btn-primary" onclick="approveAccessRequest('${r.id}')"><i class="fa-solid fa-user-check"></i> Approve</button></div></div>`).join(''):`<div class="tiny">No pending access requests.</div>`;
+}
+function editMember(id){
+  const m=members.find(x=>x.id===id);if(!m)return;const deptOpts=DEPARTMENTS.map(d=>`<option value="${esc(d)}" ${d===m.department?'selected':''}>${esc(d)}</option>`).join(''),roleOpts=OFFICE_ROLES.map(r=>`<option value="${r}" ${r===m.role?'selected':''}>${r}</option>`).join('');
+  openModal('Edit Office User',`<form id="member-form" class="form-grid"><div class="field full"><label>NAME</label><input id="member-name" value="${esc(m.name||'')}"></div><div class="field"><label>DEPARTMENT</label><select id="member-dept">${deptOpts}</select></div><div class="field"><label>ROLE</label><select id="member-role">${roleOpts}</select></div><div class="field full"><button class="btn btn-primary" type="submit">Save Access</button></div></form>`);
+  document.getElementById('member-form').addEventListener('submit',async e=>{e.preventDefault();await db.collection('office_members').doc(id).update({name:document.getElementById('member-name').value.trim(),department:document.getElementById('member-dept').value,role:document.getElementById('member-role').value,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});closeModal();showToast('Office user updated')});
+}
+async function toggleMember(id){const m=members.find(x=>x.id===id);if(!m)return;const next=m.status==='suspended'?'active':'suspended';if(!confirm(`${next==='suspended'?'Suspend':'Reactivate'} ${m.name||m.email}?`))return;await db.collection('office_members').doc(id).update({status:next,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Access updated')}
+function approveAccessRequest(uid){
+  const r=accessRequests.find(x=>x.id===uid);if(!r)return;
+  const deptOpts=DEPARTMENTS.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join(''),roleOpts=OFFICE_ROLES.map(r=>`<option value="${r}">${r}</option>`).join('');
+  openModal('Approve Office Access',`<form id="approve-access-form" class="form-grid"><div class="field full"><label>USER</label><input value="${esc(r.name||r.email||'')}" disabled></div><div class="field"><label>DEPARTMENT</label><select id="approve-dept">${deptOpts}</select></div><div class="field"><label>ROLE</label><select id="approve-role">${roleOpts}</select></div><div class="field full"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-user-check"></i> Authorise Access</button></div></form>`);
+  document.getElementById('approve-access-form').addEventListener('submit',async e=>{e.preventDefault();try{await db.collection('office_members').doc(uid).set({name:r.name||r.email,email:r.email||'',department:document.getElementById('approve-dept').value,role:document.getElementById('approve-role').value,status:'active',createdAt:firebase.firestore.FieldValue.serverTimestamp(),activatedByUid:currentUser.uid},{merge:true});await db.collection('office_access_requests').doc(uid).update({status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp(),approvedByUid:currentUser.uid});closeModal();showToast('Office access approved')}catch(err){showToast('Unable to approve access')}});
+}
+function refreshUi(){renderAll();showToast('Office workspace refreshed')}
+
+auth.onAuthStateChanged(async user=>{
+  if(!user){window.location.href='index.html';return}
+  try{await resolveOfficeAccess(user)}catch(err){console.error(err);showAccessGate('Office could not verify your access. Please contact administration.')}
+});
+document.getElementById('logout-btn').addEventListener('click',async()=>{unsubscribers.forEach(fn=>{try{fn()}catch{}});await auth.signOut();window.location.href='index.html'});
+</script>
+</body>
+</html>
