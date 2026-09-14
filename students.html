@@ -1,1471 +1,1633 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Portal | Afromed College</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Afromed Emergency College administration system">
+  <title>Afromed Emergency College | Administration</title>
 
-    <style>
-        :root {
-            --primary-blue: #0A2540;
-            --accent-red: #D90429;
-            --admin-dark: #111827;
-            --bg-body: #F3F4F6;
-            --card-bg: #FFFFFF;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --border-color: #E5E7EB;
-            --success-green: #10B981;
-            --warning-orange: #F59E0B;
-            --sidebar-width: 260px;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
-        .hidden {
-            display: none !important;
-        }
+  <link rel="icon" type="image/png" href="./logo2.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--admin-dark);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            z-index: 20;
-        }
-        .sidebar-header {
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #374151;
-        }
-        .admin-badge {
-            background: var(--accent-red);
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-        .nav-menu {
-            list-style: none;
-            padding: 1rem 0;
-            flex-grow: 1;
-        }
-        .nav-menu a {
-            display: flex;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            color: #9CA3AF;
-            text-decoration: none;
-            font-weight: 500;
-            gap: 15px;
-            cursor: pointer;
-            border-left: 4px solid transparent;
-        }
-        .nav-menu a:hover,
-        .nav-menu a.active {
-            color: white;
-            background: rgba(255, 255, 255, 0.05);
-            border-left-color: var(--accent-red);
-        }
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-        /* Main */
-        .main-wrapper {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .topbar {
-            background: var(--card-bg);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .content-area {
-            flex-grow: 1;
-            padding: 2rem;
-            overflow-y: auto;
-        }
+  <style>
+    :root{
+      --navy:#071b2f;
+      --navy-2:#0d3152;
+      --red:#d7192d;
+      --red-dark:#b31525;
+      --blue:#1c6fb8;
+      --green:#13805a;
+      --amber:#ad730a;
+      --purple:#6f59b3;
+      --ink:#1e293b;
+      --muted:#6d798a;
+      --surface:#f4f7fb;
+      --white:#fff;
+      --line:#e2e8f0;
+      --soft:#f8fafc;
+      --shadow:0 18px 45px rgba(7,27,47,.08);
+      --sidebar:250px;
+    }
 
-        /* Panels */
-        .panel {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 2rem;
-            border: 1px solid var(--border-color);
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-        .panel-header {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--primary-blue);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:var(--surface);
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased;
+    }
+    a{text-decoration:none;color:inherit}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .muted{color:var(--muted)}
 
-        /* Forms */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            color: var(--text-main);
-        }
-        .form-control {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-        }
-        .form-control:focus {
-            border-color: var(--primary-blue);
-        }
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
+    /* Loading */
+    #boot-screen{
+      position:fixed;inset:0;z-index:9999;display:grid;place-items:center;
+      background:linear-gradient(145deg,#061523,#0b2947);color:#fff;
+      transition:.3s ease
+    }
+    .boot-card{text-align:center}
+    .boot-logo{
+      width:76px;height:76px;margin:0 auto 18px;background:#fff;border-radius:22px;padding:8px;
+      display:grid;place-items:center;box-shadow:0 25px 70px rgba(0,0,0,.25)
+    }
+    .boot-logo img{width:100%;height:100%;object-fit:contain}
+    .boot-card strong{font-family:'Manrope',sans-serif;font-size:18px}
+    .boot-card span{display:block;color:#a8bbcb;font-size:11px;margin-top:5px}
+    .boot-line{width:220px;height:3px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin:18px auto}
+    .boot-line:after{content:'';display:block;height:100%;width:46%;background:var(--red);animation:load 1.1s linear infinite}
+    @keyframes load{from{transform:translateX(-120%)}to{transform:translateX(290%)}}
 
-        /* Buttons */
-        .btn {
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
-        }
-        .btn-primary {
-            background: var(--primary-blue);
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #071a2d;
-        }
-        .btn-success {
-            background: var(--success-green);
-            color: white;
-        }
-        .btn-success:hover {
-            background: #059669;
-        }
-        .btn-danger {
-            background: var(--accent-red);
-            color: white;
-        }
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-        .btn-outline:hover {
-            background: #f3f4f6;
-        }
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+    /* Layout */
+    .app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;background:linear-gradient(180deg,var(--navy),#041321);
+      color:#fff;display:flex;flex-direction:column;overflow:hidden;z-index:80
+    }
+    .brand{
+      min-height:82px;padding:17px;display:flex;align-items:center;gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.08)
+    }
+    .brand-logo{width:44px;height:44px;border-radius:13px;padding:5px;background:#fff;display:grid;place-items:center;flex:0 0 auto}
+    .brand-logo img{width:100%;height:100%;object-fit:contain}
+    .brand strong{font-family:'Manrope',sans-serif;display:block;font-size:12px}
+    .brand span{display:block;color:#91a5b8;font-size:8px;margin-top:3px}
+    .college-badge{
+      margin-left:auto!important;color:#fff!important;background:rgba(215,25,45,.18);
+      border:1px solid rgba(215,25,45,.35);padding:5px 7px;border-radius:999px;font-size:7px!important;font-weight:800
+    }
 
-        /* Tables */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .data-table th,
-        .data-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-        .data-table th {
-            background: #F9FAFB;
-            font-weight: 600;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-        .data-table tr:hover {
-            background: #F9FAFB;
-        }
+    .sidebar-scroll{flex:1;overflow:auto;padding:10px}
+    .nav-title{
+      color:#668097;font-size:8px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;margin:15px 10px 7px
+    }
+    .nav-list{display:grid;gap:4px}
+    .nav-link{
+      width:100%;border:0;background:transparent;border-radius:11px;color:#aebdcc;
+      display:flex;align-items:center;gap:11px;padding:10px 11px;text-align:left;font-size:10.5px;font-weight:700;
+      transition:.16s ease
+    }
+    .nav-link i{width:18px;text-align:center;color:#8097aa}
+    .nav-link:hover{background:rgba(255,255,255,.055);color:#fff}
+    .nav-link.active{background:rgba(255,255,255,.085);color:#fff;box-shadow:inset 3px 0 0 var(--red)}
+    .nav-link.active i{color:#fff}
+    .sidebar-footer{padding:12px;border-top:1px solid rgba(255,255,255,.08)}
+    .back-admin{
+      width:100%;display:flex;align-items:center;gap:9px;padding:10px;border-radius:11px;
+      background:rgba(255,255,255,.045);color:#b9c7d3;font-size:9px;font-weight:700
+    }
+    .back-admin:hover{background:rgba(255,255,255,.08);color:#fff}
 
-        /* Badges */
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .badge-paid {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-        .badge-owing {
-            background: #FEF3C7;
-            color: #92400E;
-        }
-        .badge-sent {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-        .badge-failed {
-            background: #FEE2E2;
-            color: #991B1B;
-        }
-        .badge-pending {
-            background: #FEF3C7;
-            color: #92400E;
-        }
+    .main{min-width:0;display:flex;flex-direction:column}
+    .topbar{
+      position:sticky;top:0;z-index:65;min-height:72px;padding:0 25px;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)
+    }
+    .top-left{display:flex;align-items:center;gap:11px;min-width:0}
+    .mobile-menu{display:none;width:40px;height:40px;border:1px solid var(--line);background:#fff;border-radius:11px;color:var(--navy)}
+    .top-title strong{display:block;color:var(--navy);font-family:'Manrope',sans-serif;font-size:13px}
+    .top-title span{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+    .top-actions{display:flex;align-items:center;gap:8px}
+    .icon-btn{width:39px;height:39px;border:1px solid var(--line);background:#fff;border-radius:11px;color:#596678}
+    .profile{
+      display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;border:1px solid var(--line);
+      background:#fff;border-radius:12px
+    }
+    .avatar{width:32px;height:32px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900}
+    .profile-copy strong{display:block;color:var(--navy);font-size:9px}
+    .profile-copy span{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+    .logout{border:0;background:#fff;color:var(--red);padding:8px;border-radius:9px;font-size:9px;font-weight:800}
+    .logout:hover{background:#fff1f2}
 
-        /* SMS */
-        .action-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.1rem;
-            margin-right: 10px;
-            transition: 0.2s;
-        }
-        .action-btn:hover {
-            color: var(--primary-blue);
-        }
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-blue);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-        .recipient-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-        }
-        .recipient-item {
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .recipient-item:hover {
-            background: #f3f4f6;
-        }
-        .message-preview {
-            background: #f3f4f6;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 10px;
-            white-space: pre-wrap;
-            word-break: break-word;
-            max-height: 120px;
-            overflow-y: auto;
-        }
-        .char-count {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-align: right;
-            margin-top: 4px;
-        }
-        .sms-status-badge {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .sms-status-badge.success {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-        .sms-status-badge.error {
-            background: #FEE2E2;
-            color: #991B1B;
-        }
-        .sms-status-badge.pending {
-            background: #FEF3C7;
-            color: #92400E;
-        }
+    .content{padding:26px;max-width:1500px;width:100%;margin-inline:auto}
+    .view{animation:fade .2s ease}
+    @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 9999;
-            animation: slideIn 0.3s ease-out;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 420px;
-        }
-        .toast-success {
-            background: var(--success-green);
-        }
-        .toast-error {
-            background: var(--accent-red);
-        }
-        .toast-warning {
-            background: var(--warning-orange);
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
+    .page-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:20px
+    }
+    .page-head h1{
+      margin:0;color:var(--navy);font-family:'Manrope',sans-serif;
+      font-size:clamp(1.7rem,3vw,2.35rem);letter-spacing:-.045em
+    }
+    .page-head p{margin:6px 0 0;color:var(--muted);font-size:10.5px}
+    .head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 
-        /* Responsive */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-        @media (max-width: 768px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .sidebar {
-                width: 60px;
-            }
-            .sidebar-header span,
-            .sidebar-header .admin-badge,
-            .nav-menu a span {
-                display: none;
-            }
-            .nav-menu a {
-                justify-content: center;
-                padding: 1rem 0.5rem;
-            }
-            .content-area {
-                padding: 1rem;
-            }
-        }
+    .btn{
+      border:0;border-radius:10px;padding:10px 13px;display:inline-flex;align-items:center;justify-content:center;
+      gap:7px;font-size:9.5px;font-weight:800;transition:.15s ease
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--navy);color:#fff}
+    .btn-red{background:var(--red);color:#fff}
+    .btn-light{background:#fff;color:#435166;border:1px solid var(--line)}
+    .btn-green{background:var(--green);color:#fff}
+    .btn-amber{background:#fff7e8;color:#95620a;border:1px solid #f1dfb4}
+    .btn-blue{background:var(--blue);color:#fff}
+    .btn-danger{background:#fff0f2;color:#a71426;border:1px solid #f1d5db}
+    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
 
-        .webhook-test-result {
-            padding: 10px 14px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-        .webhook-test-result.ok {
-            background: #D1FAE5;
-            color: #065F46;
-            border: 1px solid #A7F3D0;
-        }
-        .webhook-test-result.fail {
-            background: #FEE2E2;
-            color: #991B1B;
-            border: 1px solid #FCA5A5;
-        }
-        .webhook-test-result.waiting {
-            background: #FEF3C7;
-            color: #92400E;
-            border: 1px solid #FCD34D;
-        }
-        .inline-code {
-            background: #f3f4f6;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.85rem;
-        }
-    </style>
+    .metric-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:17px}
+    .metric{
+      background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;
+      box-shadow:0 6px 18px rgba(7,27,47,.03)
+    }
+    .metric-top{display:flex;align-items:center;justify-content:space-between}
+    .metric-icon{width:34px;height:34px;border-radius:11px;background:#edf4fa;color:var(--navy);display:grid;place-items:center;font-size:12px}
+    .metric-icon.red{background:#fff0f2;color:var(--red)}
+    .metric-icon.green{background:#e9f7f1;color:var(--green)}
+    .metric-icon.blue{background:#edf5fd;color:var(--blue)}
+    .metric-icon.purple{background:#f1eefb;color:var(--purple)}
+    .metric small{font-size:8px;color:var(--muted);font-weight:800}
+    .metric strong{display:block;color:var(--navy);font-size:1.42rem;letter-spacing:-.04em;margin-top:11px}
+    .metric span{display:block;color:var(--muted);font-size:8px;margin-top:2px}
+
+    .hero{
+      position:relative;overflow:hidden;min-height:190px;border-radius:22px;
+      background:linear-gradient(125deg,var(--navy),#10436d);color:#fff;margin-bottom:17px;
+      box-shadow:var(--shadow)
+    }
+    .hero:after{content:'';position:absolute;right:-80px;top:-100px;width:280px;height:280px;border-radius:50%;background:rgba(215,25,45,.17)}
+    .hero-image{position:absolute;right:0;top:0;bottom:0;width:40%;opacity:.22}
+    .hero-image img{width:100%;height:100%;object-fit:cover}
+    .hero-copy{position:relative;z-index:2;padding:27px;max-width:720px}
+    .hero-copy .eyebrow{font-size:8px;color:#a7bfd2;text-transform:uppercase;letter-spacing:.12em;font-weight:800}
+    .hero-copy h2{margin:8px 0;font-family:'Manrope',sans-serif;font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.05;letter-spacing:-.045em}
+    .hero-copy p{margin:0;color:#c8d7e4;font-size:10.5px;max-width:620px}
+    .hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+    .hero .btn-light{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#fff}
+
+    .dashboard-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:17px}
+    .stack{display:grid;gap:17px}
+    .panel{
+      background:#fff;border:1px solid var(--line);border-radius:18px;padding:19px;
+      box-shadow:0 7px 20px rgba(7,27,47,.035)
+    }
+    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .panel-head h3{margin:0;color:var(--navy);font-family:'Manrope',sans-serif;font-size:.95rem}
+    .panel-head p{margin:3px 0 0;color:var(--muted);font-size:8.5px}
+    .panel-link{border:0;background:none;color:var(--red);padding:0;font-size:8px;font-weight:800}
+
+    .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .quick{
+      border:1px solid var(--line);background:#fbfcfe;border-radius:12px;padding:11px;text-align:left;color:#3f4d61
+    }
+    .quick i{color:var(--navy);font-size:12px;display:block;margin-bottom:7px}
+    .quick strong{display:block;font-size:8.5px}
+    .quick span{display:block;color:var(--muted);font-size:7px;margin-top:3px}
+
+    .table-tools{
+      display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px
+    }
+    .tool-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .search-box{position:relative;min-width:240px}
+    .search-box i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#9aa7b6;font-size:10px}
+    .search-box input{
+      width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px 9px 30px;
+      font-size:9px;outline:none
+    }
+    .filter-select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px;font-size:9px;color:#4d5a6c;outline:none}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    th{
+      text-align:left;padding:10px 11px;background:#f8fafc;border-bottom:1px solid var(--line);
+      color:#7a8797;font-size:7.5px;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap
+    }
+    td{padding:11px;border-bottom:1px solid var(--line);font-size:9px;color:#435166;vertical-align:middle}
+    tr:last-child td{border-bottom:0}
+    td strong{color:#273549}
+    .tiny{font-size:7.5px;color:var(--muted)}
+    .badge{display:inline-flex;padding:5px 7px;border-radius:999px;font-size:7.5px;font-weight:800;text-transform:capitalize}
+    .badge-green{background:#e9f8f1;color:#14724a}
+    .badge-red{background:#fff0f2;color:#aa1729}
+    .badge-blue{background:#eaf4fd;color:#21659b}
+    .badge-amber{background:#fff6e5;color:#976308}
+    .badge-gray{background:#eef2f5;color:#657285}
+    .actions{display:flex;gap:5px;align-items:center}
+    .action-btn{
+      width:31px;height:31px;border-radius:9px;border:1px solid var(--line);background:#fff;color:#596678;
+      display:grid;place-items:center;font-size:9px
+    }
+    .action-btn:hover{border-color:#c7d2df;color:var(--navy)}
+    .action-btn.danger:hover{background:#fff0f2;color:var(--red);border-color:#f0ccd2}
+
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+    .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:17px}
+    .summary-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+    .summary-card span{font-size:8px;color:var(--muted);font-weight:800}
+    .summary-card strong{display:block;margin-top:8px;color:var(--navy);font-size:1.3rem;letter-spacing:-.04em}
+
+    .distribution{display:grid;gap:11px}
+    .dist-row{display:grid;gap:6px}
+    .dist-label{display:flex;justify-content:space-between;gap:10px;color:#586679;font-size:8px}
+    .dist-bar{height:7px;background:#edf1f5;border-radius:999px;overflow:hidden}
+    .dist-bar div{height:100%;border-radius:999px;background:var(--navy)}
+
+    .empty-state{text-align:center;padding:42px 20px;color:var(--muted)}
+    .empty-state i{font-size:26px;color:#a9b4c2;margin-bottom:9px}
+    .empty-state strong{display:block;color:#4b596c;font-size:10px}
+    .empty-state span{display:block;font-size:8px;margin-top:4px}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    .field{display:grid;gap:6px}
+    .field.full{grid-column:1/-1}
+    .field label{font-size:8px;font-weight:800;color:#596678}
+    .field input,.field select,.field textarea{
+      width:100%;border:1px solid var(--line);background:#fbfcfe;border-radius:10px;padding:10px 11px;
+      font-size:9px;color:#334155;outline:none
+    }
+    .field textarea{min-height:92px;resize:vertical}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#9fb1c3;background:#fff;box-shadow:0 0 0 4px rgba(7,27,47,.035)}
+    .form-note{font-size:7.5px;color:var(--muted);line-height:1.5}
+
+    .module-card{
+      background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 7px 20px rgba(7,27,47,.03)
+    }
+    .module-icon{width:40px;height:40px;border-radius:12px;background:#edf4fa;color:var(--navy);display:grid;place-items:center;margin-bottom:13px}
+    .module-card h3{margin:0 0 6px;color:var(--navy);font-size:.9rem}
+    .module-card p{margin:0;color:var(--muted);font-size:9px;min-height:42px}
+    .module-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+
+    .recipient-list{max-height:330px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+    .recipient-item{padding:10px 11px;border-bottom:1px solid var(--line)}
+    .recipient-item:last-child{border-bottom:0}
+    .recipient-item label{display:flex;align-items:center;gap:9px;cursor:pointer}
+    .recipient-item strong{display:block;font-size:8.5px;color:#334155}
+    .recipient-item span{display:block;font-size:7.5px;color:var(--muted);margin-top:2px}
+    .preview{
+      background:#f8fafc;border:1px dashed #d7dee7;border-radius:12px;padding:13px;color:#556276;
+      font-size:8.5px;line-height:1.55;white-space:pre-wrap;min-height:92px
+    }
+    .char-count{text-align:right;color:var(--muted);font-size:7.5px;margin-top:4px}
+
+    .settings-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:17px}
+    .setting-list{display:grid;gap:10px}
+    .setting-row{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--line);
+      border-radius:12px;padding:12px
+    }
+    .setting-row strong{display:block;color:#334156;font-size:9px}
+    .setting-row span{display:block;color:var(--muted);font-size:7.5px;margin-top:2px}
+    .indicator{width:9px;height:9px;border-radius:50%;background:#aab4c0}
+    .indicator.ok{background:#22b978}
+    .indicator.warn{background:#e3a527}
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:1000;background:rgba(4,19,33,.64);backdrop-filter:blur(6px);
+      display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:.18s ease
+    }
+    .modal-backdrop.show{opacity:1;pointer-events:auto}
+    .modal{
+      width:min(660px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:20px;
+      padding:22px;box-shadow:0 30px 90px rgba(0,0,0,.28);transform:translateY(8px);transition:.18s ease
+    }
+    .modal-backdrop.show .modal{transform:none}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:13px;border-bottom:1px solid var(--line);margin-bottom:16px}
+    .modal-head h3{margin:0;color:var(--navy);font-size:1rem}
+    .modal-close{width:34px;height:34px;border:1px solid var(--line);background:#fff;border-radius:50%;color:#526074}
+
+    .student-profile{
+      display:grid;grid-template-columns:100px 1fr;gap:18px;align-items:start
+    }
+    .profile-card-avatar{
+      width:90px;height:90px;border-radius:20px;background:linear-gradient(145deg,var(--navy),var(--navy-2));
+      color:#fff;display:grid;place-items:center;font-family:'Manrope',sans-serif;font-size:28px;font-weight:800
+    }
+    .student-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    .detail{border:1px solid var(--line);border-radius:11px;padding:10px}
+    .detail span{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:800}
+    .detail strong{display:block;color:#354256;font-size:8.5px;margin-top:4px}
+
+    .toast{
+      position:fixed;right:18px;bottom:18px;z-index:1200;background:var(--navy);color:#fff;border-radius:12px;
+      padding:11px 14px;font-size:9px;font-weight:700;box-shadow:var(--shadow);transform:translateY(80px);opacity:0;transition:.2s ease
+    }
+    .toast.show{transform:none;opacity:1}
+
+    .sidebar-overlay{display:none}
+
+    @media(max-width:1250px){
+      .metric-grid{grid-template-columns:repeat(3,1fr)}
+      .dashboard-grid,.settings-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:980px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:fixed;left:calc(var(--sidebar) * -1);width:var(--sidebar);transition:.2s ease}
+      .sidebar.open{left:0}
+      .sidebar-overlay{display:block;position:fixed;inset:0;z-index:70;background:rgba(4,19,33,.48);opacity:0;pointer-events:none;transition:.2s}
+      .sidebar-overlay.open{opacity:1;pointer-events:auto}
+      .mobile-menu{display:block}
+      .two-col,.three-col{grid-template-columns:1fr}
+    }
+    @media(max-width:700px){
+      .topbar{padding:0 13px}
+      .content{padding:18px 13px}
+      .profile-copy{display:none}
+      .logout span{display:none}
+      .metric-grid,.summary-grid{grid-template-columns:1fr 1fr}
+      .page-head{align-items:flex-start;flex-direction:column}
+      .hero-image{width:58%}
+      .hero-copy{padding:23px}
+      .form-grid,.student-details{grid-template-columns:1fr}
+      .field.full{grid-column:auto}
+      .student-profile{grid-template-columns:1fr}
+      .quick-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:450px){
+      .metric-grid,.summary-grid{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <img src="https://www.afromed.life/logo/logo.png" alt="Afromed" style="height:35px; filter:brightness(0) invert(1);" />
-            <span class="admin-badge">ADMIN</span>
-        </div>
-        <ul class="nav-menu">
-            <li><a class="nav-link active" data-target="view-users"><i class="fa-solid fa-users"></i> <span>Students</span></a></li>
-            <li><a class="nav-link" data-target="view-courses"><i class="fa-solid fa-book"></i> <span>Courses</span></a></li>
-            <li><a class="nav-link" data-target="view-assignments"><i class="fa-solid fa-file-pen"></i> <span>Assignments</span></a></li>
-            <li><a class="nav-link" data-target="view-grading"><i class="fa-solid fa-check-double"></i> <span>Grading</span></a></li>
-            <li><a class="nav-link" data-target="view-sms"><i class="fa-solid fa-sms"></i> <span>SMS</span></a></li>
-        </ul>
-    </aside>
+<div id="boot-screen">
+  <div class="boot-card">
+    <div class="boot-logo"><img src="./logo2.png" alt="Afromed"></div>
+    <strong>Afromed Emergency College</strong>
+    <span>Opening academic administration workspace…</span>
+    <div class="boot-line"></div>
+  </div>
+</div>
 
-    <!-- ===== MAIN ===== -->
-    <div class="main-wrapper">
-        <header class="topbar">
-            <h2 style="font-size:1.2rem; font-weight:600;">College Management System</h2>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <span id="admin-name" style="font-weight:500;">Admin User</span>
-                <button id="btn-logout" class="btn btn-danger" style="padding:6px 12px; font-size:0.85rem;">Logout</button>
-            </div>
-        </header>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
-        <main class="content-area">
-
-            <!-- ============ STUDENTS ============ -->
-            <div id="view-users" class="view-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <div>
-                        <h1>Student Management</h1>
-                        <p style="color:var(--text-muted);">Register students, track payments, and allocate courses.</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="toggleForm('student-form-panel')"><i class="fa-solid fa-user-plus"></i> Register New Student</button>
-                </div>
-
-                <div id="student-form-panel" class="panel hidden">
-                    <h3 class="panel-header">Registration Form</h3>
-                    <form id="form-add-student">
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>First Name</label>
-                                <input type="text" id="std-fname" class="form-control" required />
-                            </div>
-                            <div class="form-group">
-                                <label>Last Name</label>
-                                <input type="text" id="std-lname" class="form-control" required />
-                            </div>
-                        </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Email Address</label>
-                                <input type="email" id="std-email" class="form-control" required />
-                            </div>
-                            <div class="form-group">
-                                <label>Phone (e.g. 082 123 4567)</label>
-                                <input type="tel" id="std-phone" class="form-control" required />
-                            </div>
-                        </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Select Course</label>
-                                <select id="std-course" class="form-control" required>
-                                    <option value="" disabled selected>-- Select Course --</option>
-                                    <option value="Advanced Emergency First Aid Responder">Advanced Emergency First Aid Responder</option>
-                                    <option value="Basic Emergency First Aid Responder">Basic Emergency First Aid Responder</option>
-                                    <option value="Forestry SHE Representative">Forestry SHE Representative</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Payment Status</label>
-                                <select id="std-payment" class="form-control" required>
-                                    <option value="Paid">Fully Paid</option>
-                                    <option value="Owing">Owing / Partial</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-success" id="btn-save-student">
-                            <i class="fa-solid fa-save"></i> Save &amp; Generate Student No.
-                        </button>
-                        <button type="button" class="btn btn-outline" onclick="toggleForm('student-form-panel')">Cancel</button>
-                    </form>
-                </div>
-
-                <div class="panel">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                        <h3 class="panel-header" style="border:none; margin:0; padding:0;">Student Directory</h3>
-                        <button class="btn btn-outline" style="padding:5px 10px; font-size:0.8rem;" id="btn-refresh-students"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Student No.</th>
-                                <th>Name</th>
-                                <th>Contact</th>
-                                <th>Course</th>
-                                <th>Payment</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="student-table-body">
-                            <tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);"><div class="spinner"></div> Loading students…</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ============ COURSES ============ -->
-            <div id="view-courses" class="view-section hidden">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <h1>Manage Courses</h1>
-                    <button class="btn btn-primary" onclick="toggleForm('course-form-panel')"><i class="fa-solid fa-plus"></i> Add New Course</button>
-                </div>
-                <div id="course-form-panel" class="panel hidden">
-                    <h3 class="panel-header">Create a New Course</h3>
-                    <form id="form-add-course">
-                        <div class="grid-2">
-                            <div class="form-group"><label>Course Title</label><input type="text" id="course-title" class="form-control" required /></div>
-                            <div class="form-group"><label>Course Code</label><input type="text" id="course-code" class="form-control" required /></div>
-                        </div>
-                        <div class="form-group"><label>Description</label><textarea id="course-desc" class="form-control" required></textarea></div>
-                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-save"></i> Save Course</button>
-                        <button type="button" class="btn btn-outline" onclick="toggleForm('course-form-panel')">Cancel</button>
-                    </form>
-                </div>
-                <div class="panel">
-                    <h3 class="panel-header">Active Courses</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Code</th><th>Title</th><th>Description</th><th>Actions</th></tr></thead>
-                        <tbody id="courses-table-body"><tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">Loading…</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ============ ASSIGNMENTS ============ -->
-            <div id="view-assignments" class="view-section hidden">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <h1>Assignments</h1>
-                    <button class="btn btn-primary" onclick="toggleForm('assignment-form-panel')"><i class="fa-solid fa-plus"></i> Create Assignment</button>
-                </div>
-                <div id="assignment-form-panel" class="panel hidden">
-                    <h3 class="panel-header">Post New Assignment</h3>
-                    <form id="form-add-assignment">
-                        <div class="form-group"><label>Assignment Title</label><input type="text" id="assign-title" class="form-control" required /></div>
-                        <div class="form-group"><label>Description</label><textarea id="assign-desc" class="form-control" required></textarea></div>
-                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-paper-plane"></i> Publish</button>
-                        <button type="button" class="btn btn-outline" onclick="toggleForm('assignment-form-panel')">Cancel</button>
-                    </form>
-                </div>
-                <div class="panel">
-                    <h3 class="panel-header">Active Assignments</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Title</th><th>Description</th><th>Date Posted</th><th>Actions</th></tr></thead>
-                        <tbody id="assignments-table-body"><tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">Loading…</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ============ GRADING ============ -->
-            <div id="view-grading" class="view-section hidden">
-                <h1>Grading &amp; Marking</h1>
-                <div class="panel"><h3 class="panel-header">Pending Marking</h3><p style="color:var(--text-muted);">No new submissions to mark.</p></div>
-            </div>
-
-            <!-- ============ SMS MESSAGING ============ -->
-            <div id="view-sms" class="view-section hidden">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <div>
-                        <h1>SMS Messaging</h1>
-                        <p style="color:var(--text-muted);">Send SMS messages to students via Twilio + Make.com</p>
-                    </div>
-                    <button class="btn btn-outline" id="btn-test-webhook" style="font-size:0.85rem;">
-                        <i class="fa-solid fa-plug"></i> Test Webhook
-                    </button>
-                </div>
-
-                <!-- SMS Composer -->
-                <div class="panel">
-                    <h3 class="panel-header"><i class="fa-solid fa-pen-to-square"></i> Create New Message</h3>
-                    <form id="form-send-sms">
-                        <div class="grid-2">
-                            <!-- Recipients -->
-                            <div class="form-group">
-                                <label>Select Recipients</label>
-                                <div style="display:flex; gap:10px; margin-bottom:10px;">
-                                    <button type="button" class="btn btn-outline" style="padding:5px 10px; font-size:0.85rem;" onclick="selectAllStudents()">
-                                        <i class="fa-solid fa-check-double"></i> Select All
-                                    </button>
-                                    <button type="button" class="btn btn-outline" style="padding:5px 10px; font-size:0.85rem;" onclick="deselectAllStudents()">
-                                        <i class="fa-solid fa-times"></i> Clear All
-                                    </button>
-                                </div>
-                                <div class="recipient-list" id="sms-recipients">
-                                    <div style="padding:15px; text-align:center; color:var(--text-muted);"><div class="spinner"></div> Loading students…</div>
-                                </div>
-                                <div style="margin-top:10px; font-size:0.85rem; color:var(--text-muted);">
-                                    Selected: <span id="selected-count">0</span> student(s)
-                                </div>
-                            </div>
-
-                            <!-- Message -->
-                            <div>
-                                <div class="form-group">
-                                    <label>Template</label>
-                                    <select id="sms-template" class="form-control" onchange="applyTemplate()">
-                                        <option value="">-- Select Template --</option>
-                                        <option value="welcome">Welcome</option>
-                                        <option value="payment">Payment Reminder</option>
-                                        <option value="assignment">Assignment Notice</option>
-                                        <option value="exam">Exam Notification</option>
-                                        <option value="custom">Custom</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Message Content</label>
-                                    <textarea id="sms-message" class="form-control" rows="6" maxlength="480" placeholder="Type your SMS message here…" required></textarea>
-                                    <div class="char-count" id="char-count">0 / 480 characters</div>
-                                    <div style="margin-top:6px; font-size:0.8rem; color:var(--text-muted);">
-                                        <i class="fa-solid fa-info-circle"></i> Variables: <code>{name}</code> <code>{studentNo}</code> <code>{course}</code>
-                                    </div>
-                                </div>
-                                <div class="message-preview" id="message-preview-box">
-                                    <strong>Preview:</strong>
-                                    <div id="message-preview-text" style="margin-top:6px; color:var(--text-muted);">No message entered</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Webhook test result area -->
-                        <div id="webhook-test-result" class="webhook-test-result hidden"></div>
-
-                        <div style="margin-top:1.5rem; display:flex; gap:10px; flex-wrap:wrap;">
-                            <button type="submit" class="btn btn-primary" id="btn-send-sms">
-                                <i class="fa-solid fa-paper-plane"></i> Send SMS
-                            </button>
-                            <button type="button" class="btn btn-outline" onclick="clearSMSForm()">
-                                <i class="fa-solid fa-eraser"></i> Clear
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- SMS History -->
-                <div class="panel">
-                    <h3 class="panel-header"><i class="fa-solid fa-clock-rotate-left"></i> Message History</h3>
-                    <table class="data-table">
-                        <thead><tr><th>Date Sent</th><th>Message</th><th>Recipients</th><th>Status</th></tr></thead>
-                        <tbody id="sms-history-body"><tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">Loading history…</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-        </main>
+<div class="app hidden" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo"><img src="./logo2.png" alt="Afromed"></div>
+      <div>
+        <strong>Emergency College</strong>
+        <span>Academic Administration</span>
+      </div>
+      <span class="college-badge">ADMIN</span>
     </div>
 
-    <!-- Toast container -->
-    <div id="toast-container"></div>
+    <div class="sidebar-scroll">
+      <div class="nav-title">Overview</div>
+      <div class="nav-list">
+        <button class="nav-link active" data-view="dashboard"><i class="fa-solid fa-grid-2"></i> College Dashboard</button>
+      </div>
 
-    <!-- ===== UI SCRIPTS (non-module) ===== -->
-    <script>
-        // ========== MAKE WEBHOOK URL ==========
-        // UPDATE THIS WITH YOUR ACTUAL MAKE.COM WEBHOOK URL
-        const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/czbsf792mjy8sv1mnfq2acu6n3bjv2ij";
+      <div class="nav-title">Academic Operations</div>
+      <div class="nav-list">
+        <button class="nav-link" data-view="students"><i class="fa-solid fa-user-graduate"></i> Students</button>
+        <button class="nav-link" data-view="courses"><i class="fa-solid fa-book-medical"></i> Courses</button>
+        <button class="nav-link" data-view="assignments"><i class="fa-solid fa-list-check"></i> Assignments</button>
+        <button class="nav-link" data-view="grading"><i class="fa-solid fa-square-poll-vertical"></i> Results &amp; Grading</button>
+      </div>
 
-        // ========== TOAST ==========
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerHTML = message;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
+      <div class="nav-title">Communication</div>
+      <div class="nav-list">
+        <button class="nav-link" data-view="messages"><i class="fa-solid fa-message"></i> Student Messaging</button>
+      </div>
 
-        // ========== TAB NAV ==========
-        const navLinks = document.querySelectorAll('.nav-link');
-        const viewSections = document.querySelectorAll('.view-section');
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                navLinks.forEach(l => l.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-                const target = e.currentTarget.getAttribute('data-target');
-                viewSections.forEach(s => s.classList.add('hidden'));
-                document.getElementById(target).classList.remove('hidden');
-                if (target === 'view-courses') loadCourses();
-                if (target === 'view-assignments') loadAssignments();
-                if (target === 'view-sms') {
-                    loadSMSRecipients();
-                    loadSMSHistory();
-                }
-            });
-        });
+      <div class="nav-title">System</div>
+      <div class="nav-list">
+        <button class="nav-link" data-view="settings"><i class="fa-solid fa-sliders"></i> College Settings</button>
+      </div>
+    </div>
 
-        function toggleForm(formId) {
-            document.getElementById(formId).classList.toggle('hidden');
-        }
+    <div class="sidebar-footer">
+      <a href="admin.html" class="back-admin"><i class="fa-solid fa-arrow-left"></i> Back to Group Control Centre</a>
+    </div>
+  </aside>
 
-        // ========== SMS HELPERS ==========
-        let selectedStudents = new Set();
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="mobile-menu" onclick="toggleSidebar()" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+        <div class="top-title">
+          <strong id="top-title">College Dashboard</strong>
+          <span id="top-subtitle">Academic operations overview</span>
+        </div>
+      </div>
 
-        function selectAllStudents() {
-            document.querySelectorAll('.student-checkbox').forEach(cb => {
-                cb.checked = true;
-                selectedStudents.add(cb.value);
-            });
-            updateSelectedCount();
-        }
+      <div class="top-actions">
+        <a class="icon-btn" href="portal.html" title="Open student portal" style="display:grid;place-items:center"><i class="fa-solid fa-laptop"></i></a>
+        <button class="icon-btn" onclick="refreshUi()" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+        <div class="profile">
+          <div class="avatar" id="admin-avatar">A</div>
+          <div class="profile-copy">
+            <strong id="admin-name">Administrator</strong>
+            <span id="admin-role">College Admin</span>
+          </div>
+          <button class="logout" id="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span></button>
+        </div>
+      </div>
+    </header>
 
-        function deselectAllStudents() {
-            document.querySelectorAll('.student-checkbox').forEach(cb => {
-                cb.checked = false;
-                selectedStudents.delete(cb.value);
-            });
-            updateSelectedCount();
-        }
+    <div class="content">
 
-        function toggleStudentSelection(id, checked) {
-            if (checked) selectedStudents.add(id);
-            else selectedStudents.delete(id);
-            updateSelectedCount();
-        }
+      <!-- Dashboard -->
+      <section class="view" id="view-dashboard">
+        <div class="page-head">
+          <div>
+            <h1>College Dashboard</h1>
+            <p>Central oversight for student records, courses, learning activity, payments and communication.</p>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-light" onclick="exportStudentsCsv()"><i class="fa-solid fa-file-export"></i> Export Students</button>
+            <button class="btn btn-red" onclick="openStudentModal()"><i class="fa-solid fa-user-plus"></i> Register Student</button>
+          </div>
+        </div>
 
-        function updateSelectedCount() {
-            document.getElementById('selected-count').textContent = selectedStudents.size;
-        }
+        <div class="hero">
+          <div class="hero-image"><img src="./logo2.png" alt="" style="object-fit:contain;padding:28px" onerror="this.style.display='none'"></div>
+          <div class="hero-copy">
+            <span class="eyebrow">Academic administration · live data</span>
+            <h2>One professional workspace for the entire student journey.</h2>
+            <p>Register learners, manage courses and assignments, capture results, follow payment status and communicate with students from one College control centre.</p>
+            <div class="hero-actions">
+              <button class="btn btn-red" onclick="openStudentModal()"><i class="fa-solid fa-user-plus"></i> New Student</button>
+              <button class="btn btn-light" onclick="showView('students')"><i class="fa-solid fa-users"></i> Student Directory</button>
+              <a class="btn btn-light" href="portal.html"><i class="fa-solid fa-laptop"></i> Student Portal</a>
+            </div>
+          </div>
+        </div>
 
-        function applyTemplate() {
-            const tpl = document.getElementById('sms-template').value;
-            const box = document.getElementById('sms-message');
-            const map = {
-                welcome: 'Welcome to Afromed College {name}! Your student number is {studentNo}. Enrolled in {course}.',
-                payment: 'Dear {name}, your payment for {course} is due. Please contact the admin office.',
-                assignment: 'Dear {name}, a new assignment has been posted for {course}. Check your portal.',
-                exam: 'Dear {name}, your exam for {course} is scheduled. Check the timetable.',
-                custom: ''
-            };
-            box.value = map[tpl] || '';
-            updateCharCount();
-            updateMessagePreview();
-        }
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="metric-top"><div class="metric-icon"><i class="fa-solid fa-user-graduate"></i></div><small>STUDENTS</small></div>
+            <strong id="metric-students">0</strong><span>Total registered</span>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><div class="metric-icon green"><i class="fa-solid fa-circle-check"></i></div><small>PAYMENTS</small></div>
+            <strong id="metric-paid">0</strong><span>Marked paid</span>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><div class="metric-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div><small>FOLLOW-UP</small></div>
+            <strong id="metric-owing">0</strong><span>Payment flags</span>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><div class="metric-icon blue"><i class="fa-solid fa-book-medical"></i></div><small>ACADEMIC</small></div>
+            <strong id="metric-courses">0</strong><span>Courses configured</span>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><div class="metric-icon purple"><i class="fa-solid fa-list-check"></i></div><small>LEARNING</small></div>
+            <strong id="metric-assignments">0</strong><span>Assignments</span>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><div class="metric-icon"><i class="fa-solid fa-square-poll-vertical"></i></div><small>RESULTS</small></div>
+            <strong id="metric-results">0</strong><span>Results captured</span>
+          </div>
+        </div>
 
-        function updateCharCount() {
-            const msg = document.getElementById('sms-message').value;
-            document.getElementById('char-count').textContent = `${msg.length} / 480 characters`;
-        }
+        <div class="dashboard-grid">
+          <div class="stack">
+            <section class="panel">
+              <div class="panel-head">
+                <div><h3>Recent Student Registrations</h3><p>Latest records from the College student register</p></div>
+                <button class="panel-link" onclick="showView('students')">Open directory</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Student No.</th><th>Name</th><th>Course</th><th>Payment</th><th>Registered</th></tr></thead>
+                  <tbody id="dashboard-students-body"><tr><td colspan="5">Loading students…</td></tr></tbody>
+                </table>
+              </div>
+            </section>
 
-        function updateMessagePreview() {
-            const msg = document.getElementById('sms-message').value;
-            const el = document.getElementById('message-preview-text');
-            if (!msg) {
-                el.textContent = 'No message entered';
-                return;
-            }
-            let preview = msg
-                .replace(/{name}/g, 'John Doe')
-                .replace(/{studentNo}/g, 'AFR2412345')
-                .replace(/{course}/g, 'Advanced Emergency First Aid Responder');
-            el.textContent = preview;
-        }
+            <section class="panel">
+              <div class="panel-head">
+                <div><h3>Course Enrolment Distribution</h3><p>Current student allocation by programme</p></div>
+              </div>
+              <div class="distribution" id="course-distribution">
+                <div class="empty-state"><i class="fa-solid fa-chart-simple"></i><strong>Loading enrolment data</strong></div>
+              </div>
+            </section>
+          </div>
 
-        function clearSMSForm() {
-            document.getElementById('sms-message').value = '';
-            document.getElementById('sms-template').value = '';
-            deselectAllStudents();
-            updateCharCount();
-            updateMessagePreview();
-            document.getElementById('webhook-test-result').classList.add('hidden');
-        }
+          <div class="stack">
+            <section class="panel">
+              <div class="panel-head"><div><h3>Quick Actions</h3><p>Common College workflows</p></div></div>
+              <div class="quick-grid">
+                <button class="quick" onclick="openStudentModal()"><i class="fa-solid fa-user-plus"></i><strong>Register Student</strong><span>Create learner record</span></button>
+                <button class="quick" onclick="openCourseModal()"><i class="fa-solid fa-book-medical"></i><strong>Add Course</strong><span>Programme catalogue</span></button>
+                <button class="quick" onclick="openAssignmentModal()"><i class="fa-solid fa-list-check"></i><strong>New Assignment</strong><span>Publish learning activity</span></button>
+                <button class="quick" onclick="openResultModal()"><i class="fa-solid fa-square-poll-vertical"></i><strong>Capture Result</strong><span>Record assessment mark</span></button>
+                <button class="quick" onclick="showView('messages')"><i class="fa-solid fa-message"></i><strong>Message Students</strong><span>SMS communication</span></button>
+                <a class="quick" href="college.html"><i class="fa-solid fa-globe"></i><strong>College Website</strong><span>Public College page</span></a>
+              </div>
+            </section>
 
-        document.getElementById('sms-message').addEventListener('input', () => {
-            updateCharCount();
-            updateMessagePreview();
-        });
+            <section class="panel">
+              <div class="panel-head"><div><h3>Academic Signals</h3><p>Items that may need administrative attention</p></div></div>
+              <div id="academic-signals" class="setting-list"></div>
+            </section>
+          </div>
+        </div>
+      </section>
 
-        // ========== TEST WEBHOOK ==========
-        document.getElementById('btn-test-webhook').addEventListener('click', async function() {
-            const btn = this;
-            const resultBox = document.getElementById('webhook-test-result');
-            resultBox.className = 'webhook-test-result waiting';
-            resultBox.classList.remove('hidden');
-            resultBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testing webhook…';
-            btn.disabled = true;
+      <!-- Students -->
+      <section class="view hidden" id="view-students">
+        <div class="page-head">
+          <div><h1>Student Directory</h1><p>Register, search, review and maintain Afromed College learner records.</p></div>
+          <div class="head-actions">
+            <button class="btn btn-light" onclick="exportStudentsCsv()"><i class="fa-solid fa-download"></i> Export CSV</button>
+            <button class="btn btn-primary" onclick="openStudentModal()"><i class="fa-solid fa-user-plus"></i> Register Student</button>
+          </div>
+        </div>
 
-            try {
-                const testPayload = {
-                    to: '+27821234567',
-                    studentName: 'Test Student',
-                    studentNumber: 'TEST001',
-                    courseName: 'Test Course',
-                    message: 'This is a test message from Afromed Admin Portal.',
-                    type: 'test'
-                };
+        <div class="summary-grid">
+          <div class="summary-card"><span>TOTAL STUDENTS</span><strong id="students-total">0</strong></div>
+          <div class="summary-card"><span>PAID</span><strong id="students-paid">0</strong></div>
+          <div class="summary-card"><span>OWING / PARTIAL</span><strong id="students-owing">0</strong></div>
+          <div class="summary-card"><span>COURSES REPRESENTED</span><strong id="students-course-count">0</strong></div>
+        </div>
 
-                const response = await fetch(MAKE_WEBHOOK_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(testPayload)
-                });
+        <section class="panel">
+          <div class="table-tools">
+            <div class="tool-row">
+              <div class="search-box"><i class="fa-solid fa-search"></i><input id="student-search" placeholder="Search student number, name, email or phone" oninput="renderStudents()"></div>
+              <select class="filter-select" id="student-payment-filter" onchange="renderStudents()">
+                <option value="all">All payment statuses</option>
+                <option value="paid">Paid</option>
+                <option value="owing">Owing / Partial</option>
+              </select>
+              <select class="filter-select" id="student-course-filter" onchange="renderStudents()">
+                <option value="all">All courses</option>
+              </select>
+            </div>
+            <button class="btn btn-light" onclick="refreshUi()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+          </div>
 
-                let responseText = '';
-                try {
-                    responseText = await response.text();
-                } catch (_) { /* ignore */ }
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Student No.</th><th>Name</th><th>Contact</th><th>Course</th><th>Payment</th><th>Registered</th><th>Actions</th></tr></thead>
+              <tbody id="students-body"><tr><td colspan="7">Loading student records…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
 
-                if (response.ok) {
-                    resultBox.className = 'webhook-test-result ok';
-                    resultBox.innerHTML = `
-                        <i class="fa-solid fa-check-circle"></i> 
-                        <strong>Webhook responded successfully!</strong> 
-                        <br><span style="font-size:0.85rem;">Status: ${response.status} ${response.statusText}</span>
-                        ${responseText ? `<br><span style="font-size:0.8rem; opacity:0.8;">Response: ${responseText.slice(0, 120)}</span>` : ''}
-                    `;
-                    showToast('✅ Webhook test passed!', 'success');
-                } else {
-                    resultBox.className = 'webhook-test-result fail';
-                    resultBox.innerHTML = `
-                        <i class="fa-solid fa-exclamation-triangle"></i> 
-                        <strong>Webhook returned error:</strong> 
-                        ${response.status} ${response.statusText}
-                        <br><span style="font-size:0.85rem;">${responseText || 'No response body'}</span>
-                    `;
-                    showToast('❌ Webhook test failed — see details below', 'error');
-                }
-            } catch (err) {
-                resultBox.className = 'webhook-test-result fail';
-                resultBox.innerHTML = `
-                    <i class="fa-solid fa-bug"></i> 
-                    <strong>Network / CORS error:</strong> 
-                    ${err.message}
-                    <br><span style="font-size:0.85rem;">Make sure the webhook URL is correct and CORS is enabled on Make.com.</span>
-                `;
-                showToast('❌ Webhook unreachable — check console for details', 'error');
-                console.error('Webhook test error:', err);
-            } finally {
-                btn.disabled = false;
-            }
-        });
+      <!-- Courses -->
+      <section class="view hidden" id="view-courses">
+        <div class="page-head">
+          <div><h1>Courses</h1><p>Maintain the Afromed Emergency College programme catalogue without inventing programme details.</p></div>
+          <div class="head-actions"><button class="btn btn-primary" onclick="openCourseModal()"><i class="fa-solid fa-plus"></i> Add Course</button></div>
+        </div>
 
-        // ========== FORMAT PHONE (FIXED FOR SOUTH AFRICA) ==========
-        function formatPhoneForTwilio(phone) {
-            if (!phone) return null;
-            // Remove all non-digit characters
-            let cleaned = phone.replace(/\D/g, '');
-            if (!cleaned) return null;
+        <div class="summary-grid">
+          <div class="summary-card"><span>COURSES</span><strong id="courses-total">0</strong></div>
+          <div class="summary-card"><span>ENROLLED STUDENTS</span><strong id="courses-enrolments">0</strong></div>
+          <div class="summary-card"><span>ASSIGNMENTS</span><strong id="courses-assignments">0</strong></div>
+          <div class="summary-card"><span>RESULT RECORDS</span><strong id="courses-results">0</strong></div>
+        </div>
 
-            // If already in E.164 with +27, return as is
-            if (phone.trim().startsWith('+27') && cleaned.length === 11) {
-                return '+' + cleaned;
-            }
+        <section class="panel">
+          <div class="panel-head"><div><h3>Course Catalogue</h3><p>Programme titles, codes and administrative descriptions</p></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Code</th><th>Course</th><th>Description</th><th>Students</th><th>Actions</th></tr></thead>
+              <tbody id="courses-body"><tr><td colspan="5">Loading courses…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
 
-            // South African local numbers
-            if (cleaned.startsWith('0') && cleaned.length === 10) {
-                cleaned = '27' + cleaned.substring(1);
-            } else if (cleaned.startsWith('27') && cleaned.length === 11) {
-                // Already has 27, just add '+'
-            } else if (cleaned.length === 9) {
-                // Assume missing leading 0
-                cleaned = '27' + cleaned;
-            } else if (cleaned.length >= 10 && !cleaned.startsWith('27')) {
-                // Could be 0 + 9 digits without the 0? Add 27 anyway
-                cleaned = '27' + cleaned;
-            } else {
-                // fallback: add 27
-                cleaned = '27' + cleaned;
-            }
+      <!-- Assignments -->
+      <section class="view hidden" id="view-assignments">
+        <div class="page-head">
+          <div><h1>Assignments</h1><p>Create and manage learning activities for Afromed College programmes.</p></div>
+          <div class="head-actions"><button class="btn btn-primary" onclick="openAssignmentModal()"><i class="fa-solid fa-plus"></i> Create Assignment</button></div>
+        </div>
 
-            if (!cleaned.startsWith('+')) cleaned = '+' + cleaned;
+        <div class="summary-grid">
+          <div class="summary-card"><span>TOTAL ASSIGNMENTS</span><strong id="assignments-total">0</strong></div>
+          <div class="summary-card"><span>WITH COURSE</span><strong id="assignments-with-course">0</strong></div>
+          <div class="summary-card"><span>WITH DUE DATE</span><strong id="assignments-with-due">0</strong></div>
+          <div class="summary-card"><span>RESULTS CAPTURED</span><strong id="assignments-result-count">0</strong></div>
+        </div>
 
-            // Validate length: +27 + 9 digits = 12 characters minimum
-            if (cleaned.length < 12) return null;
+        <section class="panel">
+          <div class="panel-head"><div><h3>Learning Activity Register</h3><p>Assignments currently available in Firestore</p></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Title</th><th>Course</th><th>Due Date</th><th>Published</th><th>Actions</th></tr></thead>
+              <tbody id="assignments-body"><tr><td colspan="5">Loading assignments…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
 
-            return cleaned;
-        }
+      <!-- Results -->
+      <section class="view hidden" id="view-grading">
+        <div class="page-head">
+          <div><h1>Results &amp; Grading</h1><p>Capture assessment outcomes and maintain a simple results register.</p></div>
+          <div class="head-actions"><button class="btn btn-primary" onclick="openResultModal()"><i class="fa-solid fa-plus"></i> Capture Result</button></div>
+        </div>
 
-        // ========== SEND SMS VIA MAKE ==========
-        async function sendSMSViaMake(to, message, studentName = '', studentNumber = '', courseName = '', type = 'manual') {
-            const payload = {
-                to: to,
-                studentName: studentName,
-                studentNumber: studentNumber,
-                courseName: courseName,
-                message: message,
-                type: type
-            };
+        <div class="summary-grid">
+          <div class="summary-card"><span>RESULT RECORDS</span><strong id="results-total">0</strong></div>
+          <div class="summary-card"><span>PASS RESULTS</span><strong id="results-pass">0</strong></div>
+          <div class="summary-card"><span>BELOW PASS MARK</span><strong id="results-below">0</strong></div>
+          <div class="summary-card"><span>AVERAGE MARK</span><strong id="results-average">—</strong></div>
+        </div>
 
-            console.log('[SMS] Sending to Make.com:', payload);
+        <section class="panel">
+          <div class="table-tools">
+            <div class="search-box"><i class="fa-solid fa-search"></i><input id="result-search" placeholder="Search student, assessment or course" oninput="renderResults()"></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Student</th><th>Assessment</th><th>Course</th><th>Mark</th><th>Outcome</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="results-body"><tr><td colspan="7">Loading results…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
 
-            const response = await fetch(MAKE_WEBHOOK_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+      <!-- Messaging -->
+      <section class="view hidden" id="view-messages">
+        <div class="page-head">
+          <div><h1>Student Messaging</h1><p>Send student SMS notifications through your configured Make.com / SMS workflow.</p></div>
+          <div class="head-actions">
+            <button class="btn btn-light" onclick="testWebhook()"><i class="fa-solid fa-plug"></i> Test Connection</button>
+            <button class="btn btn-light" onclick="showView('settings')"><i class="fa-solid fa-gear"></i> Messaging Settings</button>
+          </div>
+        </div>
 
-            let responseBody = '';
-            try {
-                responseBody = await response.text();
-            } catch (_) { /* ignore */ }
+        <div class="two-col">
+          <section class="panel">
+            <div class="panel-head"><div><h3>Recipients</h3><p>Select students to receive the message</p></div></div>
+            <div class="tool-row" style="margin-bottom:10px">
+              <button class="btn btn-light" onclick="selectAllRecipients()">Select All</button>
+              <button class="btn btn-light" onclick="clearRecipients()">Clear</button>
+              <span class="tiny">Selected: <strong id="selected-count">0</strong></span>
+            </div>
+            <div class="recipient-list" id="recipient-list">
+              <div class="empty-state"><strong>Loading student recipients…</strong></div>
+            </div>
+          </section>
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status} ${response.statusText} — ${responseBody}`);
-            }
+          <section class="panel">
+            <div class="panel-head"><div><h3>Compose Message</h3><p>Use a template or type a custom SMS</p></div></div>
+            <form id="message-form">
+              <div class="field">
+                <label>MESSAGE TEMPLATE</label>
+                <select id="message-template">
+                  <option value="">Custom message</option>
+                  <option value="welcome">Welcome / Registration</option>
+                  <option value="payment">Payment Reminder</option>
+                  <option value="assignment">Assignment Notice</option>
+                  <option value="portal">Portal Reminder</option>
+                </select>
+              </div>
+              <div class="field" style="margin-top:11px">
+                <label>MESSAGE</label>
+                <textarea id="message-text" maxlength="480" placeholder="Type your message. You may use {name}, {studentNo} and {course}."></textarea>
+                <div class="char-count" id="char-count">0 / 480</div>
+              </div>
+              <div style="margin-top:11px">
+                <label class="tiny" style="font-weight:800">PREVIEW</label>
+                <div class="preview" id="message-preview">No message entered.</div>
+              </div>
+              <div class="head-actions" style="margin-top:14px">
+                <button class="btn btn-primary" id="send-message-btn" type="submit"><i class="fa-solid fa-paper-plane"></i> Send SMS</button>
+                <button class="btn btn-light" type="button" onclick="clearMessageComposer()">Clear</button>
+              </div>
+            </form>
+          </section>
+        </div>
 
-            return { ok: true, status: response.status, body: responseBody };
-        }
-    </script>
+        <section class="panel" style="margin-top:17px">
+          <div class="panel-head"><div><h3>Message History</h3><p>Recent SMS batches saved by the College system</p></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Message</th><th>Recipients</th><th>Sent</th><th>Failed</th><th>Status</th></tr></thead>
+              <tbody id="message-history-body"><tr><td colspan="6">Loading message history…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
 
-    <!-- ===== FIREBASE MODULE ===== -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+      <!-- Settings -->
+      <section class="view hidden" id="view-settings">
+        <div class="page-head">
+          <div><h1>College Settings</h1><p>Connection health and browser-specific messaging configuration.</p></div>
+        </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
-            authDomain: "afromed-fda57.firebaseapp.com",
-            projectId: "afromed-fda57",
-            storageBucket: "afromed-fda57.firebasestorage.app",
-            messagingSenderId: "633274573777",
-            appId: "1:633274573777:web:6b244c95612bc92ff976f0"
+        <div class="settings-grid">
+          <section class="panel">
+            <div class="panel-head"><div><h3>System Health</h3><p>Current administration connections</p></div></div>
+            <div class="setting-list">
+              <div class="setting-row"><div><strong>Firebase Authentication</strong><span id="auth-health-text">Checking…</span></div><span id="auth-health-dot" class="indicator"></span></div>
+              <div class="setting-row"><div><strong>Cloud Firestore</strong><span id="db-health-text">Checking…</span></div><span id="db-health-dot" class="indicator"></span></div>
+              <div class="setting-row"><div><strong>SMS Webhook</strong><span id="webhook-health-text">Not configured</span></div><span id="webhook-health-dot" class="indicator warn"></span></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div><h3>SMS Webhook</h3><p>Stored in this browser instead of hardcoded into the public GitHub source.</p></div>
+            </div>
+            <div class="field">
+              <label>MAKE.COM / SMS WEBHOOK URL</label>
+              <input id="webhook-input" type="password" placeholder="https://hook....">
+              <div class="form-note">For a multi-user production system, move SMS sending to a protected server endpoint rather than browser storage.</div>
+            </div>
+            <div class="head-actions" style="margin-top:12px">
+              <button class="btn btn-primary" onclick="saveWebhook()"><i class="fa-solid fa-floppy-disk"></i> Save in Browser</button>
+              <button class="btn btn-light" onclick="clearWebhook()"><i class="fa-solid fa-trash"></i> Clear</button>
+              <button class="btn btn-light" onclick="testWebhook()"><i class="fa-solid fa-plug"></i> Test</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Action</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBBkouWWkEWAlPtLSmp3eHZVVBcQtYu-xo",
+    authDomain: "afromed-fda57.firebaseapp.com",
+    databaseURL: "https://afromed-fda57-default-rtdb.firebaseio.com",
+    projectId: "afromed-fda57",
+    storageBucket: "afromed-fda57.firebasestorage.app",
+    messagingSenderId: "633274573777",
+    appId: "1:633274573777:web:6b244c95612bc92ff976f0",
+    measurementId: "G-3ZSVQDNVFX"
+  };
+
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  const DEFAULT_PROGRAMMES = [
+    'Advanced Emergency First Aid Responder',
+    'Basic Emergency First Aid Responder',
+    'Forestry SHE Representative',
+    'Forestry Hazard and Risk Assessor',
+    'Incident Investigator',
+    'Early Childhood Practitioner',
+    'New Venture Creation'
+  ];
+
+  let students = [];
+  let courses = [];
+  let assignments = [];
+  let results = [];
+  let smsHistory = [];
+  let unsubscribers = [];
+  const selectedRecipients = new Set();
+
+  const pageMeta = {
+    dashboard:['College Dashboard','Academic operations overview'],
+    students:['Student Directory','Learner records and enrolment administration'],
+    courses:['Courses','Programme catalogue and enrolment oversight'],
+    assignments:['Assignments','Learning activity management'],
+    grading:['Results & Grading','Assessment outcomes and student results'],
+    messages:['Student Messaging','SMS communication and history'],
+    settings:['College Settings','Connections and messaging configuration']
+  };
+
+  function esc(value=''){
+    return String(value)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+
+  function formatDate(value, withTime=false){
+    try{
+      const d = value?.toDate ? value.toDate() : value instanceof Date ? value : value ? new Date(value) : null;
+      if(!d || Number.isNaN(d.getTime())) return '—';
+      const options = withTime
+        ? {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}
+        : {day:'2-digit',month:'short',year:'numeric'};
+      return new Intl.DateTimeFormat('en-ZA',options).format(d);
+    }catch{return '—'}
+  }
+
+  function paymentBadge(status){
+    const s = String(status || 'Owing').toLowerCase();
+    if(s === 'paid') return '<span class="badge badge-green">Paid</span>';
+    if(s.includes('partial')) return '<span class="badge badge-amber">Partial</span>';
+    return '<span class="badge badge-amber">Owing</span>';
+  }
+
+  function statusBadge(status){
+    const s = String(status || 'active').toLowerCase();
+    const cls = ['pass','passed','active','sent','complete','completed'].includes(s)
+      ? 'badge-green'
+      : ['failed','fail','inactive','error'].includes(s)
+      ? 'badge-red'
+      : ['pending','draft'].includes(s)
+      ? 'badge-amber'
+      : 'badge-blue';
+    return `<span class="badge ${cls}">${esc(s)}</span>`;
+  }
+
+  function showToast(message){
+    const toast=document.getElementById('toast');
+    toast.textContent=message;
+    toast.classList.add('show');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer=setTimeout(()=>toast.classList.remove('show'),2700);
+  }
+
+  function toggleSidebar(force){
+    const sidebar=document.getElementById('sidebar');
+    const overlay=document.getElementById('sidebar-overlay');
+    const open=typeof force==='boolean'?force:!sidebar.classList.contains('open');
+    sidebar.classList.toggle('open',open);
+    overlay.classList.toggle('open',open);
+  }
+
+  function showView(view){
+    document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+    document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+    document.getElementById('view-'+view)?.classList.remove('hidden');
+    document.querySelector(`.nav-link[data-view="${view}"]`)?.classList.add('active');
+
+    const meta=pageMeta[view] || ['Emergency College','Administration'];
+    document.getElementById('top-title').textContent=meta[0];
+    document.getElementById('top-subtitle').textContent=meta[1];
+
+    if(view==='messages') renderRecipients();
+    toggleSidebar(false);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  document.querySelectorAll('.nav-link').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
+
+  function openModal(title,html){
+    document.getElementById('modal-title').textContent=title;
+    document.getElementById('modal-content').innerHTML=html;
+    document.getElementById('modal-backdrop').classList.add('show');
+  }
+
+  function closeModal(){
+    document.getElementById('modal-backdrop').classList.remove('show');
+  }
+
+  document.getElementById('modal-backdrop').addEventListener('click',e=>{
+    if(e.target.id==='modal-backdrop') closeModal();
+  });
+
+  function courseTitles(){
+    const configured = courses.map(c=>c.title).filter(Boolean);
+    return [...new Set(configured.length ? configured : DEFAULT_PROGRAMMES)];
+  }
+
+  function courseOptions(selected=''){
+    return courseTitles().map(title=>`<option value="${esc(title)}" ${title===selected?'selected':''}>${esc(title)}</option>`).join('');
+  }
+
+  async function generateStudentNumber(){
+    const yy = String(new Date().getFullYear()).slice(-2);
+    for(let i=0;i<8;i++){
+      const candidate=`AFR${yy}${Math.floor(10000+Math.random()*90000)}`;
+      const snap=await db.collection('students').where('studentNo','==',candidate).limit(1).get();
+      if(snap.empty) return candidate;
+    }
+    return `AFR${yy}${Date.now().toString().slice(-6)}`;
+  }
+
+  function formatPhone(raw){
+    let p=String(raw || '').replace(/[^\d+]/g,'');
+    if(p.startsWith('0')) p='+27'+p.slice(1);
+    else if(p.startsWith('27')) p='+'+p;
+    if(!p.startsWith('+')) return null;
+    if(p.replace(/\D/g,'').length < 11) return null;
+    return p;
+  }
+
+  function openStudentModal(id=null){
+    const student=id ? students.find(s=>s.id===id) : null;
+    openModal(student?'Edit Student':'Register New Student',`
+      <form id="student-form" class="form-grid">
+        <div class="field"><label>FIRST NAME</label><input id="std-first" required value="${esc(student?.firstName||'')}"></div>
+        <div class="field"><label>LAST NAME</label><input id="std-last" required value="${esc(student?.lastName||'')}"></div>
+        <div class="field"><label>EMAIL ADDRESS</label><input id="std-email" type="email" required value="${esc(student?.email||'')}"></div>
+        <div class="field"><label>PHONE</label><input id="std-phone" required placeholder="082 123 4567" value="${esc(student?.phone||'')}"></div>
+        <div class="field"><label>COURSE</label><select id="std-course" required><option value="">Select course</option>${courseOptions(student?.course||'')}</select></div>
+        <div class="field"><label>PAYMENT STATUS</label>
+          <select id="std-payment">
+            <option value="Paid" ${String(student?.paymentStatus||'').toLowerCase()==='paid'?'selected':''}>Paid</option>
+            <option value="Owing" ${String(student?.paymentStatus||'').toLowerCase()!=='paid'?'selected':''}>Owing / Partial</option>
+          </select>
+        </div>
+        <div class="field"><label>CAMPUS</label>
+          <select id="std-campus">
+            <option value="">Not specified</option>
+            <option value="Avoca Hills" ${student?.campus==='Avoca Hills'?'selected':''}>Avoca Hills</option>
+            <option value="Manguzi" ${student?.campus==='Manguzi'?'selected':''}>Manguzi</option>
+          </select>
+        </div>
+        <div class="field"><label>STUDENT STATUS</label>
+          <select id="std-status">
+            <option value="active" ${String(student?.status||'active').toLowerCase()==='active'?'selected':''}>Active</option>
+            <option value="inactive" ${String(student?.status||'').toLowerCase()==='inactive'?'selected':''}>Inactive</option>
+            <option value="completed" ${String(student?.status||'').toLowerCase()==='completed'?'selected':''}>Completed</option>
+          </select>
+        </div>
+        <div class="field full"><label>ADMIN NOTES</label><textarea id="std-notes" placeholder="Optional internal notes">${esc(student?.notes||'')}</textarea></div>
+        <div class="field full">
+          <div class="head-actions">
+            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> ${student?'Save Changes':'Register Student'}</button>
+            <button class="btn btn-light" type="button" onclick="closeModal()">Cancel</button>
+          </div>
+        </div>
+      </form>
+    `);
+
+    document.getElementById('student-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const phone=formatPhone(document.getElementById('std-phone').value);
+      if(!phone){showToast('Enter a valid phone number');return}
+
+      try{
+        const payload={
+          firstName:document.getElementById('std-first').value.trim(),
+          lastName:document.getElementById('std-last').value.trim(),
+          email:document.getElementById('std-email').value.trim(),
+          phone,
+          course:document.getElementById('std-course').value,
+          paymentStatus:document.getElementById('std-payment').value,
+          campus:document.getElementById('std-campus').value,
+          status:document.getElementById('std-status').value,
+          notes:document.getElementById('std-notes').value.trim(),
+          updatedAt:firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Expose for inline event handlers
-        window.db = db;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.getDocs = getDocs;
-        window.serverTimestamp = serverTimestamp;
-        window.query = query;
-        window.orderBy = orderBy;
-        window.deleteDoc = deleteDoc;
-        window.doc = doc;
-        window.showToast = showToast;
-
-        // Auth
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('admin-name').innerText = user.displayName || user.email || "Admin";
-            }
-        });
-
-        document.getElementById('btn-logout').addEventListener('click', () => {
-            signOut(auth).then(() => { window.location.href = 'index.html'; });
-        });
-
-        // ========== GENERATE STUDENT NO ==========
-        function generateStudentNumber() {
-            const year = new Date().getFullYear().toString().slice(-2);
-            const random = Math.floor(10000 + Math.random() * 90000);
-            return `AFR${year}${random}`;
+        if(student){
+          await db.collection('students').doc(student.id).update(payload);
+          showToast('Student record updated');
+        }else{
+          payload.studentNo=await generateStudentNumber();
+          payload.registeredAt=firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection('students').add(payload);
+          showToast(`Student registered: ${payload.studentNo}`);
         }
+        closeModal();
+      }catch(err){showToast('Unable to save student: '+err.message)}
+    });
+  }
 
-        // ========== SAVE STUDENT ==========
-        document.getElementById('form-add-student').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-save-student');
-            const orig = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
-            btn.disabled = true;
+  function viewStudent(id){
+    const s=students.find(x=>x.id===id);
+    if(!s) return;
+    const initials=((s.firstName||'A').charAt(0)+(s.lastName||'').charAt(0)).toUpperCase();
+    openModal('Student Profile',`
+      <div class="student-profile">
+        <div class="profile-card-avatar">${esc(initials)}</div>
+        <div>
+          <h2 style="margin:0;color:var(--navy);font-family:'Manrope',sans-serif;font-size:1.25rem">${esc(((s.firstName||'')+' '+(s.lastName||'')).trim()||'Student')}</h2>
+          <p style="margin:5px 0 0;color:var(--muted);font-size:9px">${esc(s.studentNo||'No student number')} · ${esc(s.course||'No course')}</p>
+          <div class="student-details">
+            <div class="detail"><span>Email</span><strong>${esc(s.email||'—')}</strong></div>
+            <div class="detail"><span>Phone</span><strong>${esc(s.phone||'—')}</strong></div>
+            <div class="detail"><span>Payment</span><strong>${esc(s.paymentStatus||'—')}</strong></div>
+            <div class="detail"><span>Status</span><strong>${esc(s.status||'active')}</strong></div>
+            <div class="detail"><span>Campus</span><strong>${esc(s.campus||'—')}</strong></div>
+            <div class="detail"><span>Registered</span><strong>${formatDate(s.registeredAt)}</strong></div>
+          </div>
+          ${s.notes?`<div class="detail" style="margin-top:10px"><span>Admin Notes</span><strong>${esc(s.notes)}</strong></div>`:''}
+          <div class="head-actions" style="margin-top:14px">
+            <button class="btn btn-primary" onclick="closeModal();openStudentModal('${s.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+            <button class="btn btn-light" onclick="closeModal();showView('grading');openResultModal('${s.id}')"><i class="fa-solid fa-square-poll-vertical"></i> Add Result</button>
+          </div>
+        </div>
+      </div>
+    `);
+  }
 
-            const studentNo = generateStudentNumber();
-            const firstName = document.getElementById('std-fname').value.trim();
-            const lastName = document.getElementById('std-lname').value.trim();
-            const email = document.getElementById('std-email').value.trim();
-            const course = document.getElementById('std-course').value;
-            const payment = document.getElementById('std-payment').value;
-            const rawPhone = document.getElementById('std-phone').value.trim();
-            const phone = formatPhoneForTwilio(rawPhone);
+  async function deleteStudent(id){
+    if(!confirm('Permanently delete this student record?')) return;
+    try{
+      await db.collection('students').doc(id).delete();
+      showToast('Student deleted');
+    }catch(err){showToast('Delete failed: '+err.message)}
+  }
 
-            if (!phone) {
-                showToast('❌ Invalid phone number. Please use a valid South African number (e.g., 082 123 4567)', 'error');
-                btn.innerHTML = orig;
-                btn.disabled = false;
-                return;
-            }
+  function openCourseModal(id=null){
+    const c=id ? courses.find(x=>x.id===id) : null;
+    openModal(c?'Edit Course':'Add Course',`
+      <form id="course-form" class="form-grid">
+        <div class="field"><label>COURSE TITLE</label><input id="course-title" required value="${esc(c?.title||'')}"></div>
+        <div class="field"><label>COURSE CODE</label><input id="course-code" required value="${esc(c?.code||'')}"></div>
+        <div class="field full"><label>DESCRIPTION</label><textarea id="course-description" required>${esc(c?.description||'')}</textarea></div>
+        <div class="field full"><div class="form-note">Only enter verified programme information. This system does not invent durations, NQF levels, credits, fees or accreditation details.</div></div>
+        <div class="field full"><div class="head-actions">
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> ${c?'Save Changes':'Save Course'}</button>
+          <button class="btn btn-light" type="button" onclick="closeModal()">Cancel</button>
+        </div></div>
+      </form>
+    `);
 
-            try {
-                await addDoc(collection(db, "students"), {
-                    studentNo,
-                    firstName,
-                    lastName,
-                    email,
-                    phone,
-                    course,
-                    paymentStatus: payment,
-                    registeredAt: serverTimestamp()
-                });
+    document.getElementById('course-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const payload={
+        title:document.getElementById('course-title').value.trim(),
+        code:document.getElementById('course-code').value.trim(),
+        description:document.getElementById('course-description').value.trim(),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      };
+      try{
+        if(c) await db.collection('courses').doc(c.id).update(payload);
+        else{
+          payload.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection('courses').add(payload);
+        }
+        closeModal();showToast(c?'Course updated':'Course created');
+      }catch(err){showToast('Unable to save course: '+err.message)}
+    });
+  }
 
-                // Try sending welcome SMS
-                try {
-                    const welcomeMsg =
-                        `Welcome to Afromed College! Your student number is ${studentNo}. Enrolled in ${course}.`;
-                    await sendSMSViaMake(phone, welcomeMsg, `${firstName} ${lastName}`, studentNo, course, 'registration');
-                    showToast('✅ Student saved & welcome SMS sent!', 'success');
-                } catch (smsErr) {
-                    console.warn('SMS not sent:', smsErr);
-                    showToast('✅ Student saved! (SMS failed — check webhook)', 'warning');
-                }
+  async function deleteCourse(id){
+    if(!confirm('Delete this course record? Student records will not be deleted.')) return;
+    try{await db.collection('courses').doc(id).delete();showToast('Course deleted')}
+    catch(err){showToast('Delete failed: '+err.message)}
+  }
 
-                document.getElementById('form-add-student').reset();
-                toggleForm('student-form-panel');
-                loadStudents();
-            } catch (err) {
-                console.error(err);
-                showToast('❌ Failed to save student: ' + err.message, 'error');
-            } finally {
-                btn.innerHTML = orig;
-                btn.disabled = false;
-            }
+  function openAssignmentModal(id=null){
+    const a=id ? assignments.find(x=>x.id===id) : null;
+    openModal(a?'Edit Assignment':'Create Assignment',`
+      <form id="assignment-form" class="form-grid">
+        <div class="field full"><label>ASSIGNMENT TITLE</label><input id="assignment-title" required value="${esc(a?.title||'')}"></div>
+        <div class="field"><label>COURSE</label><select id="assignment-course"><option value="">All / Not specified</option>${courseOptions(a?.course||'')}</select></div>
+        <div class="field"><label>DUE DATE</label><input id="assignment-due" type="date" value="${esc(a?.dueDate||'')}"></div>
+        <div class="field full"><label>DESCRIPTION</label><textarea id="assignment-description" required>${esc(a?.description||'')}</textarea></div>
+        <div class="field full"><div class="head-actions">
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> ${a?'Save Changes':'Publish Assignment'}</button>
+          <button class="btn btn-light" type="button" onclick="closeModal()">Cancel</button>
+        </div></div>
+      </form>
+    `);
+
+    document.getElementById('assignment-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const payload={
+        title:document.getElementById('assignment-title').value.trim(),
+        course:document.getElementById('assignment-course').value,
+        dueDate:document.getElementById('assignment-due').value,
+        description:document.getElementById('assignment-description').value.trim(),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      };
+      try{
+        if(a) await db.collection('assignments').doc(a.id).update(payload);
+        else{
+          payload.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection('assignments').add(payload);
+        }
+        closeModal();showToast(a?'Assignment updated':'Assignment published');
+      }catch(err){showToast('Unable to save assignment: '+err.message)}
+    });
+  }
+
+  async function deleteAssignment(id){
+    if(!confirm('Delete this assignment?')) return;
+    try{await db.collection('assignments').doc(id).delete();showToast('Assignment deleted')}
+    catch(err){showToast('Delete failed: '+err.message)}
+  }
+
+  function openResultModal(studentId=''){
+    const studentOpts=students.map(s=>{
+      const name=((s.firstName||'')+' '+(s.lastName||'')).trim();
+      return `<option value="${esc(s.id)}" ${s.id===studentId?'selected':''}>${esc(s.studentNo||'')} · ${esc(name||'Student')}</option>`;
+    }).join('');
+    const assignmentOpts=assignments.map(a=>`<option value="${esc(a.id)}">${esc(a.title||'Assignment')}</option>`).join('');
+
+    openModal('Capture Result',`
+      <form id="result-form" class="form-grid">
+        <div class="field"><label>STUDENT</label><select id="result-student" required><option value="">Select student</option>${studentOpts}</select></div>
+        <div class="field"><label>ASSIGNMENT / ASSESSMENT</label><select id="result-assignment"><option value="">Custom assessment</option>${assignmentOpts}</select></div>
+        <div class="field full"><label>ASSESSMENT NAME</label><input id="result-assessment" required placeholder="e.g. Practical Assessment"></div>
+        <div class="field"><label>MARK (%)</label><input id="result-mark" type="number" min="0" max="100" step="0.01" required></div>
+        <div class="field"><label>PASS MARK (%)</label><input id="result-passmark" type="number" min="0" max="100" step="0.01" value="50" required></div>
+        <div class="field full"><label>NOTES</label><textarea id="result-notes" placeholder="Optional feedback"></textarea></div>
+        <div class="field full"><div class="head-actions">
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Result</button>
+          <button class="btn btn-light" type="button" onclick="closeModal()">Cancel</button>
+        </div></div>
+      </form>
+    `);
+
+    const assignmentSelect=document.getElementById('result-assignment');
+    assignmentSelect.addEventListener('change',()=>{
+      const a=assignments.find(x=>x.id===assignmentSelect.value);
+      if(a) document.getElementById('result-assessment').value=a.title || '';
+    });
+
+    document.getElementById('result-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const sid=document.getElementById('result-student').value;
+      const student=students.find(s=>s.id===sid);
+      const assignment=assignments.find(a=>a.id===document.getElementById('result-assignment').value);
+      const mark=Number(document.getElementById('result-mark').value);
+      const passMark=Number(document.getElementById('result-passmark').value);
+      try{
+        await db.collection('results').add({
+          studentId:sid,
+          studentNo:student?.studentNo||'',
+          studentName:((student?.firstName||'')+' '+(student?.lastName||'')).trim(),
+          course:student?.course||assignment?.course||'',
+          assignmentId:assignment?.id||'',
+          assessment:document.getElementById('result-assessment').value.trim(),
+          mark,
+          passMark,
+          outcome:mark>=passMark?'Pass':'Below pass mark',
+          notes:document.getElementById('result-notes').value.trim(),
+          createdAt:firebase.firestore.FieldValue.serverTimestamp()
         });
+        closeModal();showToast('Result captured');
+      }catch(err){showToast('Unable to save result: '+err.message)}
+    });
+  }
 
-        // ========== LOAD STUDENTS ==========
-        async function loadStudents() {
-            const tbody = document.getElementById('student-table-body');
-            tbody.innerHTML =
-                '<tr><td colspan="6" style="text-align:center; padding:20px;"><div class="spinner"></div> Loading…</td></tr>';
-            try {
-                const q = query(collection(db, "students"), orderBy("registeredAt", "desc"));
-                const snap = await getDocs(q);
-                tbody.innerHTML = '';
-                if (snap.empty) {
-                    tbody.innerHTML =
-                        `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">No students registered yet.</td></tr>`;
-                    return;
-                }
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const badge = d.paymentStatus === 'Paid' ?
-                        `<span class="badge badge-paid"><i class="fa-solid fa-check"></i> Paid</span>` :
-                        `<span class="badge badge-owing"><i class="fa-solid fa-triangle-exclamation"></i> Owing</span>`;
-                    tbody.insertAdjacentHTML('beforeend', `
-                        <tr>
-                            <td><strong>${d.studentNo || 'N/A'}</strong></td>
-                            <td>${d.firstName || ''} ${d.lastName || ''}</td>
-                            <td><div><i class="fa-regular fa-envelope" style="color:var(--text-muted);font-size:0.8rem;margin-right:5px;"></i>${d.email || 'N/A'}</div>
-                                <div><i class="fa-solid fa-phone" style="color:var(--text-muted);font-size:0.8rem;margin-right:5px;"></i>${d.phone || 'N/A'}</div></td>
-                            <td>${d.course || 'N/A'}</td>
-                            <td>${badge}</td>
-                            <td>
-                                <button class="action-btn" title="Edit" onclick="alert('Edit coming soon')"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button class="action-btn" title="Delete" onclick="deleteStudent('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `);
-                });
-            } catch (err) {
-                console.error(err);
-                tbody.innerHTML =
-                    `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Failed to load: ${err.message}</td></tr>`;
-            }
-        }
+  async function deleteResult(id){
+    if(!confirm('Delete this result record?')) return;
+    try{await db.collection('results').doc(id).delete();showToast('Result deleted')}
+    catch(err){showToast('Delete failed: '+err.message)}
+  }
 
-        window.deleteStudent = async function(id) {
-            if (!confirm('Delete this student?')) return;
-            try {
-                await deleteDoc(doc(db, "students", id));
-                showToast('✅ Student deleted', 'success');
-                loadStudents();
-            } catch (err) {
-                showToast('❌ Delete failed: ' + err.message, 'error');
-            }
-        };
+  function renderDashboard(){
+    const paid=students.filter(s=>String(s.paymentStatus||'').toLowerCase()==='paid').length;
+    const owing=Math.max(0,students.length-paid);
 
-        // ========== LOAD COURSES ==========
-        async function loadCourses() {
-            const tbody = document.getElementById('courses-table-body');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><div class="spinner"></div> Loading…</td></tr>';
-            try {
-                const q = query(collection(db, "courses"), orderBy("createdAt", "desc"));
-                const snap = await getDocs(q);
-                tbody.innerHTML = '';
-                if (snap.empty) {
-                    tbody.innerHTML =
-                        `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">No courses yet.</td></tr>`;
-                    return;
-                }
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    tbody.insertAdjacentHTML('beforeend', `
-                        <tr>
-                            <td><strong>${d.code || 'N/A'}</strong></td>
-                            <td>${d.title || 'N/A'}</td>
-                            <td>${d.description || 'No description'}</td>
-                            <td>
-                                <button class="action-btn" title="Delete" onclick="deleteCourse('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `);
-                });
-            } catch (err) {
-                tbody.innerHTML =
-                    `<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Failed to load: ${err.message}</td></tr>`;
-            }
-        }
+    setText('metric-students',students.length);
+    setText('metric-paid',paid);
+    setText('metric-owing',owing);
+    setText('metric-courses',courses.length);
+    setText('metric-assignments',assignments.length);
+    setText('metric-results',results.length);
 
-        window.deleteCourse = async function(id) {
-            if (!confirm('Delete this course?')) return;
-            try {
-                await deleteDoc(doc(db, "courses", id));
-                showToast('✅ Course deleted', 'success');
-                loadCourses();
-            } catch (err) {
-                showToast('❌ Delete failed: ' + err.message, 'error');
-            }
-        };
+    const recent=[...students].sort((a,b)=>(b.registeredAt?.seconds||0)-(a.registeredAt?.seconds||0)).slice(0,8);
+    document.getElementById('dashboard-students-body').innerHTML=recent.length?recent.map(s=>`
+      <tr>
+        <td><strong>${esc(s.studentNo||'—')}</strong></td>
+        <td>${esc(((s.firstName||'')+' '+(s.lastName||'')).trim()||'Unnamed')}</td>
+        <td>${esc(s.course||'—')}</td>
+        <td>${paymentBadge(s.paymentStatus)}</td>
+        <td>${formatDate(s.registeredAt)}</td>
+      </tr>`).join(''):`<tr><td colspan="5">No students registered yet.</td></tr>`;
 
-        document.getElementById('form-add-course').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('course-title').value.trim();
-            const code = document.getElementById('course-code').value.trim();
-            const desc = document.getElementById('course-desc').value.trim();
-            try {
-                await addDoc(collection(db, "courses"), { title, code, description: desc, createdAt: serverTimestamp() });
-                showToast('✅ Course created!', 'success');
-                document.getElementById('form-add-course').reset();
-                toggleForm('course-form-panel');
-                loadCourses();
-            } catch (err) {
-                showToast('❌ Failed: ' + err.message, 'error');
-            }
+    const counts={};
+    students.forEach(s=>{const key=s.course||'Unassigned';counts[key]=(counts[key]||0)+1});
+    const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    const max=entries[0]?.[1]||1;
+    document.getElementById('course-distribution').innerHTML=entries.length?entries.slice(0,8).map(([course,count])=>`
+      <div class="dist-row">
+        <div class="dist-label"><span>${esc(course)}</span><strong>${count}</strong></div>
+        <div class="dist-bar"><div style="width:${Math.max(8,(count/max)*100)}%"></div></div>
+      </div>`).join(''):`<div class="empty-state"><i class="fa-solid fa-chart-simple"></i><strong>No enrolment data yet</strong><span>Register students to populate this overview.</span></div>`;
+
+    const signals=[];
+    if(owing) signals.push({title:`${owing} payment record${owing===1?'':'s'} need follow-up`,text:'Review student payment status in the directory.',warn:true});
+    if(!courses.length) signals.push({title:'No course catalogue records',text:'Add verified programme details in Courses.',warn:true});
+    if(!assignments.length) signals.push({title:'No assignments published',text:'Create learning activities when ready.',warn:false});
+    if(!signals.length) signals.push({title:'Academic administration is up to date',text:'No major flags from the connected College collections.',warn:false});
+    document.getElementById('academic-signals').innerHTML=signals.map(s=>`
+      <div class="setting-row"><div><strong>${esc(s.title)}</strong><span>${esc(s.text)}</span></div><span class="indicator ${s.warn?'warn':'ok'}"></span></div>
+    `).join('');
+  }
+
+  function renderStudents(){
+    const term=(document.getElementById('student-search')?.value||'').toLowerCase().trim();
+    const pay=document.getElementById('student-payment-filter')?.value||'all';
+    const course=document.getElementById('student-course-filter')?.value||'all';
+
+    const filtered=[...students].filter(s=>{
+      const text=[s.studentNo,s.firstName,s.lastName,s.email,s.phone,s.course].join(' ').toLowerCase();
+      const isPaid=String(s.paymentStatus||'').toLowerCase()==='paid';
+      const payMatch=pay==='all'||(pay==='paid'&&isPaid)||(pay==='owing'&&!isPaid);
+      const courseMatch=course==='all'||s.course===course;
+      return (!term||text.includes(term))&&payMatch&&courseMatch;
+    }).sort((a,b)=>(b.registeredAt?.seconds||0)-(a.registeredAt?.seconds||0));
+
+    const paid=students.filter(s=>String(s.paymentStatus||'').toLowerCase()==='paid').length;
+    const represented=new Set(students.map(s=>s.course).filter(Boolean)).size;
+    setText('students-total',students.length);
+    setText('students-paid',paid);
+    setText('students-owing',Math.max(0,students.length-paid));
+    setText('students-course-count',represented);
+
+    document.getElementById('students-body').innerHTML=filtered.length?filtered.map(s=>`
+      <tr>
+        <td><strong>${esc(s.studentNo||'—')}</strong></td>
+        <td><strong>${esc(((s.firstName||'')+' '+(s.lastName||'')).trim()||'Unnamed')}</strong><div class="tiny">${statusBadge(s.status||'active')}</div></td>
+        <td>${esc(s.email||'—')}<div class="tiny">${esc(s.phone||'—')}</div></td>
+        <td>${esc(s.course||'—')}</td>
+        <td>${paymentBadge(s.paymentStatus)}</td>
+        <td>${formatDate(s.registeredAt)}</td>
+        <td><div class="actions">
+          <button class="action-btn" title="View" onclick="viewStudent('${s.id}')"><i class="fa-solid fa-eye"></i></button>
+          <button class="action-btn" title="Edit" onclick="openStudentModal('${s.id}')"><i class="fa-solid fa-pen"></i></button>
+          <button class="action-btn danger" title="Delete" onclick="deleteStudent('${s.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div></td>
+      </tr>`).join(''):`<tr><td colspan="7">No students match the selected filters.</td></tr>`;
+  }
+
+  function renderCourses(){
+    setText('courses-total',courses.length);
+    setText('courses-enrolments',students.length);
+    setText('courses-assignments',assignments.length);
+    setText('courses-results',results.length);
+
+    document.getElementById('courses-body').innerHTML=courses.length?courses.map(c=>{
+      const count=students.filter(s=>s.course===c.title).length;
+      return `<tr>
+        <td><strong>${esc(c.code||'—')}</strong></td>
+        <td>${esc(c.title||'Untitled')}</td>
+        <td>${esc(c.description||'—')}</td>
+        <td>${count}</td>
+        <td><div class="actions">
+          <button class="action-btn" onclick="openCourseModal('${c.id}')"><i class="fa-solid fa-pen"></i></button>
+          <button class="action-btn danger" onclick="deleteCourse('${c.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div></td>
+      </tr>`;
+    }).join(''):`<tr><td colspan="5">No course records yet. Add verified course information when ready.</td></tr>`;
+
+    updateCourseFilters();
+  }
+
+  function renderAssignments(){
+    setText('assignments-total',assignments.length);
+    setText('assignments-with-course',assignments.filter(a=>a.course).length);
+    setText('assignments-with-due',assignments.filter(a=>a.dueDate).length);
+    setText('assignments-result-count',results.length);
+
+    const sorted=[...assignments].sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    document.getElementById('assignments-body').innerHTML=sorted.length?sorted.map(a=>`
+      <tr>
+        <td><strong>${esc(a.title||'Untitled')}</strong><div class="tiny">${esc((a.description||'').slice(0,80))}</div></td>
+        <td>${esc(a.course||'All / Not specified')}</td>
+        <td>${a.dueDate?esc(a.dueDate):'—'}</td>
+        <td>${formatDate(a.createdAt)}</td>
+        <td><div class="actions">
+          <button class="action-btn" onclick="openAssignmentModal('${a.id}')"><i class="fa-solid fa-pen"></i></button>
+          <button class="action-btn danger" onclick="deleteAssignment('${a.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div></td>
+      </tr>`).join(''):`<tr><td colspan="5">No assignments published yet.</td></tr>`;
+  }
+
+  function renderResults(){
+    const marks=results.map(r=>Number(r.mark)).filter(Number.isFinite);
+    const passed=results.filter(r=>Number(r.mark)>=Number(r.passMark??50)).length;
+    setText('results-total',results.length);
+    setText('results-pass',passed);
+    setText('results-below',Math.max(0,results.length-passed));
+    setText('results-average',marks.length?(marks.reduce((a,b)=>a+b,0)/marks.length).toFixed(1)+'%':'—');
+
+    const term=(document.getElementById('result-search')?.value||'').toLowerCase().trim();
+    const filtered=[...results].filter(r=>[r.studentName,r.studentNo,r.assessment,r.course].join(' ').toLowerCase().includes(term))
+      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+
+    document.getElementById('results-body').innerHTML=filtered.length?filtered.map(r=>`
+      <tr>
+        <td><strong>${esc(r.studentName||r.studentNo||'Student')}</strong><div class="tiny">${esc(r.studentNo||'')}</div></td>
+        <td>${esc(r.assessment||'Assessment')}</td>
+        <td>${esc(r.course||'—')}</td>
+        <td><strong>${Number.isFinite(Number(r.mark))?esc(r.mark)+'%':'—'}</strong></td>
+        <td>${statusBadge(Number(r.mark)>=Number(r.passMark??50)?'Pass':'Below pass mark')}</td>
+        <td>${formatDate(r.createdAt)}</td>
+        <td><button class="action-btn danger" onclick="deleteResult('${r.id}')"><i class="fa-solid fa-trash"></i></button></td>
+      </tr>`).join(''):`<tr><td colspan="7">No results captured yet.</td></tr>`;
+  }
+
+  function updateCourseFilters(){
+    const filter=document.getElementById('student-course-filter');
+    if(!filter) return;
+    const current=filter.value;
+    const opts=courseTitles().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    filter.innerHTML=`<option value="all">All courses</option>${opts}`;
+    if([...filter.options].some(o=>o.value===current)) filter.value=current;
+  }
+
+  function renderRecipients(){
+    const container=document.getElementById('recipient-list');
+    container.innerHTML=students.length?students.map(s=>{
+      const name=((s.firstName||'')+' '+(s.lastName||'')).trim()||'Student';
+      const checked=selectedRecipients.has(s.id)?'checked':'';
+      return `<div class="recipient-item"><label>
+        <input type="checkbox" class="recipient-check" value="${s.id}" ${checked} onchange="toggleRecipient('${s.id}',this.checked)">
+        <div><strong>${esc(name)}</strong><span>${esc(s.studentNo||'')} · ${esc(s.phone||'No phone')} · ${esc(s.course||'')}</span></div>
+      </label></div>`;
+    }).join(''):`<div class="empty-state"><strong>No students available</strong><span>Register students before sending a message.</span></div>`;
+    setText('selected-count',selectedRecipients.size);
+  }
+
+  function toggleRecipient(id,checked){
+    if(checked) selectedRecipients.add(id); else selectedRecipients.delete(id);
+    setText('selected-count',selectedRecipients.size);
+  }
+
+  function selectAllRecipients(){
+    students.forEach(s=>selectedRecipients.add(s.id));
+    renderRecipients();
+  }
+
+  function clearRecipients(){
+    selectedRecipients.clear();
+    renderRecipients();
+  }
+
+  const MESSAGE_TEMPLATES = {
+    welcome:'Welcome to Afromed College {name}. Your student number is {studentNo}. You are registered for {course}.',
+    payment:'Dear {name}, this is a reminder regarding your Afromed College payment status for {course}. Please contact the College office if you need assistance.',
+    assignment:'Dear {name}, a new learning activity has been posted for {course}. Please check your student portal for details.',
+    portal:'Dear {name}, please sign in to the Afromed student portal to review your latest College information.'
+  };
+
+  document.getElementById('message-template').addEventListener('change',e=>{
+    if(e.target.value) document.getElementById('message-text').value=MESSAGE_TEMPLATES[e.target.value]||'';
+    updateMessagePreview();
+  });
+  document.getElementById('message-text').addEventListener('input',updateMessagePreview);
+
+  function updateMessagePreview(){
+    const raw=document.getElementById('message-text').value;
+    setText('char-count',`${raw.length} / 480`);
+    const first=students[0]||{};
+    const sample=raw
+      .replace(/{name}/g,((first.firstName||'Student')+' '+(first.lastName||'')).trim())
+      .replace(/{studentNo}/g,first.studentNo||'AFR00000')
+      .replace(/{course}/g,first.course||'your course');
+    document.getElementById('message-preview').textContent=sample||'No message entered.';
+  }
+
+  function clearMessageComposer(){
+    document.getElementById('message-template').value='';
+    document.getElementById('message-text').value='';
+    clearRecipients();
+    updateMessagePreview();
+  }
+
+  function webhookUrl(){
+    return localStorage.getItem('afromed_college_sms_webhook') || '';
+  }
+
+  function updateWebhookHealth(){
+    const url=webhookUrl();
+    const dot=document.getElementById('webhook-health-dot');
+    const text=document.getElementById('webhook-health-text');
+    dot.classList.toggle('ok',!!url);
+    dot.classList.toggle('warn',!url);
+    text.textContent=url?'Configured in this browser':'Not configured';
+  }
+
+  function saveWebhook(){
+    const url=document.getElementById('webhook-input').value.trim();
+    if(!/^https:\/\//i.test(url)){showToast('Enter a valid HTTPS webhook URL');return}
+    localStorage.setItem('afromed_college_sms_webhook',url);
+    document.getElementById('webhook-input').value='';
+    updateWebhookHealth();
+    showToast('SMS webhook saved in this browser');
+  }
+
+  function clearWebhook(){
+    localStorage.removeItem('afromed_college_sms_webhook');
+    document.getElementById('webhook-input').value='';
+    updateWebhookHealth();
+    showToast('SMS webhook cleared');
+  }
+
+  async function testWebhook(){
+    const url=webhookUrl();
+    if(!url){showToast('Configure the SMS webhook in College Settings first');showView('settings');return}
+    try{
+      const response=await fetch(url,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          type:'test',
+          source:'Afromed Emergency College Admin',
+          message:'Afromed College webhook connection test'
+        })
+      });
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      showToast('Webhook responded successfully');
+    }catch(err){showToast('Webhook test failed: '+err.message)}
+  }
+
+  async function sendWebhookMessage(url,payload){
+    const response=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  }
+
+  document.getElementById('message-form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const url=webhookUrl();
+    const message=document.getElementById('message-text').value.trim();
+    if(!url){showToast('Configure the SMS webhook in College Settings first');return}
+    if(!message){showToast('Enter a message');return}
+    if(!selectedRecipients.size){showToast('Select at least one recipient');return}
+
+    const button=document.getElementById('send-message-btn');
+    button.disabled=true;
+    button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Sending…';
+
+    let sent=0,failed=0;
+    const selected=students.filter(s=>selectedRecipients.has(s.id));
+    for(const s of selected){
+      if(!s.phone){failed++;continue}
+      const personalised=message
+        .replace(/{name}/g,((s.firstName||'Student')+' '+(s.lastName||'')).trim())
+        .replace(/{studentNo}/g,s.studentNo||'')
+        .replace(/{course}/g,s.course||'');
+      try{
+        await sendWebhookMessage(url,{
+          to:s.phone,
+          studentName:((s.firstName||'')+' '+(s.lastName||'')).trim(),
+          studentNumber:s.studentNo||'',
+          courseName:s.course||'',
+          message:personalised,
+          type:'manual'
         });
+        sent++;
+      }catch(err){failed++}
+    }
 
-        // ========== LOAD ASSIGNMENTS ==========
-        async function loadAssignments() {
-            const tbody = document.getElementById('assignments-table-body');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><div class="spinner"></div> Loading…</td></tr>';
-            try {
-                const q = query(collection(db, "assignments"), orderBy("createdAt", "desc"));
-                const snap = await getDocs(q);
-                tbody.innerHTML = '';
-                if (snap.empty) {
-                    tbody.innerHTML =
-                        `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">No assignments yet.</td></tr>`;
-                    return;
-                }
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
-                    tbody.insertAdjacentHTML('beforeend', `
-                        <tr>
-                            <td><strong>${d.title || 'N/A'}</strong></td>
-                            <td>${d.description || 'No description'}</td>
-                            <td>${date}</td>
-                            <td>
-                                <button class="action-btn" title="Delete" onclick="deleteAssignment('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `);
-                });
-            } catch (err) {
-                tbody.innerHTML =
-                    `<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Failed to load: ${err.message}</td></tr>`;
-            }
-        }
+    try{
+      await db.collection('sms_messages').add({
+        message,
+        recipientCount:selected.length,
+        sentCount:sent,
+        failedCount:failed,
+        status:failed===0?'sent':sent>0?'partial':'failed',
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy:auth.currentUser?.email||''
+      });
+    }catch(err){console.warn('Could not save message history',err)}
 
-        window.deleteAssignment = async function(id) {
-            if (!confirm('Delete this assignment?')) return;
-            try {
-                await deleteDoc(doc(db, "assignments", id));
-                showToast('✅ Assignment deleted', 'success');
-                loadAssignments();
-            } catch (err) {
-                showToast('❌ Delete failed: ' + err.message, 'error');
-            }
-        };
+    button.disabled=false;
+    button.innerHTML='<i class="fa-solid fa-paper-plane"></i> Send SMS';
+    showToast(`SMS batch complete: ${sent} sent, ${failed} failed`);
+    if(sent) clearMessageComposer();
+  });
 
-        document.getElementById('form-add-assignment').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('assign-title').value.trim();
-            const desc = document.getElementById('assign-desc').value.trim();
-            try {
-                await addDoc(collection(db, "assignments"), { title, description: desc, createdAt: serverTimestamp() });
-                showToast('✅ Assignment published!', 'success');
-                document.getElementById('form-add-assignment').reset();
-                toggleForm('assignment-form-panel');
-                loadAssignments();
-            } catch (err) {
-                showToast('❌ Failed: ' + err.message, 'error');
-            }
-        });
+  function renderMessageHistory(){
+    const sorted=[...smsHistory].sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    document.getElementById('message-history-body').innerHTML=sorted.length?sorted.slice(0,50).map(m=>`
+      <tr>
+        <td>${formatDate(m.createdAt,true)}</td>
+        <td>${esc(String(m.message||'').slice(0,100))}</td>
+        <td>${esc(m.recipientCount??'—')}</td>
+        <td>${esc(m.sentCount??'—')}</td>
+        <td>${esc(m.failedCount??'—')}</td>
+        <td>${statusBadge(m.status||'sent')}</td>
+      </tr>`).join(''):`<tr><td colspan="6">No SMS history yet.</td></tr>`;
+  }
 
-        // ========== SMS RECIPIENTS ==========
-        async function loadSMSRecipients() {
-            const container = document.getElementById('sms-recipients');
-            container.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-muted);"><div class="spinner"></div> Loading…</div>';
-            try {
-                const q = query(collection(db, "students"), orderBy("firstName"));
-                const snap = await getDocs(q);
-                container.innerHTML = '';
-                if (snap.empty) {
-                    container.innerHTML =
-                        '<div style="padding:15px; text-align:center; color:var(--text-muted);">No students registered.</div>';
-                    return;
-                }
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const name = `${d.firstName || ''} ${d.lastName || ''}`.trim();
-                    container.insertAdjacentHTML('beforeend', `
-                        <div class="recipient-item">
-                            <label style="display:flex; align-items:center; cursor:pointer;">
-                                <input type="checkbox" class="student-checkbox" value="${doc.id}" 
-                                       onchange="toggleStudentSelection('${doc.id}', this.checked)" style="margin-right:10px;">
-                                <div>
-                                    <div style="font-weight:500;">${name}</div>
-                                    <div style="font-size:0.85rem; color:var(--text-muted);">
-                                        ${d.studentNo || ''} • ${d.phone || 'No phone'} • ${d.course || ''}
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    `);
-                });
-                // Reset selection when recipients reload
-                selectedStudents.clear();
-                updateSelectedCount();
-            } catch (err) {
-                container.innerHTML =
-                    `<div style="padding:15px; text-align:center; color:red;">Failed to load: ${err.message}</div>`;
-            }
-        }
+  function refreshUi(){
+    renderDashboard();
+    renderStudents();
+    renderCourses();
+    renderAssignments();
+    renderResults();
+    renderRecipients();
+    renderMessageHistory();
+    updateWebhookHealth();
+    showToast('College dashboard refreshed');
+  }
 
-        // ========== SMS HISTORY ==========
-        async function loadSMSHistory() {
-            const tbody = document.getElementById('sms-history-body');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><div class="spinner"></div> Loading…</td></tr>';
-            try {
-                const q = query(collection(db, "smsHistory"), orderBy("sentAt", "desc"));
-                const snap = await getDocs(q);
-                tbody.innerHTML = '';
-                if (snap.empty) {
-                    tbody.innerHTML =
-                        `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">No messages sent yet.</td></tr>`;
-                    return;
-                }
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const date = d.sentAt ? new Date(d.sentAt.seconds * 1000).toLocaleString() : 'N/A';
-                    let status = '';
-                    if (d.failedCount === 0 && d.successCount > 0) status =
-                        `<span class="badge badge-sent"><i class="fa-solid fa-check"></i> Sent</span>`;
-                    else if (d.successCount === 0 && d.failedCount > 0) status =
-                        `<span class="badge badge-failed"><i class="fa-solid fa-times"></i> Failed</span>`;
-                    else status =
-                        `<span class="badge badge-pending"><i class="fa-solid fa-triangle-exclamation"></i> Partial</span>`;
-                    tbody.insertAdjacentHTML('beforeend', `
-                        <tr>
-                            <td>${date}</td>
-                            <td>${d.message || 'N/A'}</td>
-                            <td>${d.recipientCount || 0} recipient(s)</td>
-                            <td>${status}</td>
-                        </tr>
-                    `);
-                });
-            } catch (err) {
-                tbody.innerHTML =
-                    `<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Failed to load: ${err.message}</td></tr>`;
-            }
-        }
+  function setText(id,value){
+    const el=document.getElementById(id);
+    if(el) el.textContent=value;
+  }
 
-        // ========== SEND SMS (with validation) ==========
-        document.getElementById('form-send-sms').addEventListener('submit', async (e) => {
-            e.preventDefault();
+  function listenCollection(name,handler){
+    const unsubscribe=db.collection(name).onSnapshot(snapshot=>{
+      handler(snapshot.docs.map(doc=>({id:doc.id,...doc.data()})));
+      const dot=document.getElementById('db-health-dot');
+      const text=document.getElementById('db-health-text');
+      dot.classList.add('ok');dot.classList.remove('warn');
+      text.textContent='Connected to afromed-fda57';
+    },err=>{
+      console.warn(`${name}:`,err);
+      const dot=document.getElementById('db-health-dot');
+      const text=document.getElementById('db-health-text');
+      dot.classList.add('warn');dot.classList.remove('ok');
+      text.textContent='One or more College collections could not be read';
+    });
+    unsubscribers.push(unsubscribe);
+  }
 
-            const message = document.getElementById('sms-message').value.trim();
-            const btn = document.getElementById('btn-send-sms');
-            const resultBox = document.getElementById('webhook-test-result');
+  function attachData(){
+    listenCollection('students',data=>{students=data;renderDashboard();renderStudents();renderCourses();renderRecipients()});
+    listenCollection('courses',data=>{courses=data;renderDashboard();renderCourses();renderStudents();renderAssignments()});
+    listenCollection('assignments',data=>{assignments=data;renderDashboard();renderAssignments();renderResults()});
+    listenCollection('results',data=>{results=data;renderDashboard();renderCourses();renderAssignments();renderResults()});
+    listenCollection('sms_messages',data=>{smsHistory=data;renderMessageHistory()});
+  }
 
-            if (!message) {
-                showToast('⚠️ Please enter a message', 'warning');
-                return;
-            }
-            if (selectedStudents.size === 0) {
-                showToast('⚠️ Please select at least one recipient', 'warning');
-                return;
-            }
+  function csvDownload(filename,rows){
+    if(!rows.length){showToast('No student data to export');return}
+    const keys=[...new Set(rows.flatMap(r=>Object.keys(r)).filter(k=>k!=='id'))];
+    const clean=v=>{
+      if(v===null||v===undefined)return '';
+      if(v?.toDate)v=v.toDate().toISOString();
+      if(typeof v==='object')v=JSON.stringify(v);
+      return `"${String(v).replace(/"/g,'""')}"`;
+    };
+    const csv=[keys.join(','),...rows.map(r=>keys.map(k=>clean(r[k])).join(','))].join('\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+    URL.revokeObjectURL(url);
+  }
 
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending…';
-            btn.disabled = true;
-            resultBox.className = 'webhook-test-result waiting';
-            resultBox.classList.remove('hidden');
-            resultBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending messages…';
+  function exportStudentsCsv(){
+    csvDownload('afromed-college-students.csv',students);
+  }
 
-            try {
-                // Fetch selected students' data
-                const allStudents = await getDocs(collection(db, "students"));
-                const selectedData = [];
-                allStudents.forEach(doc => {
-                    if (selectedStudents.has(doc.id)) {
-                        const d = doc.data();
-                        let personalized = message
-                            .replace(/{name}/g, `${d.firstName || ''} ${d.lastName || ''}`.trim())
-                            .replace(/{studentNo}/g, d.studentNo || '')
-                            .replace(/{course}/g, d.course || '');
-                        selectedData.push({
-                            phone: d.phone,
-                            name: `${d.firstName || ''} ${d.lastName || ''}`.trim(),
-                            studentNo: d.studentNo || '',
-                            course: d.course || '',
-                            message: personalized
-                        });
-                    }
-                });
+  auth.onAuthStateChanged(async user=>{
+    if(!user){
+      window.location.href='index.html';
+      return;
+    }
 
-                if (selectedData.length === 0) {
-                    showToast('⚠️ No valid recipients found', 'warning');
-                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send SMS';
-                    btn.disabled = false;
-                    resultBox.classList.add('hidden');
-                    return;
-                }
+    let name=user.displayName||user.email||'Administrator';
+    let role='College Admin';
+    try{
+      const doc=await db.collection('users').doc(user.uid).get();
+      if(doc.exists){
+        const d=doc.data();
+        name=d.name||d.displayName||name;
+        role=d.role||role;
+      }
+    }catch(err){console.warn('User profile could not be loaded',err)}
 
-                // Filter out students without phone numbers OR invalid numbers
-                const valid = selectedData.filter(s => {
-                    if (!s.phone || s.phone.length < 5) return false;
-                    // Re-format using the global function
-                    const formatted = formatPhoneForTwilio(s.phone);
-                    if (!formatted) return false;
-                    s.phone = formatted; // store the formatted version
-                    return true;
-                });
+    document.getElementById('admin-name').textContent=name;
+    document.getElementById('admin-role').textContent=role;
+    document.getElementById('admin-avatar').textContent=String(name).charAt(0).toUpperCase();
+    document.getElementById('auth-health-text').textContent=`Signed in as ${user.email||name}`;
+    document.getElementById('auth-health-dot').classList.add('ok');
 
-                if (valid.length === 0) {
-                    showToast('⚠️ None of the selected students have a valid South African phone number', 'warning');
-                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send SMS';
-                    btn.disabled = false;
-                    resultBox.classList.add('hidden');
-                    return;
-                }
+    attachData();
+    updateWebhookHealth();
 
-                let successCount = 0;
-                let failedCount = 0;
-                const errors = [];
+    document.getElementById('app').classList.remove('hidden');
+    const boot=document.getElementById('boot-screen');
+    boot.style.opacity='0';boot.style.pointerEvents='none';
+    setTimeout(()=>boot.remove(),350);
+  });
 
-                for (const student of valid) {
-                    try {
-                        const resp = await sendSMSViaMake(
-                            student.phone,
-                            student.message,
-                            student.name,
-                            student.studentNo,
-                            student.course,
-                            'manual'
-                        );
-                        if (resp.ok) successCount++;
-                        else {
-                            failedCount++;
-                            errors.push(`${student.name}: ${resp.body || 'Unknown error'}`);
-                        }
-                    } catch (err) {
-                        failedCount++;
-                        errors.push(`${student.name}: ${err.message}`);
-                        console.error(`[SMS] Failed for ${student.name}:`, err);
-                    }
-                }
+  document.getElementById('logout-btn').addEventListener('click',async()=>{
+    try{
+      unsubscribers.forEach(fn=>{try{fn()}catch{}});
+      await auth.signOut();
+      window.location.href='index.html';
+    }catch(err){showToast('Unable to log out: '+err.message)}
+  });
 
-                // Log to history
-                await addDoc(collection(db, "smsHistory"), {
-                    message: message,
-                    recipientCount: valid.length,
-                    successCount: successCount,
-                    failedCount: failedCount,
-                    sentAt: serverTimestamp(),
-                    sentBy: auth.currentUser?.email || 'Admin'
-                });
-
-                // Show result
-                if (failedCount === 0) {
-                    resultBox.className = 'webhook-test-result ok';
-                    resultBox.innerHTML =
-                        `<i class="fa-solid fa-check-circle"></i> ✅ All ${successCount} message(s) sent successfully!`;
-                    showToast(`✅ SMS sent to ${successCount} student(s)!`, 'success');
-                } else if (successCount > 0) {
-                    resultBox.className = 'webhook-test-result fail';
-                    resultBox.innerHTML = `
-                        <i class="fa-solid fa-triangle-exclamation"></i> 
-                        ⚠️ Sent to ${successCount}, failed for ${failedCount}
-                        ${errors.length ? `<br><span style="font-size:0.8rem;">${errors.slice(0, 3).join('; ')}${errors.length > 3 ? ` … and ${errors.length - 3} more` : ''}</span>` : ''}
-                    `;
-                    showToast(`⚠️ Sent to ${successCount}, failed for ${failedCount}`, 'warning');
-                } else {
-                    resultBox.className = 'webhook-test-result fail';
-                    resultBox.innerHTML = `
-                        <i class="fa-solid fa-times-circle"></i> 
-                        ❌ All ${failedCount} message(s) failed.
-                        ${errors.length ? `<br><span style="font-size:0.8rem;">${errors.slice(0, 3).join('; ')}${errors.length > 3 ? ` … and ${errors.length - 3} more` : ''}</span>` : ''}
-                        <br><span style="font-size:0.8rem;">Check that your Make.com webhook is active and properly configured.</span>
-                    `;
-                    showToast('❌ SMS sending failed — see details below', 'error');
-                }
-
-                clearSMSForm();
-                loadSMSHistory();
-
-            } catch (err) {
-                console.error('[SMS] Fatal error:', err);
-                resultBox.className = 'webhook-test-result fail';
-                resultBox.innerHTML = `
-                    <i class="fa-solid fa-bug"></i> 
-                    <strong>Error:</strong> ${err.message}
-                    <br><span style="font-size:0.85rem;">Check the browser console for more details.</span>
-                `;
-                showToast('❌ Failed to send SMS: ' + err.message, 'error');
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send SMS';
-                btn.disabled = false;
-            }
-        });
-
-        // ========== EXPOSE TO GLOBAL ==========
-        window.loadStudents = loadStudents;
-        window.loadCourses = loadCourses;
-        window.loadAssignments = loadAssignments;
-        window.loadSMSRecipients = loadSMSRecipients;
-        window.loadSMSHistory = loadSMSHistory;
-        window.toggleStudentSelection = toggleStudentSelection;
-        window.selectAllStudents = selectAllStudents;
-        window.deselectAllStudents = deselectAllStudents;
-        window.applyTemplate = applyTemplate;
-        window.updateCharCount = updateCharCount;
-        window.updateMessagePreview = updateMessagePreview;
-        window.clearSMSForm = clearSMSForm;
-        window.formatPhoneForTwilio = formatPhoneForTwilio;
-        window.sendSMSViaMake = sendSMSViaMake;
-        window.showToast = showToast;
-        window.toggleForm = toggleForm;
-
-        // ========== INIT ==========
-        document.getElementById('btn-refresh-students').addEventListener('click', loadStudents);
-        loadStudents();
-
-        console.log('✅ Afromed Admin Portal initialized');
-        console.log(`🔗 Webhook URL: ${MAKE_WEBHOOK_URL}`);
-        console.log('ℹ️  Use the "Test Webhook" button in the SMS tab to verify connectivity.');
-    </script>
+  updateMessagePreview();
+</script>
 </body>
 </html>
