@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -448,6 +448,7 @@
       .metric-grid,.summary-grid,.unit-grid{grid-template-columns:1fr}
     }
   </style>
+  <script src="app/config.js"></script>
 </head>
 <body class="loading">
 
@@ -455,7 +456,7 @@
   <div class="boot-card">
     <div class="boot-logo"><img src="./logo2.png" alt="Afromed"></div>
     <strong>Afromed Group Control Centre</strong>
-    <span>Securing operations workspace…</span>
+    <span>Securing operations workspaceâ€¦</span>
     <div class="boot-line"></div>
   </div>
 </div>
@@ -482,6 +483,7 @@
       <div class="nav-group-title">Business Units</div>
       <div class="nav-list">
         <button class="nav-link" data-view="ems"><i class="fa-solid fa-truck-medical"></i> EMS Operations</button>
+        <button class="nav-link admin-only" data-view="app"><i class="fa-solid fa-mobile-screen-button"></i> Patient App</button>
         <button class="nav-link admin-only" data-view="college"><i class="fa-solid fa-graduation-cap"></i> Emergency College</button>
         <button class="nav-link admin-only" data-view="development"><i class="fa-solid fa-people-group"></i> Development</button>
         <button class="nav-link admin-only" data-view="events"><i class="fa-solid fa-calendar-check"></i> Events &amp; Cover</button>
@@ -524,6 +526,7 @@
       <div class="top-actions">
         <button class="icon-btn" title="Refresh live data" onclick="refreshAll()"><i class="fa-solid fa-rotate"></i></button>
         <button class="icon-btn" title="Operational alerts" onclick="showView('ems')"><i class="fa-regular fa-bell"></i><span id="alert-dot" class="notif-dot hidden"></span></button>
+        <button class="icon-btn admin-only" title="Patient App Support" onclick="showView('app')"><i class="fa-solid fa-mobile-screen-button"></i><span id="app-support-dot" class="notif-dot hidden"></span></button>
         <button class="icon-btn admin-only" title="Afromed Office" onclick="showView('office')"><i class="fa-regular fa-envelope"></i><span id="office-mail-dot" class="notif-dot hidden"></span></button>
 
         <div class="profile-chip">
@@ -556,7 +559,7 @@
         <div class="command-banner">
           <div class="command-image"><img src="ambulance.png" alt="" onerror="this.style.display='none'"></div>
           <div class="command-copy">
-            <span class="eyebrow">Executive operations · live control</span>
+            <span class="eyebrow">Executive operations Â· live control</span>
             <h2>One view of the entire Afromed business.</h2>
             <p>Monitor emergency response, ambulance readiness, people, students, clients and finance from a single operational command layer. Open each specialist system when deeper action is required.</p>
             <div class="command-actions">
@@ -600,28 +603,28 @@
             <div class="unit-head"><h3>Afromed EMS</h3><span class="status-chip">Live</span></div>
             <p>Emergency dispatch, ambulance positioning and response readiness.</p>
             <div class="unit-stats"><div><strong id="unit-ems-active">0</strong><span>Active cases</span></div><div><strong id="unit-ems-fleet">0</strong><span>Fleet units</span></div></div>
-            <button class="unit-open" onclick="showView('ems')">Open EMS control →</button>
+            <button class="unit-open" onclick="showView('ems')">Open EMS control â†’</button>
           </article>
 
           <article class="unit-card college">
             <div class="unit-head"><h3>Emergency College</h3><span class="status-chip">Connected</span></div>
             <p>Student registrations, courses, assignments and academic administration.</p>
             <div class="unit-stats"><div><strong id="unit-college-students">0</strong><span>Students</span></div><div><strong id="unit-college-courses">0</strong><span>Courses</span></div></div>
-            <button class="unit-open" onclick="showView('college')">Open College overview →</button>
+            <button class="unit-open" onclick="showView('college')">Open College overview â†’</button>
           </article>
 
           <article class="unit-card development">
             <div class="unit-head"><h3>Afromed Development</h3><span class="status-chip">Live</span></div>
             <p>Community programmes, donations, volunteers and impact initiatives.</p>
             <div class="unit-stats"><div><strong id="unit-development-projects">0</strong><span>Projects</span></div><div><strong id="unit-development-volunteers">0</strong><span>Volunteers</span></div></div>
-            <button class="unit-open" onclick="showView('development')">Open Development →</button>
+            <button class="unit-open" onclick="showView('development')">Open Development â†’</button>
           </article>
 
           <article class="unit-card events">
             <div class="unit-head"><h3>Events &amp; Medical Cover</h3><span class="status-chip">Live</span></div>
             <p>Operational plans, venue layouts, medical cover and commercial handover.</p>
             <div class="unit-stats"><div><strong id="unit-events-plans">0</strong><span>Plans</span></div><div><strong id="unit-events-venues">0</strong><span>Venues</span></div></div>
-            <button class="unit-open" onclick="showView('events')">Open Events →</button>
+            <button class="unit-open" onclick="showView('events')">Open Events â†’</button>
           </article>
         </div>
 
@@ -643,7 +646,7 @@
               <div class="table-wrap">
                 <table>
                   <thead><tr><th>Case</th><th>Patient</th><th>Emergency</th><th>Status</th><th>Vehicle</th><th>Time</th></tr></thead>
-                  <tbody id="dashboard-emergency-body"><tr><td colspan="6">Loading live operations…</td></tr></tbody>
+                  <tbody id="dashboard-emergency-body"><tr><td colspan="6">Loading live operationsâ€¦</td></tr></tbody>
                 </table>
               </div>
             </section>
@@ -653,7 +656,7 @@
             <section class="panel">
               <div class="panel-head"><div><h3>Operational Signals</h3><p>Items that may require management attention</p></div></div>
               <div class="feed" id="operational-feed">
-                <div class="feed-item"><div class="feed-icon"><i class="fa-solid fa-circle-notch fa-spin"></i></div><div><strong>Loading live signals</strong><span>Connecting to Firestore…</span></div></div>
+                <div class="feed-item"><div class="feed-icon"><i class="fa-solid fa-circle-notch fa-spin"></i></div><div><strong>Loading live signals</strong><span>Connecting to Firestoreâ€¦</span></div></div>
               </div>
             </section>
 
@@ -717,7 +720,7 @@
             <div class="table-wrap">
               <table>
                 <thead><tr><th>Vehicle</th><th>Driver</th><th>Status</th></tr></thead>
-                <tbody id="ems-fleet-body"><tr><td colspan="3">Loading fleet…</td></tr></tbody>
+                <tbody id="ems-fleet-body"><tr><td colspan="3">Loading fleetâ€¦</td></tr></tbody>
               </table>
             </div>
           </section>
@@ -736,10 +739,69 @@
           <div class="table-wrap">
             <table>
               <thead><tr><th>Case ID</th><th>Patient / User</th><th>Type</th><th>Status</th><th>Vehicle</th><th>Received</th><th>Actions</th></tr></thead>
-              <tbody id="ems-requests-body"><tr><td colspan="7">Loading emergency requests…</td></tr></tbody>
+              <tbody id="ems-requests-body"><tr><td colspan="7">Loading emergency requestsâ€¦</td></tr></tbody>
             </table>
           </div>
         </section>
+      </section>
+
+      <!-- PATIENT APP -->
+      <section id="view-app" class="view hidden admin-only">
+        <div class="page-head">
+          <div><h1>Afromed Patient App</h1><p>Live patient requests, ambulance tracking, support conversations and app communication.</p></div>
+          <div class="head-actions">
+            <a class="btn btn-light" href="app/index.html" target="_blank"><i class="fa-solid fa-mobile-screen-button"></i> Open Patient App</a>
+            <button class="btn btn-red" onclick="showView('ems')"><i class="fa-solid fa-truck-medical"></i> EMS Dispatch</button>
+          </div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card"><span>APP USERS</span><strong id="app-user-count">0</strong></div>
+          <div class="summary-card"><span>ACTIVE EMERGENCIES</span><strong id="app-active-count">0</strong></div>
+          <div class="summary-card"><span>AVAILABLE AMBULANCES</span><strong id="app-available-count">0</strong></div>
+          <div class="summary-card"><span>OPEN SUPPORT CHATS</span><strong id="app-support-count">0</strong></div>
+          <div class="summary-card"><span>PUSH-READY USERS</span><strong id="app-push-count">0</strong></div>
+        </div>
+
+        <div class="two-col">
+          <section class="panel">
+            <div class="panel-head"><div><h3>Live App Emergencies</h3><p>Patient requests sent from the Afromed app</p></div><button class="panel-link" onclick="showView('ems')">Full EMS queue</button></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Case</th><th>Patient</th><th>Emergency</th><th>Status</th><th>Ambulance</th><th>Actions</th></tr></thead>
+                <tbody id="app-emergency-body"><tr><td colspan="6">Loading patient requestsâ€¦</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><h3>Patient Support</h3><p>Messages sent to the Afromed office outside an active emergency</p></div></div>
+            <div id="app-support-list" class="feed"></div>
+          </section>
+        </div>
+
+        <div class="two-col" style="margin-top:17px">
+          <section class="panel">
+            <div class="panel-head"><div><h3>Recent App Users</h3><p>Patients with app profiles and emergency information</p></div></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Patient</th><th>Phone</th><th>Medical Aid</th><th>FCM</th><th>Actions</th></tr></thead>
+                <tbody id="app-users-body"><tr><td colspan="5">Loading usersâ€¦</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><h3>App Integration Health</h3><p>Collections used by the patient, driver and control-room apps</p></div></div>
+            <div class="setting-list">
+              <div class="setting-row"><div><strong>Emergency dispatch</strong><span>requests collection</span></div><span class="indicator ok"></span></div>
+              <div class="setting-row"><div><strong>Live ambulance tracking</strong><span>vehicles + request driverLocation</span></div><span class="indicator ok"></span></div>
+              <div class="setting-row"><div><strong>Emergency chat</strong><span>requests/{case}/messages</span></div><span class="indicator ok"></span></div>
+              <div class="setting-row"><div><strong>Patient support</strong><span>support_threads/{user}/messages</span></div><span class="indicator ok"></span></div>
+              <div class="setting-row"><div><strong>In-app notifications</strong><span>users/{user}/notifications</span></div><span class="indicator ok"></span></div>
+            </div>
+          </section>
+        </div>
       </section>
 
       <!-- COLLEGE -->
@@ -766,7 +828,7 @@
             <div class="table-wrap">
               <table>
                 <thead><tr><th>Student No.</th><th>Name</th><th>Course</th><th>Payment</th></tr></thead>
-                <tbody id="college-students-body"><tr><td colspan="4">Loading students…</td></tr></tbody>
+                <tbody id="college-students-body"><tr><td colspan="4">Loading studentsâ€¦</td></tr></tbody>
               </table>
             </div>
           </section>
@@ -808,7 +870,7 @@
             <div class="table-wrap">
               <table>
                 <thead><tr><th>Project</th><th>Status</th><th>Progress</th><th>Updated</th></tr></thead>
-                <tbody id="development-projects-body"><tr><td colspan="4">Loading projects…</td></tr></tbody>
+                <tbody id="development-projects-body"><tr><td colspan="4">Loading projectsâ€¦</td></tr></tbody>
               </table>
             </div>
           </section>
@@ -851,7 +913,7 @@
             <div class="table-wrap">
               <table>
                 <thead><tr><th>Event / Match</th><th>Venue</th><th>Date</th><th>Updated</th></tr></thead>
-                <tbody id="events-plans-body"><tr><td colspan="4">Loading operational plans…</td></tr></tbody>
+                <tbody id="events-plans-body"><tr><td colspan="4">Loading operational plansâ€¦</td></tr></tbody>
               </table>
             </div>
           </section>
@@ -890,7 +952,7 @@
             <div class="table-wrap">
               <table>
                 <thead><tr><th>Invoice</th><th>Client</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-                <tbody id="finance-invoices-body"><tr><td colspan="5">Loading invoices…</td></tr></tbody>
+                <tbody id="finance-invoices-body"><tr><td colspan="5">Loading invoicesâ€¦</td></tr></tbody>
               </table>
             </div>
           </section>
@@ -932,7 +994,7 @@
             <div class="table-wrap">
               <table>
                 <thead><tr><th>Task</th><th>Department</th><th>Completed By</th><th>Completed</th><th>Actions</th></tr></thead>
-                <tbody id="office-approvals-body"><tr><td colspan="5">Loading approval queue…</td></tr></tbody>
+                <tbody id="office-approvals-body"><tr><td colspan="5">Loading approval queueâ€¦</td></tr></tbody>
               </table>
             </div>
           </section>
@@ -949,7 +1011,7 @@
             <div class="table-wrap">
               <table>
                 <thead><tr><th>Task</th><th>Assigned To</th><th>Department</th><th>Status</th><th>Approval</th></tr></thead>
-                <tbody id="office-tasks-body"><tr><td colspan="5">Loading tasks…</td></tr></tbody>
+                <tbody id="office-tasks-body"><tr><td colspan="5">Loading tasksâ€¦</td></tr></tbody>
               </table>
             </div>
           </section>
@@ -965,7 +1027,7 @@
           <div class="table-wrap">
             <table>
               <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Status</th></tr></thead>
-              <tbody id="office-members-body"><tr><td colspan="5">Loading office users…</td></tr></tbody>
+              <tbody id="office-members-body"><tr><td colspan="5">Loading office usersâ€¦</td></tr></tbody>
             </table>
           </div>
         </section>
@@ -990,7 +1052,7 @@
           <div class="table-wrap">
             <table>
               <thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Status</th><th>Start Date</th></tr></thead>
-              <tbody id="staff-body"><tr><td colspan="5">Loading staff…</td></tr></tbody>
+              <tbody id="staff-body"><tr><td colspan="5">Loading staffâ€¦</td></tr></tbody>
             </table>
           </div>
         </section>
@@ -1015,7 +1077,7 @@
           <div class="table-wrap">
             <table>
               <thead><tr><th>Vehicle ID</th><th>Driver</th><th>Status</th><th>Fuel</th><th>Mileage</th><th>Current Emergency</th></tr></thead>
-              <tbody id="fleet-body"><tr><td colspan="6">Loading fleet…</td></tr></tbody>
+              <tbody id="fleet-body"><tr><td colspan="6">Loading fleetâ€¦</td></tr></tbody>
             </table>
           </div>
         </section>
@@ -1043,7 +1105,7 @@
           <div class="table-wrap">
             <table>
               <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role / Type</th><th>Status</th></tr></thead>
-              <tbody id="clients-body"><tr><td colspan="5">Loading users…</td></tr></tbody>
+              <tbody id="clients-body"><tr><td colspan="5">Loading usersâ€¦</td></tr></tbody>
             </table>
           </div>
         </section>
@@ -1099,8 +1161,8 @@
           <section class="panel">
             <div class="panel-head"><div><h3>Integration Health</h3><p>Current browser-side system connections</p></div></div>
             <div class="setting-list">
-              <div class="setting-row"><div><strong>Firebase Authentication</strong><span id="setting-auth-text">Checking…</span></div><span id="setting-auth-indicator" class="indicator"></span></div>
-              <div class="setting-row"><div><strong>Cloud Firestore</strong><span id="setting-firestore-text">Checking…</span></div><span id="setting-firestore-indicator" class="indicator"></span></div>
+              <div class="setting-row"><div><strong>Firebase Authentication</strong><span id="setting-auth-text">Checkingâ€¦</span></div><span id="setting-auth-indicator" class="indicator"></span></div>
+              <div class="setting-row"><div><strong>Cloud Firestore</strong><span id="setting-firestore-text">Checkingâ€¦</span></div><span id="setting-firestore-indicator" class="indicator"></span></div>
               <div class="setting-row"><div><strong>Mapbox</strong><span id="setting-mapbox-text">Public token required for live maps</span></div><span id="setting-mapbox-indicator" class="indicator warn"></span></div>
             </div>
           </section>
@@ -1109,7 +1171,7 @@
             <div class="panel-head"><div><h3>Mapbox Public Token</h3><p>Stored only in this browser. Use a restricted public token beginning with <strong>pk.</strong></p></div></div>
             <div class="form-field">
               <label>PUBLIC MAPBOX TOKEN</label>
-              <input id="mapbox-token-input" type="password" placeholder="pk.••••••••••••••••">
+              <input id="mapbox-token-input" type="password" placeholder="pk.â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
             </div>
             <div class="head-actions">
               <button class="btn btn-primary" onclick="saveMapboxToken()"><i class="fa-solid fa-floppy-disk"></i> Save Public Token</button>
@@ -1177,6 +1239,9 @@
   let allOfficeMembers = [];
   let allOfficeInvites = [];
   let allOfficeAccessRequests = [];
+  let allSupportThreads = [];
+  let requestChatUnsub = null;
+  let supportChatUnsub = null;
 
   let dashboardMap = null;
   let emsMap = null;
@@ -1187,6 +1252,7 @@
   const pageMeta = {
     dashboard:['Command Centre','Afromed Group operational overview'],
     ems:['EMS Operations','Emergency response and ambulance control'],
+    app:['Patient App','Patient emergencies, live tracking and support communication'],
     college:['Emergency College','Academic and student administration oversight'],
     development:['Afromed Development','Community and impact programme control'],
     events:['Events & Medical Cover','Event operations and commercial handover'],
@@ -1211,9 +1277,9 @@
   function formatDate(value){
     try{
       const date = value?.toDate ? value.toDate() : value instanceof Date ? value : value ? new Date(value) : null;
-      if(!date || Number.isNaN(date.getTime())) return '—';
+      if(!date || Number.isNaN(date.getTime())) return 'â€”';
       return new Intl.DateTimeFormat('en-ZA',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(date);
-    }catch{return '—'}
+    }catch{return 'â€”'}
   }
 
   function formatMoney(value){
@@ -1306,7 +1372,7 @@
     openModal('Register Staff Member',`
       <form class="modal-form" id="staff-form">
         <div class="form-field"><label>FULL NAME</label><input id="staff-name" required></div>
-        <div class="form-field"><label>ROLE</label><input id="staff-role" required placeholder="Paramedic, Dispatcher, Admin…"></div>
+        <div class="form-field"><label>ROLE</label><input id="staff-role" required placeholder="Paramedic, Dispatcher, Adminâ€¦"></div>
         <div class="form-field"><label>PHONE</label><input id="staff-phone"></div>
         <div class="form-field"><label>STATUS</label><select id="staff-status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
         <div class="form-field"><label>START DATE</label><input id="staff-start" type="date"></div>
@@ -1366,7 +1432,7 @@
   }
 
   function activeRequest(req){
-    return ['pending','accepted','assigned','dispatched','active'].includes(String(req.status||'').toLowerCase());
+    return ['pending','accepted','assigned','dispatched','arriving','active'].includes(String(req.status||'').toLowerCase());
   }
 
   async function dispatchRequest(requestId){
@@ -1376,7 +1442,7 @@
       return;
     }
 
-    const options=available.map(v=>`<option value="${esc(v.id)}">${esc(v.vehicleId || v.id)} · ${esc(v.driverName || 'Unassigned')}</option>`).join('');
+    const options=available.map(v=>`<option value="${esc(v.id)}">${esc(v.vehicleId || v.id)} Â· ${esc(v.driverName || 'Unassigned')}</option>`).join('');
     openModal('Dispatch Ambulance',`
       <form id="dispatch-form">
         <div class="form-field"><label>AVAILABLE VEHICLE</label><select id="dispatch-vehicle">${options}</select></div>
@@ -1392,18 +1458,31 @@
 
       try{
         const batch=db.batch();
+        const driverId=vehicle.driverId || vehicleDocId;
+        const driverName=vehicle.driverName || '';
+        const driverProfile=allUsers.find(u=>u.id===driverId);
+        const driverPhone=driverProfile?.phone || driverProfile?.mobile || '';
         batch.update(db.collection('requests').doc(requestId),{
           status:'dispatched',
           assignedVehicle:vehicle.vehicleId || vehicleDocId,
           assignedVehicleId:vehicleDocId,
-          assignedDriver:vehicle.driverName || '',
-          dispatchedAt:firebase.firestore.FieldValue.serverTimestamp()
+          vehicleId:vehicleDocId,
+          driverId,
+          driverName,
+          driverPhone,
+          assignedDriver:driverName,
+          dispatchedAt:firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt:firebase.firestore.FieldValue.serverTimestamp()
         });
         batch.update(db.collection('vehicles').doc(vehicleDocId),{
           status:'ontrip',
           currentEmergency:requestId
         });
         await batch.commit();
+        const request=allRequests.find(r=>r.id===requestId);
+        if(request?.userId){
+          await sendPatientNotification(request.userId,'Ambulance dispatched',`${driverName || 'Your Afromed response team'} is on the way.`,requestId).catch(()=>{});
+        }
         closeModal();showToast('Ambulance dispatched');
       }catch(err){showToast('Dispatch failed: '+err.message)}
     });
@@ -1424,6 +1503,10 @@
         });
       }
       await batch.commit();
+      const request=allRequests.find(r=>r.id===requestId);
+      if(request?.userId){
+        await sendPatientNotification(request.userId,'Emergency completed','Your Afromed emergency case has been marked completed.',requestId).catch(()=>{});
+      }
       showToast('Emergency completed');
     }catch(err){showToast('Unable to complete case: '+err.message)}
   }
@@ -1442,13 +1525,13 @@
         <td>${esc(req.userName || req.userPhone || req.userId || 'Unknown')}</td>
         <td>${esc(req.emergencyType || 'General')}</td>
         <td>${statusBadge(req.status)}</td>
-        <td>${esc(req.assignedVehicle || '—')}</td>
+        <td>${esc(req.assignedVehicle || 'â€”')}</td>
         <td>${formatDate(req.timestamp)}</td>
       </tr>`).join(''):`<tr><td colspan="6">No active emergency requests.</td></tr>`;
 
     let filtered=sorted;
     if(emergencyFilter==='pending') filtered=sorted.filter(r=>String(r.status||'').toLowerCase()==='pending');
-    if(emergencyFilter==='active') filtered=sorted.filter(r=>['accepted','assigned','dispatched','active'].includes(String(r.status||'').toLowerCase()));
+    if(emergencyFilter==='active') filtered=sorted.filter(r=>['accepted','assigned','dispatched','arriving','active'].includes(String(r.status||'').toLowerCase()));
     if(emergencyFilter==='completed') filtered=sorted.filter(r=>String(r.status||'').toLowerCase()==='completed');
 
     const emsBody=document.getElementById('ems-requests-body');
@@ -1456,19 +1539,169 @@
       const status=String(req.status||'').toLowerCase();
       const actions=[];
       if(status==='pending') actions.push(`<button class="btn btn-red" onclick="dispatchRequest('${req.id}')">Dispatch</button>`);
-      if(['accepted','assigned','dispatched','active'].includes(status)) actions.push(`<button class="btn btn-green" onclick="completeRequest('${req.id}','${esc(req.assignedVehicleId||'')}')">Complete</button>`);
+      if(['accepted','assigned','dispatched','arriving','active'].includes(status)) actions.push(`<button class="btn btn-green" onclick="completeRequest('${req.id}','${esc(req.assignedVehicleId||'')}')">Complete</button>`);
+      actions.push(`<button class="btn btn-light" onclick="openEmergencyChat('${req.id}')"><i class="fa-solid fa-comments"></i> Chat</button>`);
       return `<tr>
         <td><strong>#${esc(req.id.slice(0,7))}</strong></td>
         <td>${esc(req.userName || req.userPhone || req.userId || 'Unknown')}</td>
         <td>${esc(req.emergencyType || 'General')}</td>
         <td>${statusBadge(status)}</td>
-        <td>${esc(req.assignedVehicle || '—')}</td>
+        <td>${esc(req.assignedVehicle || 'â€”')}</td>
         <td>${formatDate(req.timestamp)}</td>
         <td>${actions.join(' ') || '<span class="tiny">No action</span>'}</td>
       </tr>`;
     }).join(''):`<tr><td colspan="7">No emergency requests in this view.</td></tr>`;
 
     updateMapMarkers();
+  }
+
+
+  async function sendPatientNotification(userId,title,body,requestId=''){
+    if(!userId)return;
+    await db.collection('users').doc(userId).collection('notifications').add({
+      title,body,requestId,type:'admin_update',read:false,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    // A secure server/Cloud Function can watch push_queue and send FCM HTTP v1.
+    const user=allUsers.find(u=>u.id===userId);
+    if(user?.fcmToken){
+      await db.collection('push_queue').add({
+        userId,fcmToken:user.fcmToken,title,body,requestId,status:'pending',
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(()=>{});
+    }
+  }
+
+  function renderPatientApp(){
+    const active=allRequests.filter(activeRequest);
+    const available=allVehicles.filter(v=>String(v.status||'').toLowerCase()==='available');
+    const appUsers=allUsers.filter(u=>u.phone||u.medicalAid||u.fcmToken||u.appPlatform==='android');
+    const openSupport=allSupportThreads.filter(t=>String(t.status||'open').toLowerCase()!=='closed');
+    const pushReady=allUsers.filter(u=>u.fcmToken).length;
+
+    setText('app-user-count',appUsers.length);
+    setText('app-active-count',active.length);
+    setText('app-available-count',available.length);
+    setText('app-support-count',openSupport.length);
+    setText('app-push-count',pushReady);
+    document.getElementById('app-support-dot')?.classList.toggle('hidden',openSupport.length===0);
+
+    const body=document.getElementById('app-emergency-body');
+    if(body){
+      body.innerHTML=active.length?[...active].sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0)).slice(0,30).map(r=>`
+        <tr>
+          <td><strong>#${esc(r.id.slice(0,7))}</strong></td>
+          <td>${esc(r.userName||r.userPhone||'Patient')}<div class="tiny">${esc(r.userPhone||'')}</div></td>
+          <td>${esc(r.emergencyType||'Emergency')}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td>${esc(r.assignedVehicle||'â€”')}</td>
+          <td><div class="actions">
+            ${String(r.status||'').toLowerCase()==='pending'?`<button class="btn btn-red" onclick="dispatchRequest('${r.id}')">Dispatch</button>`:''}
+            <button class="btn btn-light" onclick="openEmergencyChat('${r.id}')"><i class="fa-solid fa-comments"></i> Chat</button>
+            ${r.userId?`<button class="action-btn" title="Notify patient" onclick="openPatientNotificationModal('${r.userId}','${r.id}')"><i class="fa-solid fa-bell"></i></button>`:''}
+          </div></td>
+        </tr>`).join(''):`<tr><td colspan="6">No active patient emergencies.</td></tr>`;
+    }
+
+    const support=document.getElementById('app-support-list');
+    if(support){
+      const list=[...allSupportThreads].sort((a,b)=>(b.lastMessageAt?.seconds||b.updatedAt?.seconds||0)-(a.lastMessageAt?.seconds||a.updatedAt?.seconds||0));
+      support.innerHTML=list.length?list.slice(0,15).map(t=>`
+        <div class="feed-item" style="cursor:pointer" onclick="openSupportThread('${t.id}')">
+          <div class="feed-icon"><i class="fa-solid fa-headset"></i></div>
+          <div><strong>${esc(t.userName||t.userPhone||'Patient')}</strong><span>${esc(t.lastMessage||'Support conversation')} Â· ${formatDate(t.lastMessageAt||t.updatedAt)}</span></div>
+        </div>`).join(''):`<div class="feed-item"><div class="feed-icon"><i class="fa-solid fa-circle-check"></i></div><div><strong>No open patient support chats</strong><span>New patient messages will appear here.</span></div></div>`;
+    }
+
+    const userBody=document.getElementById('app-users-body');
+    if(userBody){
+      userBody.innerHTML=appUsers.length?appUsers.slice(0,50).map(u=>`
+        <tr>
+          <td><strong>${esc(((u.name||'')+' '+(u.surname||'')).trim()||u.email||'Patient')}</strong></td>
+          <td>${esc(u.phone||'â€”')}</td>
+          <td>${esc(u.medicalAid||'â€”')}</td>
+          <td>${u.fcmToken?'<span class="badge badge-green">Ready</span>':'<span class="badge badge-gray">No token</span>'}</td>
+          <td><div class="actions">
+            <button class="action-btn" title="Send message" onclick="openPatientNotificationModal('${u.id}','')"><i class="fa-solid fa-bell"></i></button>
+            <button class="action-btn" title="Support chat" onclick="openSupportThread('${u.id}')"><i class="fa-solid fa-message"></i></button>
+          </div></td>
+        </tr>`).join(''):`<tr><td colspan="5">No app users detected.</td></tr>`;
+    }
+  }
+
+  function openEmergencyChat(requestId){
+    const request=allRequests.find(r=>r.id===requestId);
+    if(requestChatUnsub){requestChatUnsub();requestChatUnsub=null}
+    openModal(`Emergency Chat Â· #${requestId.slice(0,7).toUpperCase()}`,`
+      <div class="tiny" style="margin-bottom:10px"><strong>${esc(request?.userName||'Patient')}</strong> Â· ${esc(request?.emergencyType||'Emergency')} Â· ${esc(request?.userPhone||'')}</div>
+      <div id="admin-emergency-chat" style="display:flex;flex-direction:column;gap:8px;min-height:280px;max-height:48vh;overflow:auto;padding:8px;background:#f8fafc;border:1px solid var(--line);border-radius:12px"></div>
+      <form id="admin-emergency-chat-form" style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px">
+        <textarea id="admin-emergency-chat-input" rows="2" required placeholder="Message the patient / driverâ€¦" style="border:1px solid var(--line);border-radius:11px;padding:10px;resize:none"></textarea>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+      </form>
+    `);
+    requestChatUnsub=db.collection('requests').doc(requestId).collection('messages').orderBy('timestamp','asc').onSnapshot(s=>{
+      const box=document.getElementById('admin-emergency-chat');if(!box)return;
+      box.innerHTML=s.empty?'<div class="tiny">No messages yet.</div>':s.docs.map(d=>{
+        const m=d.data(),admin=['admin','control','office'].includes(String(m.senderRole||'').toLowerCase());
+        return `<div style="align-self:${admin?'flex-end':'flex-start'};max-width:82%;padding:9px 11px;border-radius:13px;background:${admin?'var(--navy)':'#fff'};color:${admin?'#fff':'#334155'};border:1px solid var(--line);font-size:9px"><div style="font-size:7px;opacity:.7;margin-bottom:3px">${esc(m.senderName||m.senderRole||'User')}</div>${esc(m.text||m.message||'')}</div>`;
+      }).join('');
+      box.scrollTop=box.scrollHeight;
+    });
+    document.getElementById('admin-emergency-chat-form').addEventListener('submit',async e=>{
+      e.preventDefault();const input=document.getElementById('admin-emergency-chat-input'),msg=input.value.trim();if(!msg)return;input.value='';
+      await db.collection('requests').doc(requestId).collection('messages').add({
+        sender:currentUser.uid,senderUid:currentUser.uid,senderName:document.getElementById('user-name').textContent||'Afromed Control Room',
+        senderRole:'control',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      if(request?.userId)sendPatientNotification(request.userId,'Afromed control room',msg,requestId).catch(()=>{});
+    });
+  }
+
+  function openSupportThread(userId){
+    if(!userId)return;
+    const thread=allSupportThreads.find(t=>t.id===userId),user=allUsers.find(u=>u.id===userId);
+    if(supportChatUnsub){supportChatUnsub();supportChatUnsub=null}
+    openModal(`Patient Support Â· ${thread?.userName||user?.name||user?.phone||'Patient'}`,`
+      <div id="admin-support-chat" style="display:flex;flex-direction:column;gap:8px;min-height:300px;max-height:50vh;overflow:auto;padding:8px;background:#f8fafc;border:1px solid var(--line);border-radius:12px"></div>
+      <form id="admin-support-form" style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px">
+        <textarea id="admin-support-input" rows="2" required placeholder="Reply to patientâ€¦" style="border:1px solid var(--line);border-radius:11px;padding:10px;resize:none"></textarea>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+      </form>
+    `);
+    const ref=db.collection('support_threads').doc(userId);
+    supportChatUnsub=ref.collection('messages').orderBy('timestamp','asc').onSnapshot(s=>{
+      const box=document.getElementById('admin-support-chat');if(!box)return;
+      box.innerHTML=s.empty?'<div class="tiny">No messages yet.</div>':s.docs.map(d=>{
+        const m=d.data(),admin=['admin','office','control'].includes(String(m.senderRole||'').toLowerCase());
+        return `<div style="align-self:${admin?'flex-end':'flex-start'};max-width:82%;padding:9px 11px;border-radius:13px;background:${admin?'var(--navy)':'#fff'};color:${admin?'#fff':'#334155'};border:1px solid var(--line);font-size:9px"><div style="font-size:7px;opacity:.7;margin-bottom:3px">${esc(m.senderName||m.senderRole||'User')}</div>${esc(m.text||'')}</div>`;
+      }).join('');box.scrollTop=box.scrollHeight;
+    });
+    document.getElementById('admin-support-form').addEventListener('submit',async e=>{
+      e.preventDefault();const input=document.getElementById('admin-support-input'),msg=input.value.trim();if(!msg)return;input.value='';
+      await ref.set({status:'open',lastMessage:msg,lastMessageAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+      await ref.collection('messages').add({senderUid:currentUser.uid,senderName:document.getElementById('user-name').textContent||'Afromed Office',senderRole:'office',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()});
+      sendPatientNotification(userId,'Afromed Office',msg,'').catch(()=>{});
+    });
+  }
+
+  function openPatientNotificationModal(userId,requestId=''){
+    const user=allUsers.find(u=>u.id===userId);
+    openModal('Send Patient Update',`
+      <form id="patient-notify-form">
+        <div class="form-field"><label>PATIENT</label><input value="${esc(((user?.name||'')+' '+(user?.surname||'')).trim()||user?.phone||user?.email||userId)}" disabled></div>
+        <div class="form-field"><label>TITLE</label><input id="patient-notify-title" value="Afromed update" required></div>
+        <div class="form-field"><label>MESSAGE</label><textarea id="patient-notify-body" rows="5" required></textarea></div>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-bell"></i> Send Update</button>
+      </form>
+    `);
+    document.getElementById('patient-notify-form').addEventListener('submit',async e=>{
+      e.preventDefault();
+      try{
+        await sendPatientNotification(userId,document.getElementById('patient-notify-title').value.trim(),document.getElementById('patient-notify-body').value.trim(),requestId);
+        closeModal();showToast('Patient update queued');
+      }catch(err){showToast('Unable to send update: '+err.message)}
+    });
   }
 
   function renderFleet(){
@@ -1490,9 +1723,9 @@
         <td><strong>${esc(v.vehicleId || v.id)}</strong></td>
         <td>${esc(v.driverName || 'Unassigned')}</td>
         <td>${statusBadge(v.status)}</td>
-        <td>${esc(v.fuel ?? '—')}${v.fuel!==undefined?'%':''}</td>
-        <td>${esc(v.mileage ?? '—')}</td>
-        <td>${esc(v.currentEmergency || '—')}</td>
+        <td>${esc(v.fuel ?? 'â€”')}${v.fuel!==undefined?'%':''}</td>
+        <td>${esc(v.mileage ?? 'â€”')}</td>
+        <td>${esc(v.currentEmergency || 'â€”')}</td>
       </tr>`).join(''):`<tr><td colspan="6">No vehicles registered.</td></tr>`;
 
     document.getElementById('ems-fleet-body').innerHTML=allVehicles.length?allVehicles.slice(0,12).map(v=>`
@@ -1512,9 +1745,9 @@
       <tr>
         <td><strong>${esc(s.name || s.fullName || 'Unnamed')}</strong></td>
         <td>${esc(s.role || 'Staff')}</td>
-        <td>${esc(s.phone || '—')}</td>
+        <td>${esc(s.phone || 'â€”')}</td>
         <td>${statusBadge(s.status || 'active')}</td>
-        <td>${esc(s.startDate || '—')}</td>
+        <td>${esc(s.startDate || 'â€”')}</td>
       </tr>`).join(''):`<tr><td colspan="5">No staff records.</td></tr>`;
   }
 
@@ -1528,8 +1761,8 @@
     document.getElementById('clients-body').innerHTML=filtered.length?filtered.slice(0,100).map(u=>`
       <tr>
         <td><strong>${esc(((u.name||'')+' '+(u.surname||'')).trim() || 'Unnamed')}</strong></td>
-        <td>${esc(u.email || '—')}</td>
-        <td>${esc(u.phone || '—')}</td>
+        <td>${esc(u.email || 'â€”')}</td>
+        <td>${esc(u.phone || 'â€”')}</td>
         <td>${esc(u.role || u.accountType || 'User')}</td>
         <td>${statusBadge(u.status || 'active')}</td>
       </tr>`).join(''):`<tr><td colspan="5">No matching user records.</td></tr>`;
@@ -1549,9 +1782,9 @@
     const sorted=[...allStudents].sort((a,b)=>(b.registeredAt?.seconds||0)-(a.registeredAt?.seconds||0));
     document.getElementById('college-students-body').innerHTML=sorted.length?sorted.slice(0,12).map(s=>`
       <tr>
-        <td><strong>${esc(s.studentNo || '—')}</strong></td>
+        <td><strong>${esc(s.studentNo || 'â€”')}</strong></td>
         <td>${esc(((s.firstName||'')+' '+(s.lastName||'')).trim() || 'Unnamed')}</td>
-        <td>${esc(s.course || '—')}</td>
+        <td>${esc(s.course || 'â€”')}</td>
         <td>${statusBadge(s.paymentStatus || 'unknown')}</td>
       </tr>`).join(''):`<tr><td colspan="4">No student records.</td></tr>`;
   }
@@ -1573,7 +1806,7 @@
     document.getElementById('finance-invoices-body').innerHTML=sorted.length?sorted.slice(0,20).map(i=>`
       <tr>
         <td><strong>${esc(i.invoiceNumber || i.id.slice(0,7))}</strong></td>
-        <td>${esc(i.clientName || i.client || '—')}</td>
+        <td>${esc(i.clientName || i.client || 'â€”')}</td>
         <td>${formatMoney(i.total || i.amount || i.totalAmount || 0)}</td>
         <td>${statusBadge(i.status || 'draft')}</td>
         <td>${formatDate(i.createdAt || i.date)}</td>
@@ -1605,14 +1838,14 @@
     setText('events-pending-approvals',officeDepartmentApprovals('Events & Medical Cover'));
 
     const eventPlans=[...allOperationalPlans].sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0));
-    const venueName=id=>allStadiums.find(v=>v.id===id)?.name || '—';
+    const venueName=id=>allStadiums.find(v=>v.id===id)?.name || 'â€”';
     const eventBody=document.getElementById('events-plans-body');
     if(eventBody){
       eventBody.innerHTML=eventPlans.length?eventPlans.slice(0,12).map(p=>`
         <tr>
           <td><strong>${esc((p.teamA||'Event')+' VS '+(p.teamB||''))}</strong></td>
           <td>${esc(venueName(p.stadiumId))}</td>
-          <td>${esc(p.eventDate||'—')}</td>
+          <td>${esc(p.eventDate||'â€”')}</td>
           <td>${formatDate(p.updatedAt)}</td>
         </tr>`).join(''):`<tr><td colspan="4">No operational plans recorded.</td></tr>`;
     }
@@ -1639,7 +1872,7 @@
         <tr>
           <td><strong>${esc(p.name||p.title||p.projectName||'Project')}</strong></td>
           <td>${statusBadge(p.status||'active')}</td>
-          <td>${esc(p.progress ?? p.percentage ?? '—')}${p.progress!==undefined||p.percentage!==undefined?'%':''}</td>
+          <td>${esc(p.progress ?? p.percentage ?? 'â€”')}${p.progress!==undefined||p.percentage!==undefined?'%':''}</td>
           <td>${formatDate(p.updatedAt||p.createdAt)}</td>
         </tr>`).join(''):`<tr><td colspan="4">No Development projects recorded.</td></tr>`;
     }
@@ -1669,7 +1902,7 @@
         <tr>
           <td><strong>${esc(t.title||'Task')}</strong></td>
           <td>${esc(t.assignedToName||'Department task')}</td>
-          <td>${esc(t.assignedDepartment||'—')}</td>
+          <td>${esc(t.assignedDepartment||'â€”')}</td>
           <td>${statusBadge(t.status||'assigned')}</td>
           <td>${statusBadge(t.approvalStatus||'not_required')}</td>
         </tr>`).join(''):`<tr><td colspan="5">No office tasks recorded.</td></tr>`;
@@ -1681,8 +1914,8 @@
       approvalBody.innerHTML=pending.length?pending.map(t=>`
         <tr>
           <td><strong>${esc(t.title||'Task')}</strong></td>
-          <td>${esc(t.assignedDepartment||'—')}</td>
-          <td>${esc(t.completedByName||t.assignedToName||'—')}</td>
+          <td>${esc(t.assignedDepartment||'â€”')}</td>
+          <td>${esc(t.completedByName||t.assignedToName||'â€”')}</td>
           <td>${formatDate(t.completedAt)}</td>
           <td>
             <div class="actions">
@@ -1698,8 +1931,8 @@
       memberBody.innerHTML=allOfficeMembers.length?allOfficeMembers.map(m=>`
         <tr>
           <td><strong>${esc(m.name||m.email||'Office User')}</strong></td>
-          <td>${esc(m.email||'—')}</td>
-          <td>${esc(m.department||'—')}</td>
+          <td>${esc(m.email||'â€”')}</td>
+          <td>${esc(m.department||'â€”')}</td>
           <td>${esc(m.role||'staff')}</td>
           <td>${statusBadge(m.status||'active')}</td>
         </tr>`).join(''):`<tr><td colspan="5">No office members authorised yet.</td></tr>`;
@@ -1710,7 +1943,7 @@
     if(workload){
       workload.innerHTML=departments.map(d=>{
         const open=officeDepartmentOpen(d), pending=officeDepartmentApprovals(d);
-        return `<div class="feed-item"><div class="feed-icon"><i class="fa-solid fa-building"></i></div><div><strong>${esc(d)}</strong><span>${open} open task${open===1?'':'s'} · ${pending} awaiting authorisation</span></div></div>`;
+        return `<div class="feed-item"><div class="feed-icon"><i class="fa-solid fa-building"></i></div><div><strong>${esc(d)}</strong><span>${open} open task${open===1?'':'s'} Â· ${pending} awaiting authorisation</span></div></div>`;
       }).join('');
     }
 
@@ -1719,14 +1952,14 @@
     if(activityFeed){
       activityFeed.innerHTML=act.length?act.map(a=>`
         <div class="feed-item"><div class="feed-icon"><i class="fa-solid ${a.type==='approval'?'fa-stamp':a.type==='message'?'fa-envelope':'fa-list-check'}"></i></div>
-          <div><strong>${esc(a.title||'Office activity')}</strong><span>${esc(a.detail||'')} · ${esc(a.actorName||'')}</span></div></div>`).join(''):
+          <div><strong>${esc(a.title||'Office activity')}</strong><span>${esc(a.detail||'')} Â· ${esc(a.actorName||'')}</span></div></div>`).join(''):
         `<div class="feed-item"><div class="feed-icon"><i class="fa-solid fa-circle-info"></i></div><div><strong>No office activity yet</strong><span>Tasks, approvals and messages will appear here.</span></div></div>`;
     }
   }
 
   function officeMemberOptions(selected=''){
     return allOfficeMembers.filter(m=>String(m.status||'active').toLowerCase()==='active').map(m=>
-      `<option value="${esc(m.id)}" ${m.id===selected?'selected':''}>${esc(m.name||m.email||'User')} · ${esc(m.department||'')}</option>`
+      `<option value="${esc(m.id)}" ${m.id===selected?'selected':''}>${esc(m.name||m.email||'User')} Â· ${esc(m.department||'')}</option>`
     ).join('');
   }
 
@@ -1803,7 +2036,7 @@
           priority:'normal',readBy:[],createdAt:firebase.firestore.FieldValue.serverTimestamp()
         });
         await db.collection('office_activity').add({
-          type:'message',title:'Management message sent',detail:`${subject} → ${to.name||to.email}`,
+          type:'message',title:'Management message sent',detail:`${subject} â†’ ${to.name||to.email}`,
           department:'Executive / Administration',actorUid:currentUser.uid,actorName:document.getElementById('user-name').textContent,
           createdAt:firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -1847,7 +2080,7 @@
           createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()
         });
         await db.collection('office_activity').add({
-          type:'task',title:'Management task assigned',detail:`${title} → ${member?.name||department}`,
+          type:'task',title:'Management task assigned',detail:`${title} â†’ ${member?.name||department}`,
           department,actorUid:currentUser.uid,actorName:document.getElementById('user-name').textContent,
           createdAt:firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -1891,7 +2124,7 @@
           updatedAt:firebase.firestore.FieldValue.serverTimestamp()
         });
         await db.collection('office_activity').add({
-          type:'approval',title:'Work returned for changes',detail:`${task.title} · ${note}`,department:task.assignedDepartment||'',
+          type:'approval',title:'Work returned for changes',detail:`${task.title} Â· ${note}`,department:task.assignedDepartment||'',
           actorUid:currentUser.uid,actorName:document.getElementById('user-name').textContent,
           createdAt:firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -1949,10 +2182,10 @@
   }
 
   function attachLiveData(){
-    listenCollection('requests',data=>{allRequests=data;renderEmergencyTables();updateMetrics()});
-    listenCollection('vehicles',data=>{allVehicles=data;renderFleet();updateMetrics()});
+    listenCollection('requests',data=>{allRequests=data;renderEmergencyTables();renderPatientApp();updateMetrics()});
+    listenCollection('vehicles',data=>{allVehicles=data;renderFleet();renderPatientApp();updateMetrics()});
     listenCollection('staff',data=>{allStaff=data;renderStaff();updateMetrics()});
-    listenCollection('users',data=>{allUsers=data;renderUsersTable();updateMetrics()});
+    listenCollection('users',data=>{allUsers=data;renderUsersTable();renderPatientApp();updateMetrics()});
     listenCollection('students',data=>{allStudents=data;renderCollege();updateMetrics()});
     listenCollection('courses',data=>{allCourses=data;renderCollege()});
     listenCollection('assignments',data=>{allAssignments=data;renderCollege()});
@@ -1971,6 +2204,7 @@
       listenCollection('office_members',data=>{allOfficeMembers=data;renderOfficeControl()});
       listenCollection('office_invites',data=>{allOfficeInvites=data;});
       listenCollection('office_access_requests',data=>{allOfficeAccessRequests=data;});
+      listenCollection('support_threads',data=>{allSupportThreads=data;renderPatientApp()});
     }
   }
 
@@ -1983,6 +2217,7 @@
     renderFinance();
     renderDepartmentOversight();
     renderOfficeControl();
+    renderPatientApp();
     updateMetrics();
     updateMapMarkers();
     showToast('Live view refreshed');
@@ -1997,9 +2232,11 @@
     txt.textContent=ok?'Connected to afromed-fda57':'Connection issue detected';
   }
 
-  // Mapbox: store only a public pk.* token in localStorage.
+  // Mapbox public token: Admin Settings first, then shared Afromed config.
   function getMapToken(){
-    return localStorage.getItem('afromed_mapbox_public_token') || '';
+    return localStorage.getItem('afromed_mapbox_public_token')
+      || window.AFROMED_CONFIG?.mapboxPublicToken
+      || '';
   }
 
   function saveMapboxToken(){
@@ -2106,7 +2343,7 @@
       if(Number.isFinite(Number(lat)) && Number.isFinite(Number(lng))){
         const marker=new mapboxgl.Marker(markerElement('vehicle'))
           .setLngLat([Number(lng),Number(lat)])
-          .setPopup(new mapboxgl.Popup({offset:16}).setHTML(`<strong>${esc(v.vehicleId||'Ambulance')}</strong><br><span>${esc(v.driverName||'Unassigned')} · ${esc(v.status||'unknown')}</span>`))
+          .setPopup(new mapboxgl.Popup({offset:16}).setHTML(`<strong>${esc(v.vehicleId||'Ambulance')}</strong><br><span>${esc(v.driverName||'Unassigned')} Â· ${esc(v.status||'unknown')}</span>`))
           .addTo(map);
         bucket.push(marker);
       }
@@ -2119,7 +2356,7 @@
       if(Number.isFinite(Number(lat)) && Number.isFinite(Number(lng))){
         const marker=new mapboxgl.Marker(markerElement('emergency'))
           .setLngLat([Number(lng),Number(lat)])
-          .setPopup(new mapboxgl.Popup({offset:14}).setHTML(`<strong>${esc(r.emergencyType||'Emergency')}</strong><br><span>${esc(r.userName||r.userPhone||'Patient')} · ${esc(r.status||'unknown')}</span>`))
+          .setPopup(new mapboxgl.Popup({offset:14}).setHTML(`<strong>${esc(r.emergencyType||'Emergency')}</strong><br><span>${esc(r.userName||r.userPhone||'Patient')} Â· ${esc(r.status||'unknown')}</span>`))
           .addTo(map);
         bucket.push(marker);
       }
@@ -2225,5 +2462,7 @@
   });
 </script>
 
+  <script src="admin-live-ems.js"></script>
 </body>
 </html>
+
